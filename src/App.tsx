@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router";
+//se agrega la libreria navigate
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router";
 import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
 import NotFound from "./pages/OtherPage/NotFound";
@@ -27,9 +28,11 @@ export default function App() {
         <Routes>
           {/* Dashboard Layout */}
           <Route element={<AppLayout />}>
-            <Route index path="/" element={<Home />} />
+            //cambie el index a que sea login, si lo consideran cochino me avisan
+            <Route index path="/"  element={<Navigate to="/signin" replace />} />
 
             {/* Others Page */}
+            <Route path="/home" element={<Home />}/>
             <Route path="/profile" element={<UserProfiles />} />
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/blank" element={<Blank />} />
