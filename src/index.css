@@ -47,8 +47,10 @@ layer(base);
   --color-brand-200: #c2d6ff;
   --color-brand-300: #9cb9ff;
   --color-brand-400: #7592ff;
-  --color-brand-500: #465fff;
-  --color-brand-600: #3641f5;
+
+  --color-brand-500: #1f9090;  /* Se cambio de color a verde */
+  --color-brand-600: #115151; /* verde oscuro */
+  
   --color-brand-700: #2a31d8;
   --color-brand-800: #252dae;
   --color-brand-900: #262e89;
