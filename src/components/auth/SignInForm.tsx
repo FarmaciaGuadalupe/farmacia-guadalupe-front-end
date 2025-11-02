@@ -35,7 +35,7 @@ export default function SignInForm() {
               Iniciar sesión
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Introduce tu correo electrónico y contraseña para iniciar sesión
+              Introduce tu usuario y contraseña para iniciar sesión
             </p>
           </div>
           
@@ -96,9 +96,9 @@ export default function SignInForm() {
               <div className="space-y-6">
                 <div>
                   <Label>
-                    Correo electrónico <span className="text-error-500">*</span>{" "}
+                    Usuario <span className="text-error-500">*</span>{" "}
                   </Label>
-                  <Input placeholder="ejemplo@gmail.com" />
+                  <Input placeholder="Introduzca su usuario" />
                 </div>
                 <div>
                   <Label>
@@ -121,20 +121,20 @@ export default function SignInForm() {
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center justify-between">
-                  {/* <div className="flex items-center gap-3">
+                {/* <div className="flex items-center justify-between">
+                   <div className="flex items-center gap-3">
                     <Checkbox checked={isChecked} onChange={setIsChecked} />
                     <span className="block font-normal text-gray-700 text-theme-sm dark:text-gray-400">
                     Mantener mi sesión abierta
                     </span>
-                  </div> */}
+                  </div> 
                   <Link
                     to="/reset-password"
                     className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400"
                   >
                   ¿Olvidó su contraseña?
                   </Link>
-                </div>
+                </div> */}
                 <div>
                   <Button className="w-full" size="sm">
                   Iniciar sesión

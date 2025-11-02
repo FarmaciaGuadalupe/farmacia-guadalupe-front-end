@@ -34,11 +34,11 @@ export default function App() {
             {/* Others Page */}
             <Route path="/home" element={<Home />}/>
             <Route path="/profile" element={<UserProfiles />} />
-            <Route path="/calendar" element={<Calendar />} />
+            <Route path="/calendar" element={<Home />} />
             <Route path="/blank" element={<Blank />} />
 
             {/* Forms */}
-            <Route path="/form-elements" element={<FormElements />} />
+            {/* <Route path="/form-elements" element={<FormElements />} /> */}
 
             {/* Tables */}
             <Route path="/basic-tables" element={<BasicTables />} />
