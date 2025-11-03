@@ -1,10 +1,13 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router"; // 👈 importa useNavigate
-import { ChevronLeftIcon, EyeCloseIcon, EyeIcon } from "../../icons";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom"; // 👈 importa useNavigate
+import { EyeCloseIcon, EyeIcon } from "../../icons";
 import Label from "../form/Label";
 import Input from "../form/input/InputField";
-import Checkbox from "../form/input/Checkbox";
-import Button from "../ui/button/Button";
+
+
+import { useAuth } from "../../context/AuthContext";
+
+
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,9 +15,34 @@ export default function SignInForm() {
 
   const navigate = useNavigate(); // 👈 inicializa navigate
 
-  const handleSignIn = (e: React.FormEvent) => {
-    e.preventDefault(); // evitar recargar la página
-    navigate("/home"); // 👈 redirigir directamente
+  // const handleSignIn = (e: React.FormEvent) => {
+  //   e.preventDefault(); // evitar recargar la página
+  //   navigate("/home"); // 👈 redirigir directamente
+  // };
+
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  
+  const { login } = useAuth();
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    
+    try {
+      await login(username, password);
+      // Si el login es exitoso, redirige al dashboard
+      navigate('/home'); 
+    } catch (err) {
+      setError('Usuario o contraseña incorrectos.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -92,13 +120,16 @@ export default function SignInForm() {
                 </span>
               </div>
             </div>
-            <form onSubmit={handleSignIn}> {/* 👈 usar el evento onSubmit */}
+            <form onSubmit={handleSubmit}>
               <div className="space-y-6">
                 <div>
                   <Label>
-                    Correo electrónico <span className="text-error-500">*</span>{" "}
+                    Usuario <span className="text-error-500">*</span>{" "}
                   </Label>
-                  <Input placeholder="ejemplo@gmail.com" />
+                  <Input 
+                    placeholder="ejemplo@gmail.com" 
+                    onChange={(e) => setUsername(e.target.value)}
+                    />
                 </div>
                 <div>
                   <Label>
@@ -108,6 +139,7 @@ export default function SignInForm() {
                     <Input
                       type={showPassword ? "text" : "password"}
                       placeholder="Introduzca su contraseña"
+                      onChange={(e) => setPassword(e.target.value)}
                     />
                     <span
                       onClick={() => setShowPassword(!showPassword)}
@@ -136,9 +168,12 @@ export default function SignInForm() {
                   </Link>
                 </div>
                 <div>
-                  <Button className="w-full" size="sm">
+                  <button 
+                    type="submit"
+                    className="w-full bg-green-500" 
+                    >
                   Iniciar sesión
-                  </Button>
+                  </button>
                 </div>
               </div>
             </form>

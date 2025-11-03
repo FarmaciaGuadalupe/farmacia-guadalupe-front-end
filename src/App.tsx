@@ -19,6 +19,9 @@ import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+import { useAuth } from "./context/AuthContext";
+
 
 export default function App() {
   return (
@@ -28,11 +31,14 @@ export default function App() {
         <Routes>
           {/* Dashboard Layout */}
           <Route element={<AppLayout />}>
-            //cambie el index a que sea login, si lo consideran cochino me avisan
+
             <Route index path="/"  element={<Navigate to="/signin" replace />} />
 
             {/* Others Page */}
-            <Route path="/home" element={<Home />}/>
+            <Route element={<ProtectedRoute />}>
+              <Route path="/home" element={<Home />}/>
+            </Route>
+            
             <Route path="/profile" element={<UserProfiles />} />
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/blank" element={<Blank />} />
