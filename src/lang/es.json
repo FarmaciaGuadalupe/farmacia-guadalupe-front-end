@@ -1,0 +1,8 @@
+{
+    "error.login":"¡Usuario y/o Contraseña incorrectos!",
+    "error.incompleteParams": "Todos los parámetros requeridos deben de ser completados",
+    "login": "Iniciar Sesión",
+    "loading":"Cargando...",
+    "user": "Usuario",
+    "password":"Contraseña"
+}
