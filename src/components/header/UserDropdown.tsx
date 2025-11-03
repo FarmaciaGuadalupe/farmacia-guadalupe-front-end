@@ -3,7 +3,19 @@ import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { Link } from "react-router";
 
+import { Avatar } from "@mui/material";
+import { useAuth } from "../../context/AuthContext";
+import { stringAvatar } from "../../utils/AvatarUtils";
+
+import Badge from "../../components/ui/badge/Badge";
+import { FormattedMessage } from "react-intl";
+
 export default function UserDropdown() {
+  const user = useAuth();
+  const names = user.user?.names ?? '';
+  const lastnames = user.user?.lastnames ?? '';
+
+  const fullName = `${names} ${lastnames}`.trim();
   const [isOpen, setIsOpen] = useState(false);
 
   function toggleDropdown() {
@@ -20,14 +32,14 @@ export default function UserDropdown() {
         className="flex items-center text-gray-700 dropdown-toggle dark:text-gray-400"
       >
         <span className="mr-3 overflow-hidden rounded-full h-11 w-11">
-          <img src="/images/user/owner.jpg" alt="User" />
+          {/* <img src="/images/user/owner.jpg" alt="User" /> */}
+          <Avatar {...stringAvatar(fullName)} />
+
         </span>
 
-        <span className="block mr-1 font-medium text-theme-sm">ADMIN</span>
         <svg
-          className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
-            isOpen ? "rotate-180" : ""
-          }`}
+          className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""
+            }`}
           width="18"
           height="20"
           viewBox="0 0 18 20"
@@ -49,13 +61,16 @@ export default function UserDropdown() {
         onClose={closeDropdown}
         className="absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark"
       >
-        <div>
-          <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-             JPEREZ
-          </span>
-          {/* <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            EJEMPLO@CORREO.com
-          </span> */}
+        <div className="flex flex-row items-center gap-2">
+          <Avatar {...stringAvatar(fullName)} />
+          <div>
+            <span className="capitalize block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
+              {fullName}
+            </span>
+            <Badge variant="light" color="primary">
+              {user.user?.roleName}
+            </Badge>
+          </div>
         </div>
 
         <ul className="flex flex-col gap-1 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">
@@ -81,7 +96,8 @@ export default function UserDropdown() {
                   fill=""
                 />
               </svg>
-              USUARIO
+              <FormattedMessage id='user' />
+
             </DropdownItem>
           </li>
           <li>
@@ -106,7 +122,7 @@ export default function UserDropdown() {
                   fill=""
                 />
               </svg>
-              CONFIGURACION
+              <FormattedMessage id="configuration" />
             </DropdownItem>
           </li>
           <li>
@@ -131,7 +147,7 @@ export default function UserDropdown() {
                   fill=""
                 />
               </svg>
-              MANUAL
+              <FormattedMessage id='manual' />
             </DropdownItem>
           </li>
         </ul>
@@ -154,7 +170,7 @@ export default function UserDropdown() {
               fill=""
             />
           </svg>
-          Cerrar Sesión
+          <FormattedMessage id='logout' />
         </Link>
       </Dropdown>
     </div>

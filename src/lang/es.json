@@ -1,8 +1,11 @@
 {
+    "configuration": "Configuración",
     "error.login":"¡Usuario y/o Contraseña incorrectos!",
     "error.incompleteParams": "Todos los parámetros requeridos deben de ser completados",
     "login": "Iniciar Sesión",
+    "logout": "Cerrar sesión",
     "loading":"Cargando...",
     "user": "Usuario",
+    "manual": "Manual",
     "password":"Contraseña"
 }
