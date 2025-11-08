@@ -31,7 +31,7 @@ export default function App() {
     <>
     <IntlProvider locale={locale} messages={messages_es} defaultLocale="es">
 
-      <Router>
+     <Router>
         <ScrollToTop />
         <Routes>
           {/* Dashboard Layout */}
@@ -39,35 +39,37 @@ export default function App() {
 
             <Route index path="/"  element={<Navigate to="/signin" replace />} />
 
-            {/* Others Page */}
+            {/* Agrupa todas las rutas protegidas aquí dentro */}
             <Route element={<ProtectedRoute />}>
+              {/* Others Page */}
               <Route path="/home" element={<Home />}/>
+              <Route path="/profile" element={<UserProfiles />} />
+              <Route path="/calendar" element={<Home />} />
+              <Route path="/blank" element={<Blank />} />
+
+              {/* Forms */}
+              {/* <Route path="/form-elements" element={<FormElements />} /> */}
+
+              {/* Tables */}
+              <Route path="/basic-tables" element={<BasicTables />} />
+
+              {/* Ui Elements */}
+              <Route path="/alerts" element={<Alerts />} />
+              <Route path="/avatars" element={<Avatars />} />
+              <Route path="/badge" element={<Badges />} />
+              <Route path="/buttons" element={<Buttons />} />
+              <Route path="/images" element={<Images />} />
+              <Route path="/videos" element={<Videos />} />
+
+              {/* Charts */}
+              <Route path="/line-chart" element={<LineChart />} />
+              <Route path="/bar-chart" element={<BarChart />} />
             </Route>
-            
-            <Route path="/profile" element={<UserProfiles />} />
-            <Route path="/calendar" element={<Home />} />
-            <Route path="/blank" element={<Blank />} />
+            {/* Fin del grupo de rutas protegidas */}
 
-            {/* Forms */}
-            {/* <Route path="/form-elements" element={<FormElements />} /> */}
-
-            {/* Tables */}
-            <Route path="/basic-tables" element={<BasicTables />} />
-
-            {/* Ui Elements */}
-            <Route path="/alerts" element={<Alerts />} />
-            <Route path="/avatars" element={<Avatars />} />
-            <Route path="/badge" element={<Badges />} />
-            <Route path="/buttons" element={<Buttons />} />
-            <Route path="/images" element={<Images />} />
-            <Route path="/videos" element={<Videos />} />
-
-            {/* Charts */}
-            <Route path="/line-chart" element={<LineChart />} />
-            <Route path="/bar-chart" element={<BarChart />} />
           </Route>
 
-          {/* Auth Layout */}
+          {/* Auth Layout (Estas quedan fuera, lo cual es correcto) */}
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
 
