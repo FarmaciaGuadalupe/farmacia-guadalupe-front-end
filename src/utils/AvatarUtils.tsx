@@ -1,3 +1,10 @@
+// (Opcional, pero buena práctica) Define los tipos de las props
+type StringAvatarProps = {
+  name: string;
+  size?: number; // El '?' significa que es opcional
+};
+
+
 function stringToSoftColor(string: string): string {
   let hash = 0;
   let i;
@@ -36,11 +43,50 @@ function stringToSoftColor(string: string): string {
   return hslToHex(hue, saturation, lightness);
 }
 
-export function stringAvatar(name: string) {
+export function stringAvatar({ name, size = 45 }: StringAvatarProps) {  
+  // 1. COMPROBACIÓN INICIAL
+  // Si 'name' es null, undefined, un string vacío ("")
+  // o solo espacios en blanco (" "), retorna null.
+  if (!name || name.trim() === '') {
+    return null; 
+    // Opcionalmente, retorna un avatar por defecto:
+    // return { sx: { bgcolor: '#cccccc' }, children: '?' };
+  }
+
+  // 2. LIMPIAR Y SEPARAR EL NOMBRE
+  // .split(' ') divide el nombre por espacios
+  // .filter(Boolean) elimina cualquier entrada vacía 
+  // (útil si hay dobles espacios, ej: "Juan  Perez")
+  const parts = name.split(' ').filter(Boolean);
+
+  // Si después de limpiar no queda nada (ej: name era " "), retorna null
+  if (parts.length === 0) {
+    return null;
+  }
+
+  // 3. GENERAR INICIALES
+  let children = '';
+
+  if (parts.length > 1) {
+    // Caso 1: Hay 2 o más palabras (ej: "Juan Perez")
+    // Toma la primera letra de las primeras dos palabras
+    children = `${parts[0][0]}${parts[1][0]}`;
+  } else {
+    // Caso 2: Hay 1 sola palabra (ej: "Juan" o "Admin")
+    // Toma la primera letra de esa única palabra
+    children = `${parts[0][0]}`;
+    // Opcional: si prefieres 2 letras para nombres únicos:
+    // children = parts[0].substring(0, 2); 
+  }
+
+  // 4. RETORNAR EL OBJETO
   return {
     sx: {
+      width: size,
+      height: size,
       bgcolor: stringToSoftColor(name),
     },
-    children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
+    // .toUpperCase() asegura que las iniciales sean mayúsculas
+    children: children.toUpperCase(),
   };
 }
