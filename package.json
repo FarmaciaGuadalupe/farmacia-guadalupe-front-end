@@ -24,6 +24,7 @@
     "@mui/styled-engine-sc": "^7.3.3",
     "@react-jvectormap/core": "^1.0.4",
     "@react-jvectormap/world": "^1.1.2",
+    "@tanstack/react-table": "^8.21.3",
     "apexcharts": "^4.1.0",
     "axios": "^1.13.1",
     "clsx": "^2.1.1",
