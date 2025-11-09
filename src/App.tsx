@@ -52,6 +52,8 @@ export default function App() {
 
               {/* Tables */}
               <Route path="/basic-tables" element={<BasicTables />} />
+              <Route path="/employee-tables" element={<BasicTables />} />
+
 
               {/* Ui Elements */}
               <Route path="/alerts" element={<Alerts />} />
