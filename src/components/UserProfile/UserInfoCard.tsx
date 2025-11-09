@@ -55,7 +55,7 @@ export default function UserInfoCard() {
 
           <div className="flex flex-col flex-row items-center justify-between">
             <div className="flex flex-col items-center w-full gap-6 xl:flex-row">
-              <Avatar {...stringAvatar({ name: fullName, size: 60 })} />
+              <Avatar {...stringAvatar({ name: names, size: 60 })} />
 
               <div>
                 <span className="capitalize block text-xl font-semibold">

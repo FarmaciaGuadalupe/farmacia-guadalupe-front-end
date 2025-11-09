@@ -1,5 +1,5 @@
 // --- Importaciones de Componentes de librerias ---
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Fragment } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -10,13 +10,17 @@ import {
   SortingState,
   PaginationState
 } from "@tanstack/react-table";
-import { useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
+import { Avatar } from "@mui/material";
 
 
 // --- Importaciones de Componentes Locales ---
 import TableDefinition from "../../ui/table/TableDefinition";
+import CellWithDrawer from "../../ui/table/CellWithDrawer";
 import Badge from "../../ui/badge/Badge";
 import Button from "../../ui/button/Button";
+import { stringAvatar } from "../../../utils/AvatarUtils";
+import AddEmployeeForm from "../../ui/table/CustomCells/AddEmployee";
 
 
 
@@ -70,6 +74,15 @@ export default function EmployeeTable() {
   const [loading, setLoading] = useState<boolean>(true);
   // Estado para almacenar mensajes de error.
   const [error, setError] = useState<string | null>(null);
+  // Estado para controlar la visibilidad del Drawer 
+  const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+
+  const handleCloseDrawer = () => setIsDrawerOpen(false);
+  // Handler para el botón de agregar.
+  const handleAgregarUsuario = () => {
+    // alert("Agregar nuevo usuario");
+    setIsDrawerOpen(true);
+  };
 
   // --- Estados Específicos de TanStack Table ---
   // Almacena el estado actual del ordenamiento (ej: { id: 'names', desc: false }).
@@ -91,17 +104,19 @@ export default function EmployeeTable() {
       // `header` usa `intl` para la traducción.
       header: intl.formatMessage({ id: 'names' }),
       id: "nombres",
-      // `cell` define un renderizado personalizado para esta celda.
+      // `cell` define un renderizado personalizado para esta celda / la idea es poner componentes, pero como estos son solo textos se ponen directos.
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full overflow-hidden">
-            <img
+            {/* TODO: Por el momento no hay imagenes, debemos buscar la forma de guardarlas y poder mostrarlas aqui, algo como AZURE BLOB STORAGE, pero gratis*/}
+            {/* <img
               src={row.original.url_photo || "/images/user/user-placeholder.jpg"}
               alt={row.original.names}
               width={40}
               height={40}
               className="object-cover w-full h-full"
-            />
+            /> */}
+            <Avatar {...stringAvatar({ name: row.original.names, size: 40 })} />
           </div>
           <span>{row.original.names}</span>
         </div>
@@ -124,6 +139,9 @@ export default function EmployeeTable() {
       header: intl.formatMessage({ id: 'statuses' }),
       accessorKey: "statusName",
       // Renderizado personalizado para el Badge de estado.
+      // TODO: debe de cambiar el color por el tipo de estado (activo, inactivo, etc).
+      // hacer otro componente que reciba el statusId y devuelva el color correspondiente.
+      // TODO: hacer el cambio en la api para que devuelva el statusId en lugar del statusName.
       cell: ({ row }) => (<Badge /* ... */ >{row.original.statusName}</Badge>),
     },
     {
@@ -172,7 +190,9 @@ export default function EmployeeTable() {
       }
     };
     fetchEmployees();
-  }, []); // El array vacío `[]` asegura que se ejecute solo una vez.
+  }, [loading, isDrawerOpen]);
+
+  // El array vacío `[]` asegura que se ejecute solo una vez.
 
   // --- Instanciación de la Tabla ---
   // `useReactTable` es el hook principal que une todo.
@@ -202,34 +222,46 @@ export default function EmployeeTable() {
     onPaginationChange: setPagination,
   });
 
-  // Handler para el botón de agregar.
-  const handleAgregarUsuario = () => {
-    alert("Agregar nuevo usuario");
-  };
-
   // --- Renderizado Condicional (Carga/Error) ---
   // TODO: Mejorar con componentes visuales.
-  if (loading) return <div className="text-center p-10">Cargando empleados...</div>;
-  if (error) return <div className="text-center p-10 text-red-600">Error: {error}</div>;
+  if (loading) return <div className="text-center p-10"><FormattedMessage id="loading" /></div>;
+  if (error) return <div className="text-center p-10 text-red-600"><FormattedMessage id="error" />: {error}</div>;
 
   // --- Renderizado Principal ---
   return (
-    <div className="flex flex-col gap-6">
-      {/* Botón de Agregar Usuario */}
-      <div className="flex justify-end">
-        <Button
-          onClick={handleAgregarUsuario}
-          variant="primary"
-          size="md"
-          className="!bg-blue-600 hover:!bg-blue-700"
-        >
-          + Agregar Usuario
-        </Button>
-      </div>
+    <Fragment>
+      <div className="flex flex-col gap-6">
+        {/* Botón de Agregar Usuario */}
+        <div className="flex justify-end">
+          <Button
+            onClick={handleAgregarUsuario}
+            variant="primary"
+            size="md"
+            className="!bg-blue-600 hover:!bg-blue-700"
+          >
+            <FormattedMessage id="user.add" />
+          </Button>
+        </div>
 
-      {/* Componente Visual de la Tabla */}
-      {/* Pasa la instancia 'table' (el "cerebro") al componente 'TableDefinition' (el "renderizador"). */}
-      <TableDefinition table={table} />
-    </div>
+        {/* Componente Visual de la Tabla */}
+        {/* Pasa la instancia 'table' (el "cerebro") al componente 'TableDefinition' (el "renderizador"). */}
+        <TableDefinition table={table} />
+      </div>
+      {
+        isDrawerOpen &&
+        <CellWithDrawer
+          isOpen={isDrawerOpen}
+          onClose={handleCloseDrawer}
+          title={intl.formatMessage({ id: 'user.add' })}
+          widthClass="w-4xl"
+        >
+         <AddEmployeeForm
+      onClose={handleCloseDrawer}     // Se usa para el botón "Cancelar"
+      onSaveSuccess={handleCloseDrawer} // Se usa para el botón "Guardar"
+    />
+        </CellWithDrawer>
+      }
+    </Fragment>
+
   );
 }
