@@ -1,22 +1,27 @@
-// src/components/tables/BasicTables/BasicTableOne.tsx
-
-import { useState, useEffect } from "react";
-import TableDefinition from "../../ui/table/TableDefinition"; // (Este es el que vamos a modificar)
-import Badge from "../../ui/badge/Badge";
-import Button from "../../ui/button/Button";
-
-// --- NUEVO: Imports de TanStack Table ---
+// --- Importaciones de Componentes de librerias ---
+import { useState, useEffect, useMemo } from "react";
 import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
   getFilteredRowModel,
-  flexRender,   
-  ColumnDef,    
-  SortingState, 
+  getPaginationRowModel,
+  ColumnDef,
+  SortingState,
+  PaginationState
 } from "@tanstack/react-table";
+import { useIntl } from "react-intl";
 
-// --- Interfaces de la API (Sin cambios) ---
+
+// --- Importaciones de Componentes Locales ---
+import TableDefinition from "../../ui/table/TableDefinition";
+import Badge from "../../ui/badge/Badge";
+import Button from "../../ui/button/Button";
+
+
+
+// --- Interfaces de la API ---
+// Define la estructura de un objeto Empleado, tal como viene de la API.
 interface Employee {
   employeeId: number;
   names: string;
@@ -32,13 +37,15 @@ interface Employee {
   statusName: string;
 }
 
+// Define la estructura de la respuesta completa de la API.
 interface ApiResponse {
   success: boolean;
   message: string | null;
-  data: Employee[]; // Ya no necesitamos 'id' extra
+  data: Employee[];
 }
 
-// --- Funciones de manejo (Sin cambios) ---
+// --- Handlers de Acciones (externos al componente) ---
+// Funciones simples que no dependen de los hooks de React.
 const handleModificar = (id: number) => {
   alert(`Modificar usuario con ID ${id}`);
 };
@@ -46,149 +53,169 @@ const handleDesactivar = (id: number) => {
   alert(`Desactivar usuario con ID ${id}`);
 };
 
-// --- Definición de Columnas (MODIFICADA para TanStack) ---
-// Usamos ColumnDef<Employee> de @tanstack/react-table
-const columns: ColumnDef<Employee>[] = [
-  {
-    header: "NOMBRES",
-    id: "nombres",
-    // NUEVO: 'row' es un objeto de TanStack. Los datos están en 'row.original'
-    cell: ({ row }) => (
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-full overflow-hidden">
-          <img
-            src={row.original.url_photo || "/images/user/user-placeholder.jpg"}
-            alt={row.original.names}
-            width={40}
-            height={40}
-            className="object-cover w-full h-full"
-          />
-        </div>
-        <span>{row.original.names}</span>
-      </div>
-    ),
-  },
-  {
-    header: "APELLIDOS",
-    accessorKey: "lastnames", // Esto funciona igual
-  },
-  {
-    header: "CORREO",
-    accessorKey: "email",
-  },
-  {
-    header: "CARGO",
-    accessorKey: "roleName",
-  },
-  {
-    header: "ESTADO",
-    accessorKey: "statusName",
-    cell: ({ row }) => (
-      <Badge
-        size="sm"
-        color={
-          row.original.statusName === "Activo"
-            ? "success"
-            : row.original.statusName === "Inactivo"
-            ? "error"
-            : "warning"
-        }
-      >
-        {row.original.statusName}
-      </Badge>
-    ),
-  },
-  {
-    header: "OPCIONES",
-    id: "opciones",
-    cell: ({ row }) => (
-      <div className="flex gap-2">
-        <Button
-          onClick={() => handleModificar(row.original.employeeId)}
-          variant="outline"
-          size="sm"
-          className="text-yellow-600..."
-        >
-          Modificar
-        </Button>
-        <Button
-          onClick={() => handleDesactivar(row.original.employeeId)}
-          variant="outline"
-          size="sm"
-          className="text-red-600..."
-        >
-          Desactivar
-        </Button>
-      </div>
-    ),
-  },
-];
 
 
-// --- Componente Principal (MODIFICADO) ---
+
+// --- Componente Principal: EmployeeTable ---
+// Este componente actúa como el "cerebro" de la tabla.
+// Maneja el estado, la carga de datos y la configuración de la tabla.
 export default function EmployeeTable() {
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  
-  // --- NUEVO: Estado para el ordenamiento ---
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [globalFilter, setGlobalFilter] = useState<string>(''); // <--- 2. AÑADE ESTADO PARA EL FILTRO
+  // Hook para acceder a las traducciones de react-intl.
+  const intl = useIntl();
 
-  // --- Fetch de datos (MODIFICADO) ---
+  // --- Estados del Componente ---
+  // Almacena los datos de empleados recibidos de la API.
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  // Estado para mostrar un indicador de carga.
+  const [loading, setLoading] = useState<boolean>(true);
+  // Estado para almacenar mensajes de error.
+  const [error, setError] = useState<string | null>(null);
+
+  // --- Estados Específicos de TanStack Table ---
+  // Almacena el estado actual del ordenamiento (ej: { id: 'names', desc: false }).
+  const [sorting, setSorting] = useState<SortingState>([]);
+  // Almacena el texto de búsqueda del filtro global.
+  const [globalFilter, setGlobalFilter] = useState<string>('');
+  // Almacena el estado de la paginación (página actual e ítems por página).
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0, // Página inicial (índice 0).
+    pageSize: 10,  // Filas por página.
+  });
+
+
+  // --- Definición de Columnas (Memoizada) ---
+  // `useMemo` optimiza el rendimiento.
+  // Evita recalcular las columnas en cada render, solo si `intl` cambia.
+  const columns = useMemo<ColumnDef<Employee>[]>(() => [
+    {
+      // `header` usa `intl` para la traducción.
+      header: intl.formatMessage({ id: 'names' }),
+      id: "nombres",
+      // `cell` define un renderizado personalizado para esta celda.
+      cell: ({ row }) => (
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full overflow-hidden">
+            <img
+              src={row.original.url_photo || "/images/user/user-placeholder.jpg"}
+              alt={row.original.names}
+              width={40}
+              height={40}
+              className="object-cover w-full h-full"
+            />
+          </div>
+          <span>{row.original.names}</span>
+        </div>
+      ),
+    },
+    {
+      header: intl.formatMessage({ id: 'lastnames' }),
+      // `accessorKey` extrae datos directamente de la fila (ej: row.lastnames).
+      accessorKey: "lastnames",
+    },
+    {
+      header: intl.formatMessage({ id: 'email' }),
+      accessorKey: "email",
+    },
+    {
+      header: intl.formatMessage({ id: 'role' }),
+      accessorKey: "roleName",
+    },
+    {
+      header: intl.formatMessage({ id: 'statuses' }),
+      accessorKey: "statusName",
+      // Renderizado personalizado para el Badge de estado.
+      cell: ({ row }) => (<Badge /* ... */ >{row.original.statusName}</Badge>),
+    },
+    {
+      header: intl.formatMessage({ id: 'options' }),
+      id: "opciones",
+      // Renderizado personalizado para los botones de acción.
+      cell: ({ row }) => (
+        <div className="flex gap-2">
+          <Button onClick={() => handleModificar(row.original.employeeId)} /* ... */ >
+            {/* Texto del botón también traducido. */}
+            {/* {intl.formatMessage({ id: 'button.modify' })} */}
+            {'texto temporal'}
+          </Button>
+          <Button onClick={() => handleDesactivar(row.original.employeeId)} /* ... */ >
+            {'texto temporal'}
+            {/* {intl.formatMessage({ id: 'button.deactivate' })} */}
+          </Button>
+        </div>
+      ),
+    },
+  ], [intl]); // `intl` es la única dependencia.
+
+  // --- Carga de Datos (Efecto) ---
+  // `useEffect` con `[]` se ejecuta una vez, cuando el componente se monta.
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
+        // Petición a la API.
         const response = await fetch('https://localhost:44361/api/Employee/getAllEmployees');
         if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
-        
+
         const result: ApiResponse = await response.json();
         if (result.success) {
-          // YA NO es necesario el .map() para añadir 'id'.
+          // Carga exitosa: guarda los datos en el estado.
           setEmployees(result.data);
         } else {
+          // Error de API: guarda el mensaje.
           setError(result.message || "Error al obtener los datos");
         }
       } catch (err: any) {
+        // Error de red/fetch: guarda el mensaje.
         setError(err.message);
       } finally {
+        // Sea éxito o error, finaliza la carga.
         setLoading(false);
       }
     };
     fetchEmployees();
-  }, []);
+  }, []); // El array vacío `[]` asegura que se ejecute solo una vez.
 
-  // --- NUEVO: Creación de la instancia de la tabla ---
+  // --- Instanciación de la Tabla ---
+  // `useReactTable` es el hook principal que une todo.
   const table = useReactTable({
-    data: employees,  // Los datos del estado
-    columns,          // Las columnas que definimos arriba
-    
-    // --- Lógica de Ordenamiento ---
-    state: {
-      sorting, // Pasamos el estado de ordenamiento
-      globalFilter
-    },
-    
-    // --- Pipelines (Modelos) ---
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(), // ¡Añadimos el modelo de ordenamiento!
-    getFilteredRowModel: getFilteredRowModel(), // <--- 3. Añadimos el modelo de filtrado
+    data: employees, // Los datos de la API.
+    columns,         // La definición de columnas memoizada.
 
-    // --- Handlers ---
-    onSortingChange: setSorting, // Le decimos cómo actualizar el estado
-    onGlobalFilterChange: setGlobalFilter, // <--- 4. Handler para actualizar el filtro
+    // --- Estado Controlado ---
+    // Conecta los estados de React con la instancia de la tabla.
+    state: {
+      sorting,
+      globalFilter,
+      pagination
+    },
+
+    // --- Modelos (Pipelines) ---
+    // Activa las diferentes funcionalidades (orden, filtro, paginación).
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+
+    // --- Handlers (Actualizadores) ---
+    // Conecta los eventos de la tabla (ej: clic en ordenar) a los `setters` de estado.
+    onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
+    onPaginationChange: setPagination,
   });
 
+  // Handler para el botón de agregar.
   const handleAgregarUsuario = () => {
     alert("Agregar nuevo usuario");
   };
 
+  // --- Renderizado Condicional (Carga/Error) ---
+  // TODO: Mejorar con componentes visuales.
   if (loading) return <div className="text-center p-10">Cargando empleados...</div>;
   if (error) return <div className="text-center p-10 text-red-600">Error: {error}</div>;
 
+  // --- Renderizado Principal ---
   return (
     <div className="flex flex-col gap-6">
-      {/* BOTÓN DE AGREGAR */}
+      {/* Botón de Agregar Usuario */}
       <div className="flex justify-end">
         <Button
           onClick={handleAgregarUsuario}
@@ -200,7 +227,8 @@ export default function EmployeeTable() {
         </Button>
       </div>
 
-      {/* NUEVO: Pasamos la instancia 'table' al componente visual */}
+      {/* Componente Visual de la Tabla */}
+      {/* Pasa la instancia 'table' (el "cerebro") al componente 'TableDefinition' (el "renderizador"). */}
       <TableDefinition table={table} />
     </div>
   );
