@@ -42,17 +42,17 @@ layer(base);
   --color-black: #101828;
 
   --color-brand-25: #f2f7ff;
-  --color-brand-50: #ecf3ff;
+  --color-brand-50: #ecf3ff; /*seleccionado modo claro*/
   --color-brand-100: #dde9ff;
   --color-brand-200: #c2d6ff;
-  --color-brand-300: #9cb9ff;
-  --color-brand-400: #7592ff;
+  --color-brand-300: #1b8282;/*barra de busquedad claro*/
+  --color-brand-400: #31e9e9; /* letras en modo oscuro */
 
-  --color-brand-500: #1f9090;  /* Se cambio de color a verde */
+  --color-brand-500: #1b8282;  /* letras modo claro */
   --color-brand-600: #115151; /* verde oscuro */
   
   --color-brand-700: #2a31d8;
-  --color-brand-800: #252dae;
+  --color-brand-800: #1b8282; /*barra de busquedad oscura*/
   --color-brand-900: #262e89;
   --color-brand-950: #161950;
 
@@ -72,12 +72,12 @@ layer(base);
   --color-gray-25: #fcfcfd;
   --color-gray-50: #f9fafb;
   --color-gray-100: #f2f4f7;
-  --color-gray-200: #e4e7ec;
-  --color-gray-300: #d0d5dd;
-  --color-gray-400: #98a2b3;
-  --color-gray-500: #667085;
+  --color-gray-200: #e4e7ec;/*modo oscuro letras*/
+  --color-gray-300: #26b5b5;
+  --color-gray-400: #31e9e9;/*modo oscuro figuras*/
+  --color-gray-500: #1b8282; /*modo claro figuras*/
   --color-gray-600: #475467;
-  --color-gray-700: #344054;
+  --color-gray-700: #1b8282;/*modo claro letras*/
   --color-gray-800: #1d2939;
   --color-gray-900: #101828;
   --color-gray-950: #0c111d;
