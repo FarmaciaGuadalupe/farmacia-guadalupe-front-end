@@ -12,51 +12,66 @@ import Avatars from "./pages/UiElements/Avatars";
 import Buttons from "./pages/UiElements/Buttons";
 import LineChart from "./pages/Charts/LineChart";
 import BarChart from "./pages/Charts/BarChart";
-import Calendar from "./pages/Calendar";
 import BasicTables from "./pages/Tables/BasicTables";
-import FormElements from "./pages/Forms/FormElements";
 import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Home from "./pages/Dashboard/Home";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+
+import { IntlProvider } from 'react-intl';
+import messages_es from './lang/es.json';
+
 
 export default function App() {
+  
+  const locale = 'es';
+
   return (
     <>
-      <Router>
+    <IntlProvider locale={locale} messages={messages_es} defaultLocale="es">
+
+     <Router>
         <ScrollToTop />
         <Routes>
           {/* Dashboard Layout */}
           <Route element={<AppLayout />}>
-            //cambie el index a que sea login, si lo consideran cochino me avisan
+
             <Route index path="/"  element={<Navigate to="/signin" replace />} />
 
-            {/* Others Page */}
-            <Route path="/home" element={<Home />}/>
-            <Route path="/profile" element={<UserProfiles />} />
-            <Route path="/calendar" element={<Home />} />
-            <Route path="/blank" element={<Blank />} />
+            {/* Agrupa todas las rutas protegidas aquí dentro */}
+            <Route element={<ProtectedRoute />}>
+              {/* Others Page */}
+              <Route path="/home" element={<Home />}/>
+              <Route path="/profile" element={<UserProfiles />} />
+              <Route path="/calendar" element={<Home />} />
+              <Route path="/blank" element={<Blank />} />
 
-            {/* Forms */}
-            {/* <Route path="/form-elements" element={<FormElements />} /> */}
+              {/* Forms */}
+              {/* <Route path="/form-elements" element={<FormElements />} /> */}
 
-            {/* Tables */}
-            <Route path="/basic-tables" element={<BasicTables />} />
+              {/* Tables */}
+              <Route path="/basic-tables" element={<BasicTables />} />
+              <Route path="/employee-tables" element={<BasicTables />} />
 
-            {/* Ui Elements */}
-            <Route path="/alerts" element={<Alerts />} />
-            <Route path="/avatars" element={<Avatars />} />
-            <Route path="/badge" element={<Badges />} />
-            <Route path="/buttons" element={<Buttons />} />
-            <Route path="/images" element={<Images />} />
-            <Route path="/videos" element={<Videos />} />
 
-            {/* Charts */}
-            <Route path="/line-chart" element={<LineChart />} />
-            <Route path="/bar-chart" element={<BarChart />} />
+              {/* Ui Elements */}
+              <Route path="/alerts" element={<Alerts />} />
+              <Route path="/avatars" element={<Avatars />} />
+              <Route path="/badge" element={<Badges />} />
+              <Route path="/buttons" element={<Buttons />} />
+              <Route path="/images" element={<Images />} />
+              <Route path="/videos" element={<Videos />} />
+
+              {/* Charts */}
+              <Route path="/line-chart" element={<LineChart />} />
+              <Route path="/bar-chart" element={<BarChart />} />
+            </Route>
+            {/* Fin del grupo de rutas protegidas */}
+
           </Route>
 
-          {/* Auth Layout */}
+          {/* Auth Layout (Estas quedan fuera, lo cual es correcto) */}
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
 
@@ -64,6 +79,8 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
+    </IntlProvider>
+
     </>
   );
 }

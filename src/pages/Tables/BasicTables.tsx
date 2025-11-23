@@ -1,7 +1,9 @@
+// src/pages/Tables/BasicTables.tsx
+
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import PageMeta from "../../components/common/PageMeta";
-import BasicTableOne from "../../components/tables/BasicTables/BasicTableOne";
+import EmployeeTable from "../../components/tables/BasicTables/EmployeeTable";
 
 export default function BasicTables() {
   return (
@@ -13,7 +15,7 @@ export default function BasicTables() {
       <PageBreadcrumb pageTitle="Basic Tables" />
       <div className="space-y-6">
         <ComponentCard title="TABLA BASICA">
-          <BasicTableOne />
+          <EmployeeTable />
         </ComponentCard>
       </div>
     </>
