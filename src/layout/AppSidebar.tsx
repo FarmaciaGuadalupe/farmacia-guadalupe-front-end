@@ -8,15 +8,11 @@ import {
   ChevronDownIcon,
   GridIcon,
   HorizontaLDots,
-  CheckLineIcon,
   ListIcon,
   PageIcon,
   PieChartIcon,
   PlugInIcon,
   TableIcon,
-  DocsIcon,
-  FolderIcon,
-  GroupIcon,
   UserCircleIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
@@ -33,100 +29,36 @@ const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
     name: "INICIO",
-    path: "/home",
-    // subItems: [{ name: "Ecommerce", path: "/home", pro: false }],
- },
-  
-  // {
-  //   icon: <CalenderIcon />,
-  //   name: "CALENDARIO",
-  //   path: "/calendar",
-  // },
-
+    subItems: [{ name: "Ecommerce", path: "/home", pro: false }],
+  },
   {
-    icon: <BoxCubeIcon />,
-    name: "PRODUCTOS/MEDICAMENTOS",
-    // path: "/calendar",
-    subItems: [
-       { name: "Listado de productos", path: "/Listado_prod", pro: false },
-       { name: "Registrar productos", path: "/home", pro: false },
-     ], },
-
+    icon: <CalenderIcon />,
+    name: "CALENDARIO",
+    path: "/calendar",
+  },
   {
-    icon: <DocsIcon />,
-    name: "INVENTARIO/LOTES",
-    // path: "/profile",
-    subItems: [
-       { name: "Inventario general", path: "/home", pro: false },
-       { name: "Registrar lote", path: "/home", pro: false },
-       { name: "Lotes por vencer", path: "/home", pro: false },
-       { name: "Movimientos de inventario", path: "/home", pro: false },
-     ],},
-
+    icon: <UserCircleIcon />,
+    name: "USUARIO",
+    path: "/profile",
+  },
   {
-    name: "VENTAS",
-    icon: <CheckLineIcon />,
-    subItems: [
-       { name: "Nueva venta", path: "/home", pro: false },
-       { name: "Historial de ventas", path: "/home", pro: false },
-       { name: "Detalle de venta", path: "/home", pro: false },
-     ], },
-
+    name: "FORMULARIOS",
+    icon: <ListIcon />,
+    subItems: [{ name: "ELEMENTOS", path: "/home", pro: false }],
+  },
   {
-    name: "PEDIDOS",
-    icon: <DocsIcon />,
-    subItems: [
-       { name: "Registrar pedido", path: "/home", pro: false },
-       { name: "Historial de pedidos", path: "/home", pro: false },
-       { name: "Proveedores", path: "/home", pro: false },
-       { name: "Tipos de proveedor", path: "/home", pro: false },
-     ],  },
-
+    name: "TABLAS",
+    icon: <TableIcon />,
+    subItems: [{ name: "TABLA BASICA", path: "/basic-tables", pro: false }],
+  },
   {
-    name: "INSUMOS",
-    icon: <DocsIcon />,
+    name: "PAGINAS",
+    icon: <PageIcon />,
     subItems: [
-       { name: "Listado de insumos", path: "/home", pro: false },
-       { name: "Categorías de insumos", path: "/home", pro: false },
-     ],  },
-
-     {
-    name: "EMPLEADOS",
-    icon: <GroupIcon />,
-    subItems: [
-       { name: "Listado de empleados", path: "/home", pro: false },
-       { name: "Registrar empleado", path: "/home", pro: false },
-       { name: "Cargos", path: "/home", pro: false },
-       { name: "Estado del empleado", path: "/home", pro: false },
-     ],  },
-
-     {
-    name: "REPORTES",
-    icon: <DocsIcon />,
-    subItems: [
-       { name: "Reporte de inventario", path: "/home", pro: false },
-       { name: "Reporte de ventas", path: "/home", pro: false },
-       { name: "Reporte de pedidos", path: "/home", pro: false },
-       { name: "Reportes por lotes", path: "/home", pro: false },
-     ],  },
-
-      {
-    name: "CONFIGURACION",
-    icon: <FolderIcon />,
-    subItems: [
-       { name: "Estados de productos", path: "/home", pro: false },
-       { name: "Métodos de pago", path: "/home", pro: false },
-     ],  },
-
-
-  // {
-  //   name: "PAGINAS",
-  //   icon: <PageIcon />,
-  //   subItems: [
-  //     { name: "PAGINA BLANCA", path: "/blank", pro: false },
-  //     // { name: "404 Error", path: "/error-404", pro: false },
-  //   ],
-  // },
+      { name: "PAGINA BLANCA", path: "/blank", pro: false },
+      // { name: "404 Error", path: "/error-404", pro: false },
+    ],
+  },
 ];
 
 const othersItems: NavItem[] = [
