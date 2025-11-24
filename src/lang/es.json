@@ -23,5 +23,10 @@
   "statuses": "Estados",
   "user": "Usuario",
   "user.add": "Agregar Usuario",
-  "user.info": "Información del usuario"
+  "user.info": "Información del usuario",
+  "inventory": "INVENTARIO",
+  "sales": "VENTAS",
+  "employees": "EMPLEADOS",
+  "reports": "REPORTES"
+  
 }
