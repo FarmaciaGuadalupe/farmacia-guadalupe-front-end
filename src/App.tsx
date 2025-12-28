@@ -21,6 +21,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 import { IntlProvider } from 'react-intl';
 import messages_es from './lang/es.json';
+import { Fragment } from "react/jsx-runtime";
 
 
 export default function App() {
@@ -28,7 +29,7 @@ export default function App() {
   const locale = 'es';
 
   return (
-    <>
+    <Fragment>
     <IntlProvider locale={locale} messages={messages_es} defaultLocale="es">
 
      <Router>
@@ -81,6 +82,6 @@ export default function App() {
       </Router>
     </IntlProvider>
 
-    </>
+    </Fragment>
   );
 }

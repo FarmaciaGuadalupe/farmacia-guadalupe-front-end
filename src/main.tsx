@@ -8,16 +8,25 @@ import { AppWrapper } from "./components/common/PageMeta.tsx";
 import { ThemeProvider } from "./context/ThemeContext.tsx";
 import { AuthProvider } from "./context/AuthContext.tsx";
 import { Toaster } from 'sonner';
+import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
+import { ApolloProvider } from "@apollo/client/react";
+
+const client = new ApolloClient({
+  link: new HttpLink({ uri: "https://localhost:44361/graphql/" }), // TODO poner esto en un .env
+  cache: new InMemoryCache(),
+});
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <ThemeProvider>
-      <AppWrapper>
-        <AuthProvider>
-          <Toaster position="top-right" richColors/>
-          <App />            
-        </AuthProvider>
-      </AppWrapper>
-    </ThemeProvider>
-  </StrictMode>,
+  <ApolloProvider client={client}>
+    <StrictMode>
+      <ThemeProvider>
+        <AppWrapper>
+          <AuthProvider>
+            <Toaster position="top-right" richColors />
+            <App />
+          </AuthProvider>
+        </AppWrapper>
+      </ThemeProvider>
+    </StrictMode>
+  </ApolloProvider>,
 );
