@@ -84,7 +84,6 @@ export default function CellWithDrawer({
                   
                 </DialogPanel>
               </TransitionChild>
-
             </div>
           </div>
         </div>

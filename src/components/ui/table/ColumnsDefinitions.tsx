@@ -1,0 +1,55 @@
+import { useMemo } from "react";
+import { useIntl } from "react-intl";
+import { ColumnDef } from "@tanstack/react-table";
+import { Avatar } from "@mui/material";
+import Badge from "../../ui/badge/Badge"; 
+import { stringAvatar } from "../../../utils/AvatarUtils";
+import { EmployeeCellActions } from "../table/CustomCells/EmployeeCellActions";
+
+export const useEmployeeColumns = () => {
+  const intl = useIntl();
+
+  const columns = useMemo<ColumnDef<any>[]>(() => [
+    {
+      // Usamos intl.formatMessage para obtener un string puro,
+      // lo cual evita errores de tipo en 'header'
+      header: intl.formatMessage({ id: 'names' }),
+      accessorFn: (row) => `${row.names} ${row.lastnames}`,
+      id: "names", 
+      cell: ({ row }) => (
+        <div className="flex items-center gap-3">
+           <Avatar {...stringAvatar({ name: row.original.names, size: 30 })} />
+           <span>{row.original.names} {row.original.lastnames}</span>
+        </div>
+      ),
+    },
+    {
+      header: intl.formatMessage({ id: 'email' }),
+      accessorKey: "email",
+      id: "email",
+    },
+    {
+      header: intl.formatMessage({ id: 'user' }),
+      accessorKey: "user",
+      id: "user",
+    },
+    {
+      header: intl.formatMessage({ id: 'role' }),
+      accessorKey: "roleName.name",
+      enableSorting: true,
+    },
+    {
+      header: intl.formatMessage({ id: 'statuses' }),
+      accessorKey: "statusName.name",
+      enableSorting: false, 
+      cell: ({ getValue }) => <Badge>{getValue() as string}</Badge>,
+    },
+    {
+      header: intl.formatMessage({ id: 'actions' }),
+      id: "actions",
+      cell: ({ row }) => <EmployeeCellActions row={row.original} />,
+    }
+  ], [intl]); // intl es la dependencia
+
+  return columns;
+};
