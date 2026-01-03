@@ -1,5 +1,5 @@
 export const GET_EMPLOYEES_QUERY = () => {
-    return `
+  return `
   query GetEmployees($first: Int, $after: String, $order: [EmployeeSortInput!]) {
     employees(first: $first, after: $after, order: $order) {
       nodes {
@@ -19,5 +19,23 @@ export const GET_EMPLOYEES_QUERY = () => {
     }
   }
 `
+}
+
+export const GET_BRANDS_QUERY = () => {
+  return `
+  query GetBrands($first: Int, $after: String, $order: [BrandsSortInput!]) {
+    brands(first: $first, after: $after, order: $order) {
+    nodes {
+        id_brand
+        name
+        is_active
+      }
+    pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+  `;
 }
 

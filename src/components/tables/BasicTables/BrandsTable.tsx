@@ -1,20 +1,20 @@
 // src/components/features/employee/EmployeeTable.tsx
 import { ServerDataTable } from "../../ui/table/ServerDataTable";
-import { useEmployeeColumns } from "../../ui/table/ColumnsDefinitions";
-import { GET_EMPLOYEES_QUERY } from "../../ui/table/QuerysDefinitions";
+import { useBrandColumns } from "../../ui/table/ColumnsDefinitions";
+import { GET_BRANDS_QUERY } from "../../ui/table/QuerysDefinitions";
 
 // 1. Agregamos $order a la;
 
 export default function BrandsTable() {
-  const query = GET_EMPLOYEES_QUERY();
-  const columns = useEmployeeColumns();
+  const query = GET_BRANDS_QUERY();
+  const columns = useBrandColumns();
 
   return (
     <div>      
       <ServerDataTable
         columns={columns}
         query={query}
-        queryKeyName="employees"
+        queryKeyName="brands"
       />
     </div>
   );

@@ -13,6 +13,7 @@ import Buttons from "./pages/UiElements/Buttons";
 import LineChart from "./pages/Charts/LineChart";
 import BarChart from "./pages/Charts/BarChart";
 import BasicTables from "./pages/Tables/BasicTables";
+import Catalogs from "./pages/Tables/Catalogs";
 import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
@@ -54,6 +55,7 @@ export default function App() {
               {/* Tables */}
               <Route path="/basic-tables" element={<BasicTables />} />
               <Route path="/employee-tables" element={<BasicTables />} />
+              <Route path="/catalogs" element={<Catalogs />} />
 
 
               {/* Ui Elements */}

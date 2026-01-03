@@ -1,10 +1,11 @@
 import { useMemo } from "react";
-import { useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { ColumnDef } from "@tanstack/react-table";
 import { Avatar } from "@mui/material";
-import Badge from "../../ui/badge/Badge"; 
+import Badge from "../../ui/badge/Badge";
 import { stringAvatar } from "../../../utils/AvatarUtils";
 import { EmployeeCellActions } from "../table/CustomCells/EmployeeCellActions";
+import { BrandCellActions } from "./CustomCells/BrandCellActions";
 
 export const useEmployeeColumns = () => {
   const intl = useIntl();
@@ -15,11 +16,11 @@ export const useEmployeeColumns = () => {
       // lo cual evita errores de tipo en 'header'
       header: intl.formatMessage({ id: 'names' }),
       accessorFn: (row) => `${row.names} ${row.lastnames}`,
-      id: "names", 
+      id: "names",
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
-           <Avatar {...stringAvatar({ name: row.original.names, size: 30 })} />
-           <span>{row.original.names} {row.original.lastnames}</span>
+          <Avatar {...stringAvatar({ name: row.original.names, size: 30 })} />
+          <span>{row.original.names} {row.original.lastnames}</span>
         </div>
       ),
     },
@@ -41,13 +42,44 @@ export const useEmployeeColumns = () => {
     {
       header: intl.formatMessage({ id: 'statuses' }),
       accessorKey: "statusName.name",
-      enableSorting: false, 
+      enableSorting: false,
       cell: ({ getValue }) => <Badge>{getValue() as string}</Badge>,
     },
     {
       header: intl.formatMessage({ id: 'actions' }),
       id: "actions",
       cell: ({ row }) => <EmployeeCellActions row={row.original} />,
+    }
+  ], [intl]); // intl es la dependencia
+
+  return columns;
+};
+
+export const useBrandColumns = () => {
+  const intl = useIntl();
+  const columns = useMemo<ColumnDef<any>[]>(() => [
+    {
+      header: intl.formatMessage({ id: 'name' }),
+      accessorKey: "name",
+      id: "name",
+    },
+    {
+      header: intl.formatMessage({ id: 'name' }),
+      accessorKey: "is_active",
+      cell: ({ getValue }) =>
+        <Badge color={getValue() ? "success" : "error"}>
+          {getValue() ?
+            <FormattedMessage id="active" values={{
+              gender: 'female'
+            }} /> :
+            <FormattedMessage id="inactive" values={{
+              gender: 'female'
+            }} />}
+        </Badge>,
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => <BrandCellActions row={row} />,
     }
   ], [intl]); // intl es la dependencia
 

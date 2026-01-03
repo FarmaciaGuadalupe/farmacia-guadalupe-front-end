@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
+import { FormattedMessage, useIntl } from "react-intl";
 
 // Assume these icons are imported from an icon library
 import {
@@ -16,6 +17,8 @@ import {
   UserCircleIcon,
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
+import { FolderOpenIcon } from "@heroicons/react/24/outline";
+
 
 type NavItem = {
   name: string;
@@ -24,76 +27,87 @@ type NavItem = {
   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
 
-const navItems: NavItem[] = [
-  {
-    icon: <GridIcon />,
-    name: "Dashboard",
-    subItems: [{ name: "Ecommerce", path: "/", pro: false }],
-  },
-  {
-    icon: <CalenderIcon />,
-    name: "Calendar",
-    path: "/calendar",
-  },
-  {
-    icon: <UserCircleIcon />,
-    name: "User Profile",
-    path: "/profile",
-  },
-  {
-    name: "Forms",
-    icon: <ListIcon />,
-    subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
-  },
-  {
-    name: "Tables",
-    icon: <TableIcon />,
-    subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
-  },
-  {
-    name: "Pages",
-    icon: <PageIcon />,
-    subItems: [
-      { name: "Blank Page", path: "/blank", pro: false },
-      { name: "404 Error", path: "/error-404", pro: false },
-    ],
-  },
-];
 
-const othersItems: NavItem[] = [
-  {
-    icon: <PieChartIcon />,
-    name: "Charts",
-    subItems: [
-      { name: "Line Chart", path: "/line-chart", pro: false },
-      { name: "Bar Chart", path: "/bar-chart", pro: false },
-    ],
-  },
-  {
-    icon: <BoxCubeIcon />,
-    name: "UI Elements",
-    subItems: [
-      { name: "Alerts", path: "/alerts", pro: false },
-      { name: "Avatar", path: "/avatars", pro: false },
-      { name: "Badge", path: "/badge", pro: false },
-      { name: "Buttons", path: "/buttons", pro: false },
-      { name: "Images", path: "/images", pro: false },
-      { name: "Videos", path: "/videos", pro: false },
-    ],
-  },
-  {
-    icon: <PlugInIcon />,
-    name: "Authentication",
-    subItems: [
-      { name: "Sign In", path: "/signin", pro: false },
-      { name: "Sign Up", path: "/signup", pro: false },
-    ],
-  },
-];
+
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen } = useSidebar();
   const location = useLocation();
+  const intl = useIntl();
+
+  const navItems: NavItem[] = [
+    {
+      icon: <GridIcon />,
+      name: "Dashboard",
+      subItems: [{ name: "Ecommerce", path: "/", pro: false }],
+    },
+    {
+      icon: <CalenderIcon />,
+      name: "Calendar",
+      path: "/calendar",
+    },
+    {
+      icon: <UserCircleIcon />,
+      name: "User Profile",
+      path: "/profile",
+    },
+    {
+      name: "Forms",
+      icon: <ListIcon />,
+      subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
+    },
+    {
+      name: "Tables",
+      icon: <TableIcon />,
+      subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
+    },
+    {
+      name: "Pages",
+      icon: <PageIcon />,
+      subItems: [
+        { name: "Blank Page", path: "/blank", pro: false },
+        { name: "404 Error", path: "/error-404", pro: false },
+      ],
+    },
+    {
+      icon: <FolderOpenIcon />,
+      name: intl.formatMessage({ id: 'catalogs' }, { count: 2 }),
+      path: "/catalogs",
+    }
+  ];
+
+  const othersItems: NavItem[] = [
+    {
+      icon: <PieChartIcon />,
+      name: "Charts",
+      subItems: [
+        { name: "Line Chart", path: "/line-chart", pro: false },
+        { name: "Bar Chart", path: "/bar-chart", pro: false },
+      ],
+    },
+    {
+      icon: <BoxCubeIcon />,
+      name: "UI Elements",
+      subItems: [
+        { name: "Alerts", path: "/alerts", pro: false },
+        { name: "Avatar", path: "/avatars", pro: false },
+        { name: "Badge", path: "/badge", pro: false },
+        { name: "Buttons", path: "/buttons", pro: false },
+        { name: "Images", path: "/images", pro: false },
+        { name: "Videos", path: "/videos", pro: false },
+      ],
+    },
+    {
+      icon: <PlugInIcon />,
+      name: "Authentication",
+      subItems: [
+        { name: "Sign In", path: "/signin", pro: false },
+        { name: "Sign Up", path: "/signup", pro: false },
+      ],
+    },
+  ];
+
+
 
   const [openSubmenu, setOpenSubmenu] = useState<{
     type: "main" | "others";
@@ -167,8 +181,8 @@ const AppSidebar: React.FC = () => {
             <button
               onClick={() => handleSubmenuToggle(index, menuType)}
               className={`menu-item group ${openSubmenu?.type === menuType && openSubmenu?.index === index
-                  ? "menu-item-active"
-                  : "menu-item-inactive"
+                ? "menu-item-active"
+                : "menu-item-inactive"
                 } cursor-pointer ${!isExpanded
                   ? "lg:justify-center"
                   : "lg:justify-start"
@@ -176,8 +190,8 @@ const AppSidebar: React.FC = () => {
             >
               <span
                 className={`menu-item-icon-size  ${openSubmenu?.type === menuType && openSubmenu?.index === index
-                    ? "menu-item-icon-active"
-                    : "menu-item-icon-inactive"
+                  ? "menu-item-icon-active"
+                  : "menu-item-icon-inactive"
                   }`}
               >
                 {nav.icon}
@@ -188,9 +202,9 @@ const AppSidebar: React.FC = () => {
               {(isExpanded || isMobileOpen) && (
                 <ChevronDownIcon
                   className={`ml-auto w-5 h-5 transition-transform duration-200 ${openSubmenu?.type === menuType &&
-                      openSubmenu?.index === index
-                      ? "rotate-180 text-brand-500"
-                      : ""
+                    openSubmenu?.index === index
+                    ? "rotate-180 text-brand-500"
+                    : ""
                     }`}
                 />
               )}
@@ -204,8 +218,8 @@ const AppSidebar: React.FC = () => {
               >
                 <span
                   className={`menu-item-icon-size ${isActive(nav.path)
-                      ? "menu-item-icon-active"
-                      : "menu-item-icon-inactive"
+                    ? "menu-item-icon-active"
+                    : "menu-item-icon-inactive"
                     }`}
                 >
                   {nav.icon}
@@ -235,8 +249,8 @@ const AppSidebar: React.FC = () => {
                     <Link
                       to={subItem.path}
                       className={`menu-dropdown-item ${isActive(subItem.path)
-                          ? "menu-dropdown-item-active"
-                          : "menu-dropdown-item-inactive"
+                        ? "menu-dropdown-item-active"
+                        : "menu-dropdown-item-inactive"
                         }`}
                     >
                       {subItem.name}
@@ -244,8 +258,8 @@ const AppSidebar: React.FC = () => {
                         {subItem.new && (
                           <span
                             className={`ml-auto ${isActive(subItem.path)
-                                ? "menu-dropdown-badge-active"
-                                : "menu-dropdown-badge-inactive"
+                              ? "menu-dropdown-badge-active"
+                              : "menu-dropdown-badge-inactive"
                               } menu-dropdown-badge`}
                           >
                             new
@@ -254,8 +268,8 @@ const AppSidebar: React.FC = () => {
                         {subItem.pro && (
                           <span
                             className={`ml-auto ${isActive(subItem.path)
-                                ? "menu-dropdown-badge-active"
-                                : "menu-dropdown-badge-inactive"
+                              ? "menu-dropdown-badge-active"
+                              : "menu-dropdown-badge-inactive"
                               } menu-dropdown-badge`}
                           >
                             pro
@@ -274,16 +288,16 @@ const AppSidebar: React.FC = () => {
   );
 
   return (
-   <aside
+    <aside
       className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-width transition-transform duration-1500 ease-in-out z-50 border-r border-gray-200 
       ${isExpanded || isMobileOpen ? "w-[290px]" : "w-[90px]"}
       ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
       lg:translate-x-0`}
     >
-            {/* TODO: Mejorar vista mobile */}
+      {/* TODO: Mejorar vista mobile */}
 
       <div
-        className={`py-8 flex ${!isExpanded  ? "lg:justify-center" : "justify-start"
+        className={`py-8 flex ${!isExpanded ? "lg:justify-center" : "justify-start"
           }`}
       >
         <Link to="/">
@@ -319,9 +333,9 @@ const AppSidebar: React.FC = () => {
           <div className="flex flex-col gap-4">
             <div>
               <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded 
-                    ? "lg:justify-center"
-                    : "justify-start"
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded
+                  ? "lg:justify-center"
+                  : "justify-start"
                   }`}
               >
                 {isExpanded || isMobileOpen ? (
