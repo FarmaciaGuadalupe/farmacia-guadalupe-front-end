@@ -127,7 +127,7 @@ export function ServerDataTable<TData>({
     return (
         <div className="flex flex-col gap-4">
             <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
-                <div className="max-w-full overflow-x-auto">
+                <div className="max-w-full overflow-x-auto min-h-60">
                     <Table>
                         <TableHeader className="border-b border-gray-100">
                             {table.getHeaderGroups().map((headerGroup) => (
