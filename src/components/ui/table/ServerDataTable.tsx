@@ -74,7 +74,7 @@ export function ServerDataTable<TData>({
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch("https://localhost:44361/graphql", {
+            const response = await fetch("http://localhost:5036/graphql", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

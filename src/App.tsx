@@ -23,6 +23,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { IntlProvider } from 'react-intl';
 import messages_es from './lang/es.json';
 import { Fragment } from "react/jsx-runtime";
+import FormElements from "./pages/Forms/FormElements";
 
 
 export default function App() {

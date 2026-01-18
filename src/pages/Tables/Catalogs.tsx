@@ -14,6 +14,7 @@ import ComponentCard from "../../components/common/ComponentCard";
 import PageMeta from "../../components/common/PageMeta";
 import EmployeeTable from "../../components/tables/BasicTables/EmployeeTable";
 import BrandsTable from "../../components/tables/BasicTables/BrandsTable";
+import Brands from "../../components/ui/catalogs/Brands";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -55,7 +56,7 @@ export default function Catalogs() {
 
   // Definición de los datos
   const items = [
-    { label: <FormattedMessage id="brands" values={{ count: 2 }}/>, content: <BrandsTable/> },
+    { label: <FormattedMessage id="brands" values={{ count: 2 }}/>, content: <Brands /> },
     { label: <FormattedMessage id="employees" values={{ count: 1 }}/>, content: <EmployeeTable/> },
     { label: <FormattedMessage id="categories" values={{ count: 1 }}/>, content: 'Contenido del Item Three' },
     { label: <FormattedMessage id="categories" values={{ count: 1 }}/>, content: 'Contenido del Item Three' },
@@ -67,9 +68,8 @@ export default function Catalogs() {
   ];
 
   return (
-    <Fragment>
+    <div className="h-full w-full">
       <PageBreadcrumb pageTitle={intl.formatMessage({ id: "catalogs" }, { count: 2 })} />
-
       <div
         className={`rounded-2xl border border-gray-200 bg-slate-50 dark:border-gray-800 dark:bg-white/[0.03] p-4`}>
         <Box sx={{ width: '100%' }}>
@@ -100,6 +100,6 @@ export default function Catalogs() {
           ))}
         </Box>
       </div>
-    </Fragment>
+    </div>
   );
 }
