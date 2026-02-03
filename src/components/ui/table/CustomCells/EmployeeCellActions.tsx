@@ -42,7 +42,6 @@ const DeactivateUserModal = ({ row, onClose }: any) => {
 
 export const EmployeeCellActions = ({ row }: any) => {
 
-    const { original } = row
     const [activeItem, setActiveItem] = useState<any>(null)
 
     const items = [
