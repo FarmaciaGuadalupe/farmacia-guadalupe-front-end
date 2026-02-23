@@ -10,11 +10,13 @@ import { FormattedMessage, useIntl } from "react-intl";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 // ComponentCard y PageMeta no se estaban usando en el snippet original, 
 // pero los dejo por si los necesitas.
-import ComponentCard from "../../components/common/ComponentCard";
-import PageMeta from "../../components/common/PageMeta";
-import EmployeeTable from "../../components/tables/BasicTables/EmployeeTable";
-import BrandsTable from "../../components/tables/BasicTables/BrandsTable";
 import Brands from "../../components/ui/catalogs/Brands";
+import Categories from "../../components/ui/catalogs/Categories";
+import ActiveIngredients from "../../components/ui/catalogs/ActiveIngredients";
+import AdministrationRoutes from "../../components/ui/catalogs/AdministrationRoutes";
+import SupplierTypes from "../../components/ui/catalogs/SupplierTypes";
+import Suppliers from "../../components/ui/catalogs/Suppliers";
+
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -57,13 +59,13 @@ export default function Catalogs() {
   // Definición de los datos
   const items = [
     { label: <FormattedMessage id="brands" values={{ count: 2 }}/>, content: <Brands /> },
-    { label: <FormattedMessage id="employees" values={{ count: 1 }}/>, content: <EmployeeTable/> },
-    { label: <FormattedMessage id="categories" values={{ count: 1 }}/>, content: 'Contenido del Item Three' },
-    { label: <FormattedMessage id="categories" values={{ count: 1 }}/>, content: 'Contenido del Item Three' },
-    { label: <FormattedMessage id="categories" values={{ count: 1 }}/>, content: 'Contenido del Item Three' },
-    { label: <FormattedMessage id="categories" values={{ count: 1 }}/>, content: 'Contenido del Item Three' },
-    { label: <FormattedMessage id="categories" values={{ count: 1 }}/>, content: 'Contenido del Item Three' },
-    { label: 'Item Three', content: 'Contenido del Item Three' },
+    { label: <FormattedMessage id="categories" values={{ count: 2 }}/>, content: <Categories /> },
+    { label: <FormattedMessage id="active_ingredients" values={{ count: 1 }}/>, content: <ActiveIngredients /> },
+    { label: <FormattedMessage id="administration_routes" values={{ count: 1 }}/>, content: <AdministrationRoutes /> },
+    { label: <FormattedMessage id="supplier_types" values={{ count: 1 }}/>, content: <SupplierTypes /> },
+    { label: <FormattedMessage id="suppliers" values={{ count: 1 }}/>, content: <Suppliers /> },
+
+
     // Puedes agregar más items aquí fácilmente
   ];
 
