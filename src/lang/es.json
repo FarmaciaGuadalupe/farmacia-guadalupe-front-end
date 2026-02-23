@@ -35,5 +35,7 @@
   "statuses": "Estados",
   "user": "Usuario",
   "user.add": "Agregar Usuario",
-  "user.info": "Información del usuario"
+  "user.info": "Información del usuario",
+  "requires.prescription": "Venta bajo receta médica",
+  "administration_route": "Vía de administración: {qoute}"
 }

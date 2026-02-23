@@ -1,6 +1,5 @@
 // src/pages/Tables/BasicTables.tsx
 
-import { Fragment } from "react";
 import * as React from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -16,6 +15,7 @@ import ActiveIngredients from "../../components/ui/catalogs/ActiveIngredients";
 import AdministrationRoutes from "../../components/ui/catalogs/AdministrationRoutes";
 import SupplierTypes from "../../components/ui/catalogs/SupplierTypes";
 import Suppliers from "../../components/ui/catalogs/Suppliers";
+import Medicines from "../../components/ui/catalogs/Medicines";
 
 
 interface TabPanelProps {
@@ -64,6 +64,8 @@ export default function Catalogs() {
     { label: <FormattedMessage id="administration_routes" values={{ count: 1 }}/>, content: <AdministrationRoutes /> },
     { label: <FormattedMessage id="supplier_types" values={{ count: 1 }}/>, content: <SupplierTypes /> },
     { label: <FormattedMessage id="suppliers" values={{ count: 1 }}/>, content: <Suppliers /> },
+    { label: <FormattedMessage id="medicines" values={{ count: 1 }}/>, content: <Medicines /> },
+
 
 
     // Puedes agregar más items aquí fácilmente

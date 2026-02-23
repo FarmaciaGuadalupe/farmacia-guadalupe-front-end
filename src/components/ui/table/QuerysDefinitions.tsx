@@ -164,3 +164,45 @@ export const GET_SUPPLIER_QUERY = () => gql`
     }
   }
 `;
+
+export const GET_MEDICINE_QUERY = () => gql `
+query GetMedicineTherapeuticDetails($first: Int, $after: String, $order: [MedicineSortInput!]) {
+  medicines(first: $first, after: $after, order: $order) {
+    nodes {
+      medicine_id
+      name
+      description
+      requires_prescription
+      
+      # Relación con Ingredientes Activos (Todos los que tenga el ID)
+      medicine_active_ingredients {
+        dose_value
+        dose_unit {
+          abbreviation
+        }
+        active_ingredient {
+          name
+        }
+      }
+
+      # Datos de clasificación
+      brand {
+        name
+      }
+      manufacturer {
+        name
+      }
+      category {
+        name
+      }
+      administration_route {
+        name
+      }
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+`;

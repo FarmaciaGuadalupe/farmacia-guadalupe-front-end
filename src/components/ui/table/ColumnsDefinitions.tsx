@@ -7,6 +7,9 @@ import { stringAvatar } from "../../../utils/AvatarUtils";
 import { EmployeeCellActions } from "../table/CustomCells/EmployeeCellActions";
 import { BrandCellActions } from "./CustomCells/BrandCellActions";
 import Status from "./CustomCells/Status";
+import MedicineName from "./CustomCells/MedicineName";
+import MedicineClasification from "./CustomCells/MedicineClasification";
+import MedicineActiveIngredients from "./CustomCells/MedicineActiveIngredients";
 
 export const useEmployeeColumns = () => {
   const intl = useIntl();
@@ -293,6 +296,37 @@ export const useSupplierColumns = () => {
       {
         id: "actions",
         cell: ({ row }) => <BrandCellActions row={row} />,
+      },
+    ],
+    [intl],
+  );
+
+  return columns;
+};
+
+export const useMedicineColumns = () => {
+  const intl = useIntl();
+  const columns = useMemo<ColumnDef<any>[]>(
+    () => [
+      {
+        header: intl.formatMessage({ id: "name" }),
+        id: "name",
+        cell: ({row}) => <MedicineName row={row}/>, 
+      },
+      {
+        header: intl.formatMessage({ id: "clasification" }, {count: 1}),
+        id: "medicineClasification",
+        cell: ({row}) => <MedicineClasification row={row}/>, 
+      },
+      {
+        header: intl.formatMessage({ id: "active_ingredients" }, {count: 1}),
+        id: "medicineActiveIngredients",
+        cell: ({row}) => <MedicineActiveIngredients row={row}/>, 
+      },
+      {
+        header: intl.formatMessage({ id: "description" }),
+        accessorKey: "description",
+        id: "description",
       },
     ],
     [intl],
