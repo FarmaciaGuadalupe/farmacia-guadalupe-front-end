@@ -73,7 +73,7 @@ export default function AddEmployeeForm({ onClose, onSaveSuccess }: AddEmployeeF
 
     try {
       // --- Aquí está la llamada a la API ---
-      const response = await fetch('http://localhost:5036/api/Employee/createEmployee', {
+      const response = await fetch('https://localhost:44361/api/Employee/createEmployee', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
