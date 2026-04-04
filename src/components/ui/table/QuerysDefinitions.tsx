@@ -165,7 +165,7 @@ export const GET_SUPPLIER_QUERY = () => gql`
   }
 `;
 
-export const GET_MEDICINE_QUERY = () => gql `
+export const GET_MEDICINE_QUERY = () => gql`
 query GetMedicineTherapeuticDetails($first: Int, $after: String, $order: [MedicineSortInput!]) {
   medicines(first: $first, after: $after, order: $order) {
     nodes {
@@ -206,3 +206,95 @@ query GetMedicineTherapeuticDetails($first: Int, $after: String, $order: [Medici
   }
 }
 `;
+
+export const GET_SUPPLIERS_LIST_QUERY = gql`
+query GetSuppliersList {
+	suppliers {
+		nodes {
+			supplier_id
+			company_name
+		}
+	}
+}
+`;
+
+export const GET_PRESENTATION_LIST_QUERY = gql`
+query GetPresentations {
+	presentations {
+		nodes {
+			presentation_id
+			name
+		}
+	}
+}
+`;
+
+export const GET_BRANDS_LIST_QUERY = gql`
+query GetBrands {
+    brands {
+        nodes {
+            id_brand
+            name
+        }
+    }
+}
+`;
+
+
+export const GET_MANUFACTURERS_LIST_QUERY = gql`
+query GetManufacturers  {
+    manufacturers {
+        nodes {
+            manufacturer_id
+            name
+        }
+    }
+}
+`;
+
+export const GET_CATEGORIES_LIST_QUERY = gql`
+query GetCategories  {
+    categories {
+        nodes {
+            category_id
+            name
+        }
+    }
+}
+`;
+
+export const GET_ADMINISTRATION_ROUTES_LIST_QUERY = gql`
+query GetAdministrationRoutes {
+  administrationRoutes {
+    nodes { 
+      administration_route_id
+      name
+    }
+  }
+}
+`;
+
+export const GET_ACTIVE_INGREDIENTS_LIST_QUERY = gql`
+query GetActiveIngredients {
+  activeIngredients{
+    nodes {
+      active_ingredient_id
+      name
+    }
+  }
+}
+`;
+
+export const GET_DOSE_UNITS_LIST_QUERY = gql`
+query GetDoseUnits {
+  doseUnits {
+    nodes {
+      dose_unit_id
+      name
+      abbreviation
+    }
+  }
+}
+`;
+
+

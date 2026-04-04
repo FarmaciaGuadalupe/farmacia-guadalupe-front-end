@@ -1,21 +1,11 @@
-// src/pages/Tables/BasicTables.tsx
-
 import * as React from 'react';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
 import { FormattedMessage, useIntl } from "react-intl";
 
-import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-// ComponentCard y PageMeta no se estaban usando en el snippet original, 
-// pero los dejo por si los necesitas.
-import Brands from "../../components/ui/catalogs/Brands";
-import Categories from "../../components/ui/catalogs/Categories";
-import ActiveIngredients from "../../components/ui/catalogs/ActiveIngredients";
-import AdministrationRoutes from "../../components/ui/catalogs/AdministrationRoutes";
-import SupplierTypes from "../../components/ui/catalogs/SupplierTypes";
-import Suppliers from "../../components/ui/catalogs/Suppliers";
 import Medicines from "../../components/ui/catalogs/Medicines";
+import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 
 
 interface TabPanelProps {
@@ -47,7 +37,7 @@ function a11yProps(index: number) {
   };
 }
 
-export default function Catalogs() {
+export default function Products() {
   const intl = useIntl();
 
   const [value, setValue] = React.useState(0);
@@ -58,18 +48,12 @@ export default function Catalogs() {
 
   // Definición de los datos
   const items = [
-    { label: <FormattedMessage id="brands" values={{ count: 2 }}/>, content: <Brands /> },
-    { label: <FormattedMessage id="categories" values={{ count: 2 }}/>, content: <Categories /> },
-    { label: <FormattedMessage id="active_ingredients" values={{ count: 1 }}/>, content: <ActiveIngredients /> },
-    { label: <FormattedMessage id="administration_routes" values={{ count: 1 }}/>, content: <AdministrationRoutes /> },
-    { label: <FormattedMessage id="supplier_types" values={{ count: 1 }}/>, content: <SupplierTypes /> },
-    { label: <FormattedMessage id="suppliers" values={{ count: 1 }}/>, content: <Suppliers /> },
-    // { label: <FormattedMessage id="medicines" values={{ count: 1 }}/>, content: <Medicines /> },
+    { label: <FormattedMessage id="medicine" values={{ count: 2 }}/>, content: <Medicines /> },
   ];
 
   return (
     <div className="h-full w-full">
-      <PageBreadcrumb pageTitle={intl.formatMessage({ id: "catalogs" }, { count: 2 })} />
+      <PageBreadcrumb pageTitle={intl.formatMessage({ id: "products" }, { count: 2 })} />
       <div
         className={`rounded-2xl border border-gray-200 bg-slate-50 dark:border-gray-800 dark:bg-white/[0.03] p-4`}>
         <Box sx={{ width: '100%' }}>

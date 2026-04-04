@@ -5,11 +5,12 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 
 // --- Props ---
 interface SimpleModalProps {
-  isOpen: boolean;        // Estado para mostrar/ocultar
-  onClose: () => void;    // Función para cerrar
-  title: string;          // Título del header
-  children: ReactNode;    // Contenido del modal
-  widthClass?: string;    // (Opcional) Ancho del modal
+  isOpen: boolean;                // Estado para mostrar/ocultar
+  onClose: () => void;            // Función para cerrar
+  title: string;                  // Título del header
+  children: ReactNode;            // Contenido del modal
+  widthClass?: string;            // (Opcional) Ancho del modal
+  disableOutsideClick?: boolean;  // (Opcional) Evita cerrar al hacer click afuera
 }
 
 /**
@@ -21,12 +22,15 @@ export default function SimpleModal({
   onClose,
   title,
   children,
-  widthClass = 'w-full max-w-md' // Por defecto un ancho mediano y responsivo
+  widthClass = 'w-full max-w-md', // Por defecto un ancho mediano y responsivo
+  disableOutsideClick = false     // Por defecto permite cerrar al hacer click afuera
 }: SimpleModalProps) {
+
+  const handleDialogClose = disableOutsideClick ? () => {} : onClose;
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-900" onClose={onClose}>
+      <Dialog as="div" className="relative z-900" onClose={handleDialogClose}>
         
         {/* --- 1. El Fondo Oscuro (Overlay) --- */}
         <TransitionChild
@@ -58,7 +62,7 @@ export default function SimpleModal({
               leaveTo="opacity-0 scale-95"
             >
               <DialogPanel 
-                className={`w-full transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 text-left align-middle shadow-xl transition-all ${widthClass}`}
+                className={`transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 text-left align-middle shadow-xl transition-all ${widthClass}`}
               >
                 
                 {/* --- Header del Modal --- */}

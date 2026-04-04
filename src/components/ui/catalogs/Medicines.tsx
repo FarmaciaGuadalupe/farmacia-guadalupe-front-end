@@ -1,27 +1,27 @@
-import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
-
-// Local imports
 import { useIntl } from "react-intl";
-import CellWithDrawer from "../table/CellWithDrawer";
-import AddNewBrand from "../table/CustomDrawers/AddNewBrand";
+import { PlusCircleIcon } from "@heroicons/react/24/outline";
+
+import SimpleModal from "../utils/SimpleModal";
 import MedicineTable from "../../tables/BasicTables/MedicineTable";
+import AddNewMedicine from "../table/CustomDrawers/AddNewMedicine";
 
 
 const AddNewBrandDrawer = ({ onClose }: any) => {
 
     const intl = useIntl()
 
-    return <CellWithDrawer
+    return <SimpleModal
         isOpen={true}
         onClose={onClose}
         title={intl.formatMessage({ id: 'brand_add' })}
-        widthClass="w-150"
+        widthClass="w-[75%]"
+        disableOutsideClick={true}
         >
             <div>
-                <AddNewBrand />
+                <AddNewMedicine />
             </div>
-    </CellWithDrawer>
+    </SimpleModal>
 
 }
 

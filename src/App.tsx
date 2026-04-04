@@ -1,32 +1,30 @@
-//se agrega la libreria navigate
+import { Tooltip } from 'react-tooltip';
+import { IntlProvider } from 'react-intl';
+import { Fragment } from "react/jsx-runtime";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router";
+
+import Blank from "./pages/Blank";
+import messages_es from './lang/es.json';
+import Home from "./pages/Dashboard/Home";
+import AppLayout from "./layout/AppLayout";
+import 'react-tooltip/dist/react-tooltip.css'; 
 import SignIn from "./pages/AuthPages/SignIn";
 import SignUp from "./pages/AuthPages/SignUp";
-import NotFound from "./pages/OtherPage/NotFound";
-import UserProfiles from "./pages/UserProfiles";
+import Catalogs from "./pages/Tables/Catalogs";
+import Products from "./pages/Tables/Products";
 import Videos from "./pages/UiElements/Videos";
 import Images from "./pages/UiElements/Images";
 import Alerts from "./pages/UiElements/Alerts";
 import Badges from "./pages/UiElements/Badges";
+import BarChart from "./pages/Charts/BarChart";
+import UserProfiles from "./pages/UserProfiles";
 import Avatars from "./pages/UiElements/Avatars";
 import Buttons from "./pages/UiElements/Buttons";
 import LineChart from "./pages/Charts/LineChart";
-import BarChart from "./pages/Charts/BarChart";
+import NotFound from "./pages/OtherPage/NotFound";
 import BasicTables from "./pages/Tables/BasicTables";
-import Catalogs from "./pages/Tables/Catalogs";
-import Blank from "./pages/Blank";
-import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
-import Home from "./pages/Dashboard/Home";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
-
-import { IntlProvider } from 'react-intl';
-import messages_es from './lang/es.json';
-import { Fragment } from "react/jsx-runtime";
-
-import { Tooltip } from 'react-tooltip';
-import 'react-tooltip/dist/react-tooltip.css'; // Asegúrate de importar el CSS aquí
-
 
 export default function App() {
   
@@ -59,6 +57,7 @@ export default function App() {
               <Route path="/basic-tables" element={<BasicTables />} />
               <Route path="/employee-tables" element={<BasicTables />} />
               <Route path="/catalogs" element={<Catalogs />} />
+              <Route path="/products" element={<Products />} />
 
 
               {/* Ui Elements */}

@@ -2,10 +2,10 @@ import { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { EnvelopeIcon, PhoneIcon } from "@heroicons/react/24/outline";
 
-import ComponentCard from "../../../common/ComponentCard";
 import Label from "../../../form/Label";
 import Input from "../../../form/input/InputField";
 import FileInput from "../../../form/input/FileInput";
+import ComponentCard from "../../../common/ComponentCard";
 
 
 import { useMutation } from "@apollo/client/react";
