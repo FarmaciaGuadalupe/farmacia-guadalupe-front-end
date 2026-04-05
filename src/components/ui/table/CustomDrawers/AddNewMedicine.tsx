@@ -1,7 +1,9 @@
 import * as React from "react";
 import { Fragment, useState } from "react";
 import { FormattedMessage } from "react-intl";
-import { useQuery } from "@apollo/client/react";
+import { gql } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
+import { useQuery } from "@apollo/client/react"; // Cambiamos fetch por useQuery
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import {
   Box,
@@ -12,6 +14,7 @@ import {
   Typography,
   TextField,
 } from "@mui/material";
+import { toast } from "sonner";
 
 import Label from "../../../form/Label";
 import Select from "../../../form/Select";
@@ -29,6 +32,17 @@ import {
   GET_UNIT_OF_MEASURE_LIST_QUERY,
 } from "../QuerysDefinitions";
 import DatePicker from "../../../form/date-picker";
+
+// --- QUERIES Y MUTACIONES ---
+
+const ADD_MEDICINE_MUTATION = gql`
+  mutation AddMedicine($input: AddMedicineInput!) {
+    addMedicine(input: $input) {
+      result
+      message
+    }
+  }
+`;
 
 // --- INTERFACES DE TYPESCRIPT ---
 
@@ -55,7 +69,7 @@ export interface MedicineFormData {
   price_full_presentation: number | string;
   is_fractionable: boolean;
 
-  dosage: string;
+  description: string;
   batch_code: string;
   expiration_date: string;
   units: number | string;
@@ -201,6 +215,17 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
           </div>
           <div className="w-full">
             <Label>
+              <FormattedMessage id="description" values={{ count: 1 }} />
+            </Label>
+            <Input
+              type="text"
+              name="description"
+              value={formData.description}
+              onChange={onChange}
+            />
+          </div>
+          <div className="w-full">
+            <Label>
               <FormattedMessage id="brands" values={{ count: 1 }} />
             </Label>
             <Select
@@ -211,6 +236,8 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
               className="dark:bg-dark-900"
             />
           </div>
+        </div>
+        <div className="flex flex-row gap-4 justify-center  ">
           <div className="w-full">
             <Label>
               <FormattedMessage id="manufacturers" values={{ count: 1 }} />
@@ -223,8 +250,6 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
               className="dark:bg-dark-900"
             />
           </div>
-        </div>
-        <div className="flex flex-row gap-4 justify-center  ">
           <div className="w-full">
             <Label>
               <FormattedMessage id="categories" values={{ count: 1 }} />
@@ -254,7 +279,9 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
               className="dark:bg-dark-900"
             />
           </div>
-          <div className="w-full">
+        </div>
+        <div className="flex flex-row gap-4 justify-center  ">
+          <div className="flex w-full justify-start">
             <div className="flex flex-row h-full w-full gap-3 items-center justify-center">
               <Checkbox
                 checked={formData.requires_prescription}
@@ -521,7 +548,9 @@ function CompositionStep({ formData, onChange, setFormData }: StepProps) {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const suggestedMinStock = Math.ceil((Number(formData.stock_units) || 0) * 0.15);
+  const suggestedMinStock = Math.ceil(
+    (Number(formData.stock_units) || 0) * 0.15,
+  );
 
   return (
     <Fragment>
@@ -607,8 +636,10 @@ function CompositionStep({ formData, onChange, setFormData }: StepProps) {
 
 // --- COMPONENTE PRINCIPAL ---
 
-export default function AddNewMedicine() {
+export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
   const [activeStep, setActiveStep] = React.useState<number>(0);
+
+  const [addMedicine, { loading: isSubmitting }] = useMutation(ADD_MEDICINE_MUTATION);
 
   // Tipamos el estado inicial con la interfaz MedicineFormData
   const [formData, setFormData] = React.useState<MedicineFormData>({
@@ -628,7 +659,7 @@ export default function AddNewMedicine() {
     price_full_presentation: "",
     is_fractionable: false,
 
-    dosage: "",
+    description: "",
     batch_code: "",
     expiration_date: "",
     units: "",
@@ -652,18 +683,21 @@ export default function AddNewMedicine() {
   React.useEffect(() => {
     const units = Number(formData.units) || 0;
     const unitsPerPresentation = Number(formData.units_per_presentation) || 0;
-    
+
     if (units >= 0 && unitsPerPresentation >= 0) {
       const totalStock = units * unitsPerPresentation;
       const minStock = Math.ceil(totalStock * 0.15); // 15% as requested
-      
-      setFormData(prev => {
+
+      setFormData((prev) => {
         // Only update if values actually changed to avoid infinite loops
-        if (prev.stock_units !== totalStock || prev.min_stock_units !== minStock) {
+        if (
+          prev.stock_units !== totalStock ||
+          prev.min_stock_units !== minStock
+        ) {
           return {
             ...prev,
             stock_units: totalStock,
-            min_stock_units: minStock
+            min_stock_units: minStock,
           };
         }
         return prev;
@@ -702,7 +736,7 @@ export default function AddNewMedicine() {
       price_full_presentation: "",
       is_fractionable: false,
 
-      dosage: "",
+      description: "",
       batch_code: "",
       expiration_date: "",
       units: "",
@@ -714,12 +748,66 @@ export default function AddNewMedicine() {
     });
   };
 
-  const submitToAPI = async () => {
-    console.log("Enviando payload al API:", formData);
-    // Aquí formData ya es de tipo MedicineFormData y está listo para ser enviado
+const submitToAPI = async () => {
+    // 1. Aplicamos lógica de stock mínimo asegurándonos de que sea un número válido
+    const finalMinStock =
+      formData.min_stock_units === ""
+        ? Math.ceil((Number(formData.stock_units) || 0) * 0.15)
+        : Number(formData.min_stock_units);
 
-    // Simulación de éxito
-    setActiveStep((prev) => prev + 1);
+    // 2. Construimos el objeto garantizando tipos estrictos para GraphQL
+    const input = {
+      name: formData.name,
+      idBrand: parseInt(String(formData.id_brand), 10) || 0,
+      manufacturerId: parseInt(String(formData.manufacturer_id), 10) || 0,
+      categoryId: parseInt(String(formData.category_id), 10) || 0,
+      administrationRouteId: parseInt(String(formData.administration_route_id), 10) || 0,
+      requiresPrescription: Boolean(formData.requires_prescription),
+
+      supplierId: parseInt(String(formData.supplier_id), 10) || 0,
+      presentationId: parseInt(String(formData.presentation_id), 10) || 0,
+      unitOfMeasureId: parseInt(String(formData.unit_of_measure_id), 10) || 0,
+      unitsPerPresentation: parseInt(String(formData.units_per_presentation), 10) || 0,
+      
+      currency: formData.currency,
+      
+      // Usamos 'undefined' o '0' en vez de 'null'. Apollo Client filtrará los campos 'undefined' 
+      // y GraphQL aplicará sus valores por defecto o los ignorará correctamente.
+      pricePerUnit: formData.is_fractionable ? parseFloat(String(formData.price_per_unit)) || 0 : 0,
+      priceFullPresentation: parseFloat(String(formData.price_full_presentation)) || 0,
+      isFractionable: Boolean(formData.is_fractionable),
+      
+      description: formData.description || "Sin descripción",
+      
+      batchCode: formData.batch_code,
+      expirationDate: formData.expiration_date ? `${formData.expiration_date}T23:59:59Z` : undefined,
+      
+      units: parseInt(String(formData.units), 10) || 0,
+      stockUnits: parseInt(String(formData.stock_units), 10) || 0,
+      minStockUnits: finalMinStock || 0,
+
+      ingredients: formData.ingredients.map((ing) => ({
+        activeIngredientId: parseInt(String(ing.active_ingredient_id), 10) || 0,
+        doseValue: parseFloat(String(ing.dose_value)) || 0,
+        doseUnitId: parseInt(String(ing.dose_unit_id), 10) || 0,
+      })),
+    };
+
+    console.log("🚀 Enviando Payload a API:", { input });
+
+    try {
+      const { data } = await addMedicine({ variables: { input } });
+      
+      if (data?.addMedicine?.result) {
+        toast.success(data.addMedicine.message || "¡Medicamento guardado con éxito!");
+        if (onClose) onClose();
+      } else {
+        toast.error(data?.addMedicine?.message || "Error al guardar el medicamento");
+      }
+    } catch (error: any) {
+      console.error("❌ Error GraphQL:", error);
+      toast.error(error.message || "Error de red o servidor al intentar guardar");
+    }
   };
 
   const isStepValid = (): boolean => {
@@ -753,7 +841,9 @@ export default function AddNewMedicine() {
         return baseValid;
       case 2:
         return (
-          !!formData.batch_code && !!formData.expiration_date && !!formData.units
+          !!formData.batch_code &&
+          !!formData.expiration_date &&
+          !!formData.units
         );
       default:
         return false;
@@ -821,7 +911,7 @@ export default function AddNewMedicine() {
           <div className="flex flex-row gap-2 items-end justify-end mt-5   ">
             <Button
               color="inherit"
-              disabled={activeStep === 0}
+              disabled={activeStep === 0 || isSubmitting}
               onClick={handleBack}
             >
               Atrás
@@ -829,9 +919,9 @@ export default function AddNewMedicine() {
             <Button
               variant="contained"
               onClick={handleNext}
-              disabled={!isStepValid()}
+              disabled={!isStepValid() || isSubmitting}
             >
-              {activeStep === steps.length - 1 ? "Enviar al API" : "Siguiente"}
+              {isSubmitting ? "Enviando..." : activeStep === steps.length - 1 ? "Enviar al API" : "Siguiente"}
             </Button>
           </div>
         </Fragment>

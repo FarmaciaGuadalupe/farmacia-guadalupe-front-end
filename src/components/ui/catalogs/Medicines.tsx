@@ -21,6 +21,7 @@ const AddNewBrandDrawer = ({ onClose }: any) => {
         >
             <div>
                 <AddNewMedicine 
+                    onClose={onClose}
                 />
             </div>
     </SimpleModal>
