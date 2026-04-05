@@ -297,4 +297,14 @@ query GetDoseUnits {
 }
 `;
 
+export const GET_UNIT_OF_MEASURE_LIST_QUERY = gql`
+query GetUnitOfMeasures {
+  unitOfMeasures {
+    nodes {
+      unit_of_measure_id
+      name
+    }
+  }
+}
+`;
 

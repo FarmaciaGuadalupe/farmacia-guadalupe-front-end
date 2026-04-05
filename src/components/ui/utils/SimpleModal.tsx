@@ -9,6 +9,7 @@ interface SimpleModalProps {
   onClose: () => void;            // Función para cerrar
   title: string;                  // Título del header
   children: ReactNode;            // Contenido del modal
+  custom?: string;
   widthClass?: string;            // (Opcional) Ancho del modal
   disableOutsideClick?: boolean;  // (Opcional) Evita cerrar al hacer click afuera
 }
@@ -22,6 +23,7 @@ export default function SimpleModal({
   onClose,
   title,
   children,
+  custom = "",
   widthClass = 'w-full max-w-md', // Por defecto un ancho mediano y responsivo
   disableOutsideClick = false     // Por defecto permite cerrar al hacer click afuera
 }: SimpleModalProps) {
@@ -62,7 +64,7 @@ export default function SimpleModal({
               leaveTo="opacity-0 scale-95"
             >
               <DialogPanel 
-                className={`transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 text-left align-middle shadow-xl transition-all ${widthClass}`}
+                className={`transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 text-left align-middle shadow-xl transition-all ${widthClass} ${custom}`}
               >
                 
                 {/* --- Header del Modal --- */}

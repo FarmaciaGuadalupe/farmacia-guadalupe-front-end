@@ -15,11 +15,13 @@ const AddNewBrandDrawer = ({ onClose }: any) => {
         isOpen={true}
         onClose={onClose}
         title={intl.formatMessage({ id: 'brand_add' })}
-        widthClass="w-[75%]"
+        widthClass="w-[75%] h-[75%]"
+        custom="h-200"
         disableOutsideClick={true}
         >
             <div>
-                <AddNewMedicine />
+                <AddNewMedicine 
+                />
             </div>
     </SimpleModal>
 
