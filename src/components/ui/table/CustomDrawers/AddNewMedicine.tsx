@@ -516,6 +516,13 @@ function GeneralInfoStep({ formData, onChange, setFormData }: StepProps) {
 }
 
 function CompositionStep({ formData, onChange, setFormData }: StepProps) {
+  // Función dinámica para actualizar cualquier select/date en el padre
+  const handleSelectChange = (field: keyof MedicineFormData, value: any) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const suggestedMinStock = Math.ceil((Number(formData.stock_units) || 0) * 0.15);
+
   return (
     <Fragment>
       <div className="flex flex-col gap-2 h-full w-full space-y-4">
@@ -545,10 +552,9 @@ function CompositionStep({ formData, onChange, setFormData }: StepProps) {
             <DatePicker
               id="expiration_date"
               placeholder="Select a date"
-              defaultDate={formData.expiration_date}
-              onChange={(dates, currentDateString) => {
-                // Handle your logic
-                console.log({ dates, currentDateString });
+              value={formData.expiration_date}
+              onChange={(_, currentDateString) => {
+                handleSelectChange("expiration_date", currentDateString);
               }}
             />
           </div>
@@ -574,12 +580,12 @@ function CompositionStep({ formData, onChange, setFormData }: StepProps) {
               type="number"
               name="stock_units"
               min="0"
-			  disabled={true}
-              value={(!!formData.units && !!formData.units_per_presentation) ? formData.units * formData.units_per_presentation : "0" }
+              disabled={true}
+              value={formData.stock_units || "0"}
               onChange={onChange}
             />
           </div>
-		  <div className="w-full">
+          <div className="w-full">
             <Label>
               <FormattedMessage id="min_stock_units" values={{ count: 1 }} />
             </Label>
@@ -587,14 +593,13 @@ function CompositionStep({ formData, onChange, setFormData }: StepProps) {
               type="number"
               name="min_stock_units"
               min="0"
-              value={!!formData.stock_units ? formData.stock_units  * 0.10 : "0" }
+              value={formData.min_stock_units}
+              placeholder={String(suggestedMinStock)}
               onChange={onChange}
             />
           </div>
         </div>
-        <div className="flex flex-row gap-4 justify-center">
-			
-		</div>
+        <div className="flex flex-row gap-4 justify-center"></div>
       </div>
     </Fragment>
   );
@@ -642,6 +647,29 @@ export default function AddNewMedicine() {
       [name]: value,
     }));
   };
+
+  // Auto-calculate stock units and min stock units
+  React.useEffect(() => {
+    const units = Number(formData.units) || 0;
+    const unitsPerPresentation = Number(formData.units_per_presentation) || 0;
+    
+    if (units >= 0 && unitsPerPresentation >= 0) {
+      const totalStock = units * unitsPerPresentation;
+      const minStock = Math.ceil(totalStock * 0.15); // 15% as requested
+      
+      setFormData(prev => {
+        // Only update if values actually changed to avoid infinite loops
+        if (prev.stock_units !== totalStock || prev.min_stock_units !== minStock) {
+          return {
+            ...prev,
+            stock_units: totalStock,
+            min_stock_units: minStock
+          };
+        }
+        return prev;
+      });
+    }
+  }, [formData.units, formData.units_per_presentation]);
 
   const handleNext = () => {
     if (activeStep === steps.length - 1) {
@@ -692,6 +720,44 @@ export default function AddNewMedicine() {
 
     // Simulación de éxito
     setActiveStep((prev) => prev + 1);
+  };
+
+  const isStepValid = (): boolean => {
+    switch (activeStep) {
+      case 0:
+        return (
+          !!formData.name &&
+          !!formData.id_brand &&
+          !!formData.manufacturer_id &&
+          !!formData.category_id &&
+          !!formData.administration_route_id &&
+          formData.ingredients.length > 0 &&
+          formData.ingredients.every(
+            (ing) =>
+              !!ing.active_ingredient_id &&
+              !!ing.dose_value &&
+              !!ing.dose_unit_id,
+          )
+        );
+      case 1:
+        const baseValid =
+          !!formData.supplier_id &&
+          !!formData.presentation_id &&
+          !!formData.unit_of_measure_id &&
+          !!formData.units_per_presentation &&
+          !!formData.price_full_presentation;
+
+        if (formData.is_fractionable) {
+          return baseValid && !!formData.price_per_unit;
+        }
+        return baseValid;
+      case 2:
+        return (
+          !!formData.batch_code && !!formData.expiration_date && !!formData.units
+        );
+      default:
+        return false;
+    }
   };
 
   // Tipamos el parámetro step como un número y el retorno como un React.ReactNode
@@ -760,7 +826,11 @@ export default function AddNewMedicine() {
             >
               Atrás
             </Button>
-            <Button variant="contained" onClick={handleNext}>
+            <Button
+              variant="contained"
+              onClick={handleNext}
+              disabled={!isStepValid()}
+            >
               {activeStep === steps.length - 1 ? "Enviar al API" : "Siguiente"}
             </Button>
           </div>
