@@ -30,6 +30,7 @@ import {
   GET_ACTIVE_INGREDIENTS_LIST_QUERY,
   GET_DOSE_UNITS_LIST_QUERY,
   GET_UNIT_OF_MEASURE_LIST_QUERY,
+  GET_MEDICINE_QUERY,
 } from "../QuerysDefinitions";
 import DatePicker from "../../../form/date-picker";
 
@@ -639,7 +640,9 @@ function CompositionStep({ formData, onChange, setFormData }: StepProps) {
 export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
   const [activeStep, setActiveStep] = React.useState<number>(0);
 
-  const [addMedicine, { loading: isSubmitting }] = useMutation(ADD_MEDICINE_MUTATION);
+  const [addMedicine, { loading: isSubmitting }] = useMutation(ADD_MEDICINE_MUTATION, {
+    refetchQueries: [{ query: GET_MEDICINE_QUERY() }]
+  });
 
   // Tipamos el estado inicial con la interfaz MedicineFormData
   const [formData, setFormData] = React.useState<MedicineFormData>({
