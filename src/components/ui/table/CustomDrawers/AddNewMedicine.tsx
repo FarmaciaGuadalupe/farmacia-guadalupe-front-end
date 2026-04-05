@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Fragment, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useQuery } from '@apollo/client/react';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import { Box, Stepper, Step, StepLabel, Button, Typography, TextField } from '@mui/material';
 
 
@@ -32,6 +33,7 @@ export interface ActiveIngredientInput {
 
 export interface MedicineFormData {
     name: string;
+    id_brand: number; 
     supplier_id: number;
     presentation_id: number;
     unit_of_measure_id: number;
@@ -63,117 +65,7 @@ const steps: string[] = [
 
 // --- COMPONENTES DE CADA PASO ---
 
-function GeneralInfoStep({ formData, onChange, setFormData }: StepProps) {
 
-    const { data: suppliersData, loading: loadingSuppliers, error: errorSuppliers } = useQuery(GET_SUPPLIERS_LIST_QUERY);
-
-    const suppliersOptions = React.useMemo(() => {
-        if (!suppliersData?.suppliers?.nodes) return [];
-        return suppliersData.suppliers.nodes.map((node: any) => ({
-            value: node.supplier_id,
-            label: node.company_name
-        }));
-    }, [suppliersData]);
-
-
-    const { data: presentationsData, loading: loadingPresentations, error: errorPresentations } = useQuery(GET_PRESENTATION_LIST_QUERY);
-
-    const presentationsOptions = React.useMemo(() => {
-        if (!presentationsData?.presentations?.nodes) return [];
-        return presentationsData.presentations.nodes.map((node: any) => ({
-            value: node.presentation_id,
-            label: node.name
-        }));
-    }, [presentationsData]);
-
-    // const suppliers = [
-    //     { value: "marketing", label: "Supplier 1" },
-    //     { value: "template", label: "Supplier 2" },
-    //     { value: "development", label: "Supplier 3" },
-    // ];
-
-    const presentations = [
-        { value: "marketing", label: "Presentation 1" },
-        { value: "template", label: "Presentation 2" },
-        { value: "development", label: "Presentation 3" },
-    ];
-
-
-
-    const handleSelectChange = (value: string) => {
-        console.log("Selected value:", value);
-    };
-
-    return (
-        <Fragment>
-            <div className='flex flex-col gap-2 h-full w-full'>
-                <div className='flex flex-row gap-2 justify-center  '>
-                    <div className='w-full'>
-                        <Label>
-                            <FormattedMessage id="suppliers" values={{ count: 1 }} />
-                        </Label>
-                        <Select
-                            options={suppliersOptions}
-                            placeholder="Select Option"
-                            onChange={handleSelectChange}
-                            className="dark:bg-dark-900"
-                        />
-                    </div>
-                    <div className='w-full'>
-                        <Label>
-                            <FormattedMessage id="presentations" values={{ count: 1 }} />
-                        </Label>
-                        <Select
-                            options={presentationsOptions}
-                            placeholder="Select Option"
-                            onChange={handleSelectChange}
-                            className="dark:bg-dark-900"
-                        />
-                    </div>
-                    <div className='w-full'>
-                        <Label>
-                            <FormattedMessage id="names" values={{ count: 1 }} />
-                        </Label>
-                        <Input
-                            type="number"
-                            min="1"
-                            // id="name_input"
-                            name="unitsPerPresentation"
-                            value={formData.units_per_presentation}
-                            onChange={onChange}
-                        />
-                    </div>
-
-                    <div className='w-full'>
-                        <Label>
-                            <FormattedMessage id="suppliers" values={{ count: 1 }} />
-                        </Label>
-                        <Select
-                            options={presentations}
-                            placeholder="Select Option"
-                            onChange={handleSelectChange}
-                            className="dark:bg-dark-900"
-                        />
-                    </div>
-
-
-                    {/* <div className='w-full'>
-                        <Label>
-                            <FormattedMessage id="names" values={{ count: 1 }} />
-                        </Label>
-                        <Input
-                            type="text"
-                            // id="name_input"
-                            name="productName"
-                            value={formData.productName}
-                            onChange={onChange}
-                        />
-                    </div> */}
-                </div>
-            </div>
-        </Fragment>
-    );
-}
 
 function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
     const { data: brandsData, loading: loadingBrands, error: errorBrands } = useQuery(GET_BRANDS_LIST_QUERY);
@@ -252,13 +144,17 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
         setFormData(prev => ({ ...prev, ingredients: newIngredients }));
     };
 
-    const handleSelectChange = (value: string) => {
-        console.log("Selected value:", value);
+    // Función dinámica para actualizar cualquier select en el padre
+    const handleSelectChange = (field: keyof MedicineFormData, value: any) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
     };
 
     return (
         <Fragment>
             <div className='flex flex-col gap-2 h-full w-full'>
+                <Typography variant="subtitle1" fontWeight="bold" className="mb-2 text-gray-700">
+                    Datos del medicamento
+                </Typography>
                 <div className='flex flex-row gap-4 justify-center  '>
                     <div className='w-full'>
                         <Label>
@@ -266,7 +162,7 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
                         </Label>
                         <Input
                             type="text"
-                            name="productName"
+                            name="name"
                             value={formData.name}
                             onChange={onChange}
                         />
@@ -278,7 +174,8 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
                         <Select
                             options={brandsOptions}
                             placeholder="Select Option"
-                            onChange={handleSelectChange}
+                            // value={  formData.id_brand} // <-- ¡Faltaba leer el valor guardado!
+                            onChange={(val) => handleSelectChange('id_brand', val)} // <-- ¡Faltaba guardar!
                             className="dark:bg-dark-900"
                         />
                     </div>
@@ -341,7 +238,7 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
                                 {formData.ingredients.map((ingredient, index) => (
                                     <div key={index} className='flex flex-row gap-3 items-end mb-4'>
 
-                                        <div className='w-5/12'>
+                                        <div className='w-full'>
                                             <Label>Principio Activo</Label>
                                             <Select
                                                 options={ingredientsOptions}
@@ -351,7 +248,7 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
                                             />
                                         </div>
 
-                                        <div className='w-3/12'>
+                                        <div className='w-full'>
                                             <Label>Dosis</Label>
                                             <Input
                                                 type="number"
@@ -361,7 +258,7 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
                                             />
                                         </div>
 
-                                        <div className='w-3/12'>
+                                        <div className='w-full'>
                                             <Label>Unidad</Label>
                                             <Select
                                                 options={doseUnitsOptions}
@@ -371,7 +268,7 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
                                         </div>
 
                                         {/* Botón para eliminar fila (solo si hay más de 1) */}
-                                        <div className='w-1/12 pb-1'>
+                                        <div className='w-full pb-1'>
                                             {formData.ingredients.length > 1 && (
                                                 <Button
                                                     color="error"
@@ -404,17 +301,19 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
     );
 }
 
+function GeneralInfoStep({ formData, onChange, setFormData }: StepProps) {
+    return (
+        <Fragment>
+            <p>TODO</p>
+        </Fragment>
+    );
+}
+
 function CompositionStep({ formData, onChange, setFormData }: StepProps) {
     return (
-        <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Typography variant="h6">Composición y Lote</Typography>
-            <TextField
-                label="Número de Lote"
-                name="batchNumber"
-                value={formData.batchNumber}
-                onChange={onChange}
-            />
-        </Box>
+        <Fragment>
+            <p>TODO</p>
+        </Fragment>
     );
 }
 
@@ -514,20 +413,20 @@ export default function AddNewMedicine() {
                 <Fragment>
                     {getStepContent(activeStep)}
 
-                    <Box sx={{ display: 'flex', flexDirection: 'row', pt: 4 }}>
+                    <div
+                        className='flex flex-row gap-2 items-end justify-end mt-5   '
+                        >
                         <Button
                             color="inherit"
                             disabled={activeStep === 0}
                             onClick={handleBack}
-                            sx={{ mr: 1 }}
                         >
                             Atrás
                         </Button>
-                        <Box sx={{ flex: '1 1 auto' }} />
                         <Button variant="contained" onClick={handleNext}>
                             {activeStep === steps.length - 1 ? 'Enviar al API' : 'Siguiente'}
                         </Button>
-                    </Box>
+                    </div>
                 </Fragment>
             )}
         </Box>
