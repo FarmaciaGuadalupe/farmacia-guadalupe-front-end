@@ -62,7 +62,7 @@ export default function CellWithDrawer({
                 leaveTo="translate-x-full"  // Termina fuera de la pantalla
               >
                 <DialogPanel 
-                  className={`pointer-events-auto relative flex h-full transform-gpu flex-col transition-transform rounded-l-xl bg-gray-100 dark:bg-gray-800 p-0 ${widthClass}`}
+                  className={`pointer-events-auto relative flex h-full transform-gpu flex-col transition-transform rounded-md bg-gray-100 dark:bg-gray-800 p-0 ${widthClass}`}
                 >
                   {/* --- Header del Drawer --- */}
                   <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-stone-200">
@@ -84,7 +84,6 @@ export default function CellWithDrawer({
                   
                 </DialogPanel>
               </TransitionChild>
-
             </div>
           </div>
         </div>
