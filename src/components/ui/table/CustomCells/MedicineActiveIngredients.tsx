@@ -1,9 +1,6 @@
-import { useIntl } from "react-intl";
-
 import Badge from "../../badge/Badge";
 
 const MedicineActiveIngredients = ({ row }: any) => {
-    const intl = useIntl();
     const ingredients = row.original.medicine_active_ingredients || [];
 
     return (
