@@ -189,14 +189,22 @@ query GetMedicineTherapeuticDetails($first: Int, $after: String, $order: [Medici
       brand {
         name
       }
+
       manufacturer {
         name
       }
+
       category {
         name
       }
+
       administration_route {
         name
+      }
+
+      product {
+        stock_units
+        min_stock_units
       }
     }
     pageInfo {

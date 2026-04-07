@@ -1,14 +1,16 @@
 import { useMemo } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
-import { ColumnDef } from "@tanstack/react-table";
 import { Avatar } from "@mui/material";
+import { ColumnDef } from "@tanstack/react-table";
+import { FormattedMessage, useIntl } from "react-intl";
+
+import Stock from "./CustomCells/Stock";
 import Badge from "../../ui/badge/Badge";
-import { stringAvatar } from "../../../utils/AvatarUtils";
-import { EmployeeCellActions } from "../table/CustomCells/EmployeeCellActions";
-import { BrandCellActions } from "./CustomCells/BrandCellActions";
 import Status from "./CustomCells/Status";
 import MedicineName from "./CustomCells/MedicineName";
+import { stringAvatar } from "../../../utils/AvatarUtils";
+import { BrandCellActions } from "./CustomCells/BrandCellActions";
 import MedicineClasification from "./CustomCells/MedicineClasification";
+import { EmployeeCellActions } from "../table/CustomCells/EmployeeCellActions";
 import MedicineActiveIngredients from "./CustomCells/MedicineActiveIngredients";
 
 export const useEmployeeColumns = () => {
@@ -324,10 +326,15 @@ export const useMedicineColumns = () => {
         cell: ({row}) => <MedicineActiveIngredients row={row}/>, 
       },
       {
+        header: intl.formatMessage({id : "stock"}),
+        id: "product",
+        cell: ({row}) => <Stock row={row}/>
+      },
+      {
         header: intl.formatMessage({ id: "description" }),
         accessorKey: "description",
         id: "description",
-      },
+      }
     ],
     [intl],
   );
