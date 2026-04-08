@@ -84,7 +84,9 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
-      <Tooltip id="global-tooltip" />
+      <Tooltip 
+        className='z-9999'
+      id="global-tooltip" />
     </IntlProvider>
     </Fragment>
   );

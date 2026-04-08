@@ -203,6 +203,7 @@ query GetMedicineTherapeuticDetails($first: Int, $after: String, $order: [Medici
       }
 
       product {
+        product_id
         stock_units
         min_stock_units
       }
@@ -316,3 +317,29 @@ query GetUnitOfMeasures {
 }
 `;
 
+
+export const GET_BATHCES_BY_PRODUCT_QUERY = () => gql`
+query GetBatches(
+  $first: Int
+  $after: String
+  $order: [BatchSortInput!]
+  $where: BatchFilterInput
+) {
+  batches(first: $first, after: $after, order: $order, where: $where) {
+    nodes {
+      batch_id
+      product_id
+      batch_code
+      expiration_date
+      initial_quantity_units
+      current_quantity_units
+      is_active
+      created_at
+    }
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+  }
+}
+`;

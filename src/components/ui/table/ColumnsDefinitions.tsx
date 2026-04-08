@@ -7,8 +7,11 @@ import Stock from "./CustomCells/Stock";
 import Badge from "../../ui/badge/Badge";
 import Status from "./CustomCells/Status";
 import MedicineName from "./CustomCells/MedicineName";
+import { BatchStock } from "./CustomCells/BatchStock";
 import { stringAvatar } from "../../../utils/AvatarUtils";
+import BatchExpiration from "./CustomCells/ExpirationDate";
 import { BrandCellActions } from "./CustomCells/BrandCellActions";
+import { BatchCellActions } from "./CustomCells/BatchCellActions";
 import MedicineClasification from "./CustomCells/MedicineClasification";
 import { EmployeeCellActions } from "../table/CustomCells/EmployeeCellActions";
 import MedicineActiveIngredients from "./CustomCells/MedicineActiveIngredients";
@@ -313,28 +316,90 @@ export const useMedicineColumns = () => {
       {
         header: intl.formatMessage({ id: "name" }),
         id: "name",
-        cell: ({row}) => <MedicineName row={row}/>, 
+        cell: ({ row }) => <MedicineName row={row} />,
       },
       {
-        header: intl.formatMessage({ id: "clasification" }, {count: 1}),
+        header: intl.formatMessage({ id: "clasification" }, { count: 1 }),
         id: "medicineClasification",
-        cell: ({row}) => <MedicineClasification row={row}/>, 
+        cell: ({ row }) => <MedicineClasification row={row} />,
       },
       {
-        header: intl.formatMessage({ id: "active_ingredients" }, {count: 1}),
+        header: intl.formatMessage({ id: "active_ingredients" }, { count: 1 }),
         id: "medicineActiveIngredients",
-        cell: ({row}) => <MedicineActiveIngredients row={row}/>, 
+        cell: ({ row }) => <MedicineActiveIngredients row={row} />,
       },
       {
-        header: intl.formatMessage({id : "stock"}),
+        header: intl.formatMessage({ id: "stock" }),
         id: "product",
-        cell: ({row}) => <Stock row={row}/>
+        cell: ({ row }) => <Stock row={row} />
       },
       {
         header: intl.formatMessage({ id: "description" }),
         accessorKey: "description",
         id: "description",
-      }
+      },
+      {
+        header: intl.formatMessage({ id: "actions" }),
+        id: "actions",
+        cell: ({ row }) => <BatchCellActions row={row} />,
+      },
+    ],
+    [intl],
+  );
+
+  return columns;
+};
+
+
+export const useBatchColumns = () => {
+  const intl = useIntl();
+  const columns = useMemo<ColumnDef<any>[]>(
+    () => [
+      // {
+      //   header: intl.formatMessage({ id: "name" }),
+      //   accessorKey: "batch_id",
+      //   id: "batch_id",
+      // },
+      {
+        header: intl.formatMessage({ id: "code" }),
+        accessorKey: "batch_code",
+        id: "batch_code",
+      },
+      {
+        header: intl.formatMessage({ id: "exp_date" }),
+        accessorKey: "expiration_date",
+        id: "expiration_date",
+        cell: ({ row }) => <BatchExpiration expirationDate={row.original.expiration_date} />
+      },
+      {
+        header: intl.formatMessage({ id: "stock" }),
+        // id: "product",
+        cell: ({ row }) => <BatchStock current={row.original.current_quantity_units ?? 0} initial={row.original.initial_quantity_units ?? 0} />
+      },
+      // {
+      //   header: intl.formatMessage({ id: "is_active" }),
+      //   accessorKey: "is_active",
+      //   id: "is_active",
+      // },
+      // {
+      //   header: intl.formatMessage({ id: "created_at" }),
+      //   accessorKey: "created_at",
+      //   id: "created_at",
+      // },
+      
+      // TODO
+      // {
+      //   id: "actions",
+      //   cell: ({ row }) => (
+      //     <button
+      //       //  onClick={() => handleDeactivate(row.original.batch_id)}
+      //       className="text-red-600 hover:text-red-900 flex items-center gap-1 text-xs font-bold"
+      //     >
+      //       {/* <NoSymbolIcon className="size-4" /> */}
+      //       RETIRAR
+      //     </button>
+      //   )
+      // }
     ],
     [intl],
   );

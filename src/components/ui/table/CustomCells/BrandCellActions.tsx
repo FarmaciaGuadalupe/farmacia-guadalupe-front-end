@@ -1,24 +1,12 @@
-import {
-  EllipsisHorizontalIcon,
-  PencilSquareIcon,
-  MinusCircleIcon,
-  CheckCircleIcon,
-} from "@heroicons/react/24/outline";
-import { useState, Fragment } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
-import {
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-  Transition,
-} from "@headlessui/react";
 import clsx from "clsx";
-import { Button } from "@mui/material";
-import { GET_BRANDS_QUERY } from "../QuerysDefinitions";
-
 import { gql } from "@apollo/client";
+import { Button } from "@mui/material";
+import { useState, Fragment } from "react";
 import { useMutation } from "@apollo/client/react";
+import { FormattedMessage, useIntl } from "react-intl";
+import { Menu, MenuButton, MenuItem, MenuItems, Transition } from "@headlessui/react";
+import { EllipsisHorizontalIcon, PencilSquareIcon, MinusCircleIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
+
 
 import CellWithDrawer from "../CellWithDrawer";
 import SimpleModal from "../../../ui/utils/SimpleModal";

@@ -18,6 +18,7 @@ interface ServerDataTableProps<TData> {
   query: any; // Ahora es un DocumentNode (gql)
   queryKeyName: string;
   initialPageSize?: number;
+  filter?: any;
 }
 
 interface ApolloResponse {
@@ -35,6 +36,7 @@ export function ServerDataTable<TData>({
   query,
   queryKeyName,
   initialPageSize = 10,
+  filter,
 }: ServerDataTableProps<TData>) {
   // 1. Estados de la Tabla (TanStack)
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -62,6 +64,7 @@ export function ServerDataTable<TData>({
       first: pageSize,
       after: currentCursor,
       order: order,
+      where: filter,
     },
     fetchPolicy: "cache-and-network", // Muestra caché primero, luego actualiza
     notifyOnNetworkStatusChange: true, // Para que 'loading' sea true en cada refetch
