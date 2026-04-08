@@ -1,27 +1,25 @@
 import clsx from "clsx";
 import { Button } from "@mui/material";
 import { useState, Fragment } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
+import { FormattedMessage } from "react-intl";
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from "@headlessui/react";
-import { EllipsisHorizontalIcon, PencilSquareIcon, UserMinusIcon } from "@heroicons/react/24/outline";
+import { EllipsisHorizontalIcon, InboxStackIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 
-import CellWithDrawer from "../CellWithDrawer";
 import SimpleModal from "../../../ui/utils/SimpleModal";
+import BatchTable from "../../../tables/BasicTables/BatchTable";
+
+const showAllBatches = ({ row, onClose }: any) => {
+  const { product, name } = row.original ?? [];
 
 
-
-const EditUserDrawer = ({ row, onClose }: any) => {
-
-    const intl = useIntl()
-
-    return <CellWithDrawer
+    return <SimpleModal
         isOpen={true}
         onClose={onClose}
-
-        title={intl.formatMessage({ id: 'edit_user' })}>
-
-        <h1>test</h1>
-    </CellWithDrawer>
+        title={name}
+        widthClass="w-[75%] h-[75%]"
+        custom="h-200">
+            <BatchTable productId={product?.product_id} />
+    </SimpleModal>
 
 }
 
@@ -42,19 +40,19 @@ const DeactivateUserModal = ({ row, onClose }: any) => {
     </SimpleModal>
 }
 
-export const EmployeeCellActions = ({ row }: any) => {
+export const BatchCellActions = ({ row }: any) => {
 
     const [activeItem, setActiveItem] = useState<any>(null)
 
     const items = [
         {
             showWhen: true,
-            label: <><PencilSquareIcon className='size-4.5 stroke-1' /><span><FormattedMessage id='edit' /></span></>,
-            drawer: EditUserDrawer,
+            label: <><InboxStackIcon className='size-4.5 stroke-1' /><span><FormattedMessage id='batches' /></span></>,
+            drawer: showAllBatches,
         },
         {
             showWhen: true,
-            label: <><UserMinusIcon className='size-4.5 stroke-1' /><span><FormattedMessage id='deactivate_user' /></span></>,
+            label: <><PlusCircleIcon className='size-4.5 stroke-1' /><span><FormattedMessage id='add_batch' /></span></>,
             drawer: DeactivateUserModal,    
         }
     ]

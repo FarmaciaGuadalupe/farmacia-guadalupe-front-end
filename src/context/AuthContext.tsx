@@ -1,5 +1,5 @@
-import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import axios from 'axios';
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 
 // Define la forma de los datos del usuario que vienen en el token/response
 interface UserData {
@@ -59,7 +59,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = async (username: string, password: string) => {
     try {
       const response = await axios.post<ApiResponse>(
-        'http://localhost:5036/api/Auth/login',
+        // 'http://localhost:5036/api/Auth/login',
+        'https://localhost:44361/api/Auth/login',
         {
           user: username,
           password: password,

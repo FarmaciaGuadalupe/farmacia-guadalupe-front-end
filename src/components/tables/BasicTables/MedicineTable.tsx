@@ -1,7 +1,7 @@
 // src/components/features/employee/EmployeeTable.tsx
 import { ServerDataTable } from "../../ui/table/ServerDataTable";
-import { useMedicineColumns, useSupplierTypesColumns } from "../../ui/table/ColumnsDefinitions";
-import { GET_MEDICINE_QUERY, GET_SUPPLIER_TYPES_QUERY } from "../../ui/table/QuerysDefinitions";
+import { GET_MEDICINE_QUERY } from "../../ui/table/QuerysDefinitions";
+import { useMedicineColumns } from "../../ui/table/ColumnsDefinitions";
 
 
 export default function MedicineTable() {
