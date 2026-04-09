@@ -7,6 +7,7 @@ import { EllipsisHorizontalIcon, InboxStackIcon, PlusCircleIcon } from "@heroico
 
 import SimpleModal from "../../../ui/utils/SimpleModal";
 import BatchTable from "../../../tables/BasicTables/BatchTable";
+import AddNewBatch from "../CustomModels/AddNewBatch";
 
 const showAllBatches = ({ row, onClose }: any) => {
   const { product, name } = row.original ?? [];
@@ -23,20 +24,16 @@ const showAllBatches = ({ row, onClose }: any) => {
 
 }
 
-const DeactivateUserModal = ({ row, onClose }: any) => {
+const AddBatchModal = ({ row, onClose }: any) => {
+    const { product } = row.original ?? {};
     return <SimpleModal
         isOpen={true}
         onClose={onClose}
-        title="Confirmar Acción"
-    >
-        // aqui se puede poner cualquier componente dentro, por ejemplo un formulario o un mensaje de confirmación
+        title="Agregar Nuevo Lote"
+        widthClass="w-[50%] h-[75%]">
 
-        <p>¿Estás seguro de que deseas guardar los cambios?</p>
-
-        <div className="mt-6 flex justify-end gap-3">
-            {/* <button onClick={() => setShowModal(false)} className="px-4 py-2 bg-gray-200 rounded">Cancelar</button> */}
-            <button className="px-4 py-2 bg-blue-600 text-white rounded">Confirmar</button>
-        </div>
+        <AddNewBatch productId={product?.product_id} onClose={onClose}/>
+    
     </SimpleModal>
 }
 
@@ -53,7 +50,7 @@ export const BatchCellActions = ({ row }: any) => {
         {
             showWhen: true,
             label: <><PlusCircleIcon className='size-4.5 stroke-1' /><span><FormattedMessage id='add_batch' /></span></>,
-            drawer: DeactivateUserModal,    
+            drawer: AddBatchModal,    
         }
     ]
 
