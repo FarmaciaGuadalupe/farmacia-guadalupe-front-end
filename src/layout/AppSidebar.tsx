@@ -1,13 +1,12 @@
 import { useIntl } from "react-intl";
 import { Link, useLocation } from "react-router";
 import { AiOutlineMedicineBox } from "react-icons/ai";
-import { FolderOpenIcon } from "@heroicons/react/24/outline";
+import { FolderOpenIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 
 import {
     BoxCubeIcon,
-    CalenderIcon,
     ChevronDownIcon,
     GridIcon,
     HorizontaLDots,
@@ -53,8 +52,8 @@ const AppSidebar: React.FC = () => {
             path: "/catalogs",
         },
         {
-            icon: <CalenderIcon />,
-            name: "Calendar",
+            icon: <ShoppingCartIcon />,
+            name: intl.formatMessage({ id: 'sales' }, { count: 2 }),
             path: "/calendar",
         },
         {
