@@ -31,7 +31,7 @@ export default function UserInfoCard() {
 
   const userData = [
     {
-      label: intl.formatMessage({ id: 'names' }),
+      label: intl.formatMessage({ id: 'names' }, { count: 2 }),
       value: names
     },
     {
