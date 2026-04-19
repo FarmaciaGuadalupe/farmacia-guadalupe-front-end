@@ -1,13 +1,12 @@
 import { useIntl } from "react-intl";
 import { Link, useLocation } from "react-router";
 import { AiOutlineMedicineBox } from "react-icons/ai";
-import { FolderOpenIcon } from "@heroicons/react/24/outline";
+import { FolderOpenIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 
 import {
     BoxCubeIcon,
-    CalenderIcon,
     ChevronDownIcon,
     GridIcon,
     HorizontaLDots,
@@ -40,7 +39,8 @@ const AppSidebar: React.FC = () => {
         {
             icon: <GridIcon />,
             name: "Dashboard",
-            subItems: [{ name: "Ecommerce", path: "/", pro: false }],
+            path: "/calendar",
+            //subItems: [{ name: "Ecommerce", path: "/", pro: false }],
         },
         {
             icon: <AiOutlineMedicineBox />,
@@ -53,15 +53,15 @@ const AppSidebar: React.FC = () => {
             path: "/catalogs",
         },
         {
-            icon: <CalenderIcon />,
-            name: "Calendar",
+            icon: <ShoppingCartIcon />,
+            name: intl.formatMessage({ id: 'sales' }, { count: 2 }),
             path: "/calendar",
         },
-        {
+        /**{
             icon: <UserCircleIcon />,
             name: "User Profile",
             path: "/profile",
-        },
+        },**/
         {
             name: "Forms",
             icon: <ListIcon />,
@@ -72,18 +72,18 @@ const AppSidebar: React.FC = () => {
             icon: <TableIcon />,
             subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
         },
-        {
+/**        {
             name: "Pages",
             icon: <PageIcon />,
             subItems: [
                 { name: "Blank Page", path: "/blank", pro: false },
                 { name: "404 Error", path: "/error-404", pro: false },
             ],
-        },
+        },*/
     ];
 
-    const othersItems: NavItem[] = [
-        {
+   const othersItems: NavItem[] = [
+       /**  {
             icon: <PieChartIcon />,
             name: "Charts",
             subItems: [
@@ -110,10 +110,8 @@ const AppSidebar: React.FC = () => {
                 { name: "Sign In", path: "/signin", pro: false },
                 { name: "Sign Up", path: "/signup", pro: false },
             ],
-        },
+        },**/
     ];
-
-
 
     const [openSubmenu, setOpenSubmenu] = useState<{
         type: "main" | "others";
@@ -352,7 +350,7 @@ const AppSidebar: React.FC = () => {
                             </h2>
                             {renderMenuItems(navItems, "main")}
                         </div>
-                        <div className="">
+                        {/*<div className="">
                             <h2
                                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${!isExpanded ? "lg:justify-center" : "justify-start"
                                     }`}
@@ -364,7 +362,7 @@ const AppSidebar: React.FC = () => {
                                 )}
                             </h2>
                             {renderMenuItems(othersItems, "others")}
-                        </div>
+                        </div>*/}
                     </div>
                 </nav>
             </div>
