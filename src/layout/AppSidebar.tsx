@@ -57,11 +57,11 @@ const AppSidebar: React.FC = () => {
             name: intl.formatMessage({ id: 'sales' }, { count: 2 }),
             path: "/calendar",
         },
-        {
+        /**{
             icon: <UserCircleIcon />,
             name: "User Profile",
             path: "/profile",
-        },
+        },**/
         {
             name: "Forms",
             icon: <ListIcon />,
