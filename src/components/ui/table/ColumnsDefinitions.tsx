@@ -101,7 +101,7 @@ export const useBrandColumns = () => {
         id: "contact_email",
       },
       {
-        header: intl.formatMessage({ id: "name" }),
+        header: intl.formatMessage({ id: "statuses" }),
         accessorKey: "is_active",
         cell: ({ getValue }) => (
           <Badge color={getValue() ? "success" : "error"}>
