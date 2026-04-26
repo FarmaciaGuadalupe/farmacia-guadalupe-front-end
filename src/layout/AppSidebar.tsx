@@ -55,7 +55,7 @@ const AppSidebar: React.FC = () => {
         {
             icon: <ShoppingCartIcon />,
             name: intl.formatMessage({ id: 'sales' }, { count: 2 }),
-            path: "/calendar",
+            path: "/sales",
         },
         /**{
             icon: <UserCircleIcon />,

@@ -25,6 +25,7 @@ import NotFound from "./pages/OtherPage/NotFound";
 import BasicTables from "./pages/Tables/BasicTables";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import Sale from './pages/Sale';
 
 export default function App() {
   
@@ -49,6 +50,7 @@ export default function App() {
               <Route path="/profile" element={<UserProfiles />} />
               <Route path="/calendar" element={<Home />} />
               <Route path="/blank" element={<Blank />} />
+              <Route path="/sales" element={<Sale />} />
 
               {/* Forms */}
               {/* <Route path="/form-elements" element={<FormElements />} /> */}
