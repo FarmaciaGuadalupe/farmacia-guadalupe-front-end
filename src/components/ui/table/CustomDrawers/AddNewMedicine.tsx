@@ -55,6 +55,7 @@ export interface ActiveIngredientInput {
 
 export interface MedicineFormData {
   name: string;
+  barcode: string;
   id_brand: string;
   manufacturer_id: string;
   category_id: string;
@@ -205,6 +206,17 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
         <div className="flex flex-row gap-4 justify-center  ">
           <div className="w-full">
             <Label>
+              <FormattedMessage id="barcode" />
+            </Label>
+            <Input
+              type="text"
+              name="barcode"
+              value={formData.barcode}
+              onChange={onChange}
+            />
+          </div>
+          <div className="w-full">
+            <Label>
               <FormattedMessage id="medicines" values={{ count: 1 }} />
             </Label>
             <Input
@@ -214,6 +226,8 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
               onChange={onChange}
             />
           </div>
+        </div>
+        <div className="flex flex-row gap-4 justify-center  ">
           <div className="w-full">
             <Label>
               <FormattedMessage id="description" values={{ count: 1 }} />
@@ -647,6 +661,7 @@ export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
   // Tipamos el estado inicial con la interfaz MedicineFormData
   const [formData, setFormData] = React.useState<MedicineFormData>({
     name: "",
+    barcode: "",
     id_brand: "",
     manufacturer_id: "",
     category_id: "",
@@ -724,6 +739,7 @@ export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
     setActiveStep(0);
     setFormData({
       name: "",
+      barcode: "",
       id_brand: "",
       manufacturer_id: "",
       category_id: "",
@@ -761,6 +777,7 @@ const submitToAPI = async () => {
     // 2. Construimos el objeto garantizando tipos estrictos para GraphQL
     const input = {
       name: formData.name,
+      barcode: formData.barcode,
       idBrand: parseInt(String(formData.id_brand), 10) || 0,
       manufacturerId: parseInt(String(formData.manufacturer_id), 10) || 0,
       categoryId: parseInt(String(formData.category_id), 10) || 0,
