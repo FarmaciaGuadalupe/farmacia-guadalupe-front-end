@@ -161,9 +161,9 @@ export default function Sale() {
   ]);
 
   // --- QUERIES & MUTATIONS ---
-  const { data: customersData } = useQuery(GET_CUSTOMERS);
-  const { data: medicinesData } = useQuery(GET_MEDICINES_WITH_BATCHES);
-  const { data: paymentMethodsData } = useQuery(GET_PAYMENT_METHODS);
+  const { data: customersData, refetch: refetchCustomers } = useQuery(GET_CUSTOMERS);
+  const { data: medicinesData, refetch: refetchMedicines } = useQuery(GET_MEDICINES_WITH_BATCHES);
+  const { data: paymentMethodsData, refetch: refetchPaymentMethods } = useQuery(GET_PAYMENT_METHODS);
   const [createSale, { loading: isSubmitting }] = useMutation(CREATE_SALE_MUTATION);
 
   // --- DERIVED STATE / CALCULATIONS ---
@@ -337,6 +337,11 @@ export default function Sale() {
       if (data?.createSale?.success) {
         toast.success(data.createSale.message || `Venta procesada con éxito. ID: ${data.createSale.saleId}`);
         
+        // Refetch queries to update stock and catalogs for the next sale
+        refetchCustomers();
+        refetchMedicines();
+        refetchPaymentMethods();
+
         // Reset form on success
         setCart([]);
         setPayments([{ id: Date.now().toString(), paymentMethodId: "", amount: "", transactionReference: "" }]);
