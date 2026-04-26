@@ -43,6 +43,11 @@ const AppSidebar: React.FC = () => {
             //subItems: [{ name: "Ecommerce", path: "/", pro: false }],
         },
         {
+            icon: <ShoppingCartIcon />,
+            name: intl.formatMessage({ id: 'sales' }, { count: 2 }),
+            path: "/sales",
+        },
+        {
             icon: <AiOutlineMedicineBox />,
             name: intl.formatMessage({ id: 'products' }, { count: 2 }),
             path: "/products"
@@ -51,11 +56,6 @@ const AppSidebar: React.FC = () => {
             icon: <FolderOpenIcon />,
             name: intl.formatMessage({ id: 'catalogs' }, { count: 2 }),
             path: "/catalogs",
-        },
-        {
-            icon: <ShoppingCartIcon />,
-            name: intl.formatMessage({ id: 'sales' }, { count: 2 }),
-            path: "/sales",
         },
         /**{
             icon: <UserCircleIcon />,
