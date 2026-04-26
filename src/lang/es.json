@@ -58,6 +58,11 @@
   "user": "Usuario",
   "user.add": "Agregar Usuario",
   "user.info": "Información del usuario",
+  "inventory": "INVENTARIO",
+  "sales": "VENTAS",
+  "employees": "EMPLEADOS",
+  "reports": "REPORTES"
+  
   "website": "Sitio web",
   "sales": "{count, plural, one {Venta} other {Ventas}}"
 }
