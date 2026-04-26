@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
 import Label from "./Label";
@@ -11,6 +11,7 @@ type PropsType = {
   mode?: "single" | "multiple" | "range" | "time";
   onChange?: Hook | Hook[];
   defaultDate?: DateOption;
+  value?: string | Date;
   label?: string;
   placeholder?: string;
 };
@@ -21,34 +22,49 @@ export default function DatePicker({
   onChange,
   label,
   defaultDate,
+  value,
   placeholder,
 }: PropsType) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const fp = useRef<flatpickr.Instance | null>(null);
+
   useEffect(() => {
-    const flatPickr = flatpickr(`#${id}`, {
-      mode: mode || "single",
-      static: true,
-      monthSelectorType: "static",
-      dateFormat: "Y-m-d",
-      defaultDate,
-      onChange,
-    });
+    if (inputRef.current) {
+      fp.current = flatpickr(inputRef.current, {
+        mode: mode || "single",
+        monthSelectorType: "static",
+        dateFormat: "Y-m-d",
+        defaultDate: value || defaultDate,
+        onChange,
+        // Ensure the picker is appended to body to avoid overflow issues in drawers/modals
+        static: false,
+        disableMobile: true, // Better UI on desktop/tablets
+      });
+    }
 
     return () => {
-      if (!Array.isArray(flatPickr)) {
-        flatPickr.destroy();
-      }
+      fp.current?.destroy();
     };
-  }, [mode, onChange, id, defaultDate]);
+  }, [mode, id]); // Only re-init if mode or id changes
+
+  // Sync value if it changes externally
+  useEffect(() => {
+    if (fp.current && value !== undefined) {
+      fp.current.setDate(value, false);
+    }
+  }, [value]);
 
   return (
-    <div>
+    <div className="w-full">
       {label && <Label htmlFor={id}>{label}</Label>}
 
       <div className="relative">
         <input
           id={id}
+          ref={inputRef}
           placeholder={placeholder}
-          className="h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30  bg-transparent text-gray-800 border-gray-300 focus:border-brand-300 focus:ring-brand-500/20 dark:border-gray-700  dark:focus:border-brand-800"
+          readOnly // Flatpickr usually works better with readOnly on the input
+          className="h-11 w-full rounded-lg border appearance-none px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:outline-hidden focus:ring-3  dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30  bg-transparent text-gray-800 border-gray-300 focus:border-brand-300 focus:ring-brand-500/20 dark:border-gray-700  dark:focus:border-brand-800 cursor-pointer"
         />
 
         <span className="absolute text-gray-500 -translate-y-1/2 pointer-events-none right-3 top-1/2 dark:text-gray-400">

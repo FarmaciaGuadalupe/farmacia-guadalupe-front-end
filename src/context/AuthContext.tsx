@@ -1,5 +1,5 @@
-import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import axios from 'axios';
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 
 // Define la forma de los datos del usuario que vienen en el token/response
 interface UserData {

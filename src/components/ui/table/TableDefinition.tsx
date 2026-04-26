@@ -67,7 +67,7 @@ export default function TableDefinition<T>({ table }: TableDefinitionProps<T>) {
                     <TableCell
                       key={header.id}
                       isHeader
-                      className="px-5 py-3 text-start text-gray-500 font-medium text-theme-xs">
+                      className="px-5 py-3 text-start text-gray-500 font-medium text-theme-lg">
 
                       {/* Div interno para manejar el clic de ordenamiento */}
                       <div
