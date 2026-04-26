@@ -199,8 +199,22 @@ VALUES
     -- 5. Mascarillas Quirúrgicas (Caja de 50 unidades, fraccionable)
     ('172911711947', 2, 2, 8, 50, 500, 100, 90,150.00, 4.00, 1, 1);
 
-select * from Product; 
+select * from Product;
+select * from Batch; 
 select * from Medicine;
+select * from Customer;
+select * from Sale; 
+select * from SaleDetail;
+select * from SalePayment;
+select * from InventoryTransaction;
+select * from PaymentMethod
+
+insert into PaymentMethod (name, is_active)
+values ('efectivo', 1)
+
+insert into Customer (identification_type, identification_number, first_name, last_name, address, phone, email, created_at)
+values ('CEDULA', '001-010101-0001A', 'Cliente', 'Generico', '', '', '', GETDATE())
+
 INSERT INTO Medicine (
     product_id, 
     id_brand, 

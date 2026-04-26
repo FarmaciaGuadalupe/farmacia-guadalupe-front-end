@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { gql } from "@apollo/client";
-import { useQuery, useMutation } from "@apollo/client/react"
+import { useQuery, useMutation } from "@apollo/client/react";
 import {
   Autocomplete,
   TextField,
@@ -22,7 +22,7 @@ import { toast } from "sonner";
 import PageBreadcrumb from "../components/common/PageBreadCrumb";
 import { useAuth } from "../context/AuthContext";
 
-// --- GRAPHQL DEFINITIONS (Skeletons / Real) ---
+// --- GRAPHQL DEFINITIONS ---
 const GET_CUSTOMERS = gql`
   query GetCustomers {
     customers {
@@ -35,23 +35,26 @@ const GET_CUSTOMERS = gql`
   }
 `;
 
-const GET_PRODUCTS_WITH_BATCHES = gql`
-  query GetProductsWithBatches($search: String) {
-    products(filter: { or: [{ name: { includes: $search } }, { barcode: { equalTo: $search } }] }) {
+const GET_MEDICINES_WITH_BATCHES = gql`
+  query GetMedicinesWithBatches {
+    medicines {
       nodes {
-        productId
+        medicine_id
         name
-        barcode
-        isFractionable
-        batchesByProductId(filter: { stockUnits: { greaterThan: 0 } }) {
-          nodes {
-            batchId
-            batchCode
-            expirationDate
-            stockUnits
-            pricePerUnit
-            priceFullPresentation
-            unitsPerPresentation
+        requires_prescription
+        product {
+          product_id
+          barcode
+          price_per_unit
+          price_full_presentation
+          stock_units
+          is_fractionable
+          batches {
+            batch_id
+            batch_code
+            expiration_date
+            current_quantity_units
+            is_active
           }
         }
       }
@@ -65,18 +68,19 @@ const GET_PAYMENT_METHODS = gql`
       nodes {
         paymentMethodId
         name
+        isActive
       }
     }
   }
 `;
 
 const CREATE_SALE_MUTATION = gql`
-  mutation CreateSale($input: CreateSaleInput!) {
-    createSale(input: { sale: $input }) {
-      sale {
-        saleId
-        receiptNumber
-      }
+  mutation RegistrarVenta($input: CreateSaleInput!) {
+    createSale(input: $input) {
+      success
+      message
+      saleId
+      receiptNumber
     }
   }
 `;
@@ -89,31 +93,39 @@ interface Customer {
 }
 
 interface Batch {
-  batchId: number;
-  batchCode: string;
-  expirationDate: string;
-  stockUnits: number;
-  pricePerUnit: number;
-  priceFullPresentation: number;
-  unitsPerPresentation: number;
+  batch_id: number;
+  batch_code: string;
+  expiration_date: string;
+  current_quantity_units: number;
+  is_active: boolean;
 }
 
-interface Product {
-  productId: number;
-  name: string;
+interface ProductInfo {
+  product_id: number;
   barcode: string;
-  isFractionable: boolean;
+  price_per_unit: number;
+  price_full_presentation: number;
+  stock_units: number;
+  is_fractionable: boolean;
   batches: Batch[];
+}
+
+interface Medicine {
+  medicine_id: number;
+  name: string;
+  requires_prescription: boolean;
+  product: ProductInfo;
 }
 
 interface PaymentMethod {
   paymentMethodId: number;
   name: string;
+  isActive: boolean;
 }
 
 interface CartItem {
   id: string; // Unique ID for the cart row
-  product: Product;
+  medicine: Medicine;
   batch: Batch | null;
   quantity: number;
   isFullPresentation: boolean;
@@ -133,15 +145,15 @@ export default function Sale() {
   // --- STATE: Header Section ---
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [receiptType, setReceiptType] = useState<string>("FACTURA");
-  const [receiptNumber, setReceiptNumber] = useState<string>("");
   const [showMedicalData, setShowMedicalData] = useState<boolean>(false);
   const [prescriptionNumber, setPrescriptionNumber] = useState<string>("");
   const [doctorName, setDoctorName] = useState<string>("");
+  const [receiptNumber, setReceiptNumber] = useState<string>(crypto.randomUUID());
 
   // --- STATE: Cart & Search ---
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [selectedProductForBatch, setSelectedProductForBatch] = useState<Product | null>(null);
+  const [selectedMedicineForBatch, setSelectedMedicineForBatch] = useState<Medicine | null>(null);
 
   // --- STATE: Payments ---
   const [payments, setPayments] = useState<PaymentItem[]>([
@@ -150,19 +162,15 @@ export default function Sale() {
 
   // --- QUERIES & MUTATIONS ---
   const { data: customersData } = useQuery(GET_CUSTOMERS);
-  // Simulating product search for demonstration. In a real scenario, this would refetch on searchQuery change or debounced input.
-  const { data: productsData } = useQuery(GET_PRODUCTS_WITH_BATCHES, {
-    variables: { search: searchQuery },
-    skip: searchQuery.length < 3, // Only search if length >= 3
-  });
+  const { data: medicinesData } = useQuery(GET_MEDICINES_WITH_BATCHES);
   const { data: paymentMethodsData } = useQuery(GET_PAYMENT_METHODS);
   const [createSale, { loading: isSubmitting }] = useMutation(CREATE_SALE_MUTATION);
 
   // --- DERIVED STATE / CALCULATIONS ---
   const subtotal = useMemo(() => {
     return cart.reduce((acc, item) => {
-      if (!item.batch) return acc;
-      const price = item.isFullPresentation ? item.batch.priceFullPresentation : item.batch.pricePerUnit;
+      if (!item.batch || !item.medicine.product) return acc;
+      const price = item.isFullPresentation ? item.medicine.product.price_full_presentation : item.medicine.product.price_per_unit;
       return acc + (price * item.quantity);
     }, 0);
   }, [cart]);
@@ -176,51 +184,56 @@ export default function Sale() {
 
   const changeDue = totalPaid - grandTotal;
 
-  // --- HANDLERS: Header ---
-  // Handled directly in onChange props
-
   // --- HANDLERS: Search & Cart ---
-  const handleProductSelect = (product: Product) => {
-    if (!product.batches || product.batches.length === 0) {
-      toast.error("Este producto no tiene lotes disponibles con stock.");
+  const handleProductSelect = (medicine: Medicine) => {
+    if (!medicine.product || !medicine.product.batches || medicine.product.batches.length === 0) {
+      toast.error("Este producto no tiene lotes disponibles.");
       return;
     }
     
-    if (product.batches.length === 1) {
+    // Filter active batches with stock
+    const availableBatches = medicine.product.batches.filter(b => b.is_active && b.current_quantity_units > 0);
+
+    if (availableBatches.length === 0) {
+      toast.error("Este producto no tiene lotes activos con stock disponible.");
+      return;
+    }
+
+    if (availableBatches.length === 1) {
       // Auto select if only one batch
-      addBatchToCart(product, product.batches[0]);
+      addBatchToCart(medicine, availableBatches[0]);
     } else {
       // Open modal to select batch
-      setSelectedProductForBatch(product);
+      setSelectedMedicineForBatch(medicine);
     }
     setSearchQuery(""); // Clear search
   };
 
-  const addBatchToCart = (product: Product, batch: Batch) => {
+  const addBatchToCart = (medicine: Medicine, batch: Batch) => {
     setCart((prev) => [
       ...prev,
       {
         id: Date.now().toString() + Math.random(),
-        product,
+        medicine,
         batch,
         quantity: 1,
         isFullPresentation: true, // Default to full
         promotionId: null,
       },
     ]);
-    setSelectedProductForBatch(null);
+    setSelectedMedicineForBatch(null);
   };
 
-  const updateCartItem = (id: string, field: keyof CartItem, value: any) => {
+  const updateCartItem = (id: string, field: keyof CartItem, value: number | boolean) => {
     setCart((prev) =>
       prev.map((item) => {
         if (item.id === id) {
           // Validation on quantity change
           if (field === "quantity" && item.batch) {
             const valNum = Number(value);
-            if (valNum > item.batch.stockUnits) {
-              toast.error(`La cantidad no puede superar el stock (${item.batch.stockUnits})`);
-              return { ...item, [field]: item.batch.stockUnits };
+            if (valNum > item.batch.current_quantity_units) {
+              toast.error(`La cantidad no puede superar el stock del lote (${item.batch.current_quantity_units})`);
+              return { ...item, [field]: item.batch.current_quantity_units };
             }
             if (valNum < 1) return { ...item, [field]: 1 };
           }
@@ -243,7 +256,7 @@ export default function Sale() {
     ]);
   };
 
-  const updatePaymentRow = (id: string, field: keyof PaymentItem, value: any) => {
+  const updatePaymentRow = (id: string, field: keyof PaymentItem, value: string | number) => {
     setPayments((prev) =>
       prev.map((p) => (p.id === id ? { ...p, [field]: value } : p))
     );
@@ -275,67 +288,86 @@ export default function Sale() {
         return;
     }
 
+    // Prepare payments. The total amount in the payload should ideally match the grandTotal
+    // if the user paid more in cash, we send the exact amount needed for the bill, 
+    // because change is handled by the cashier.
+    let remainingAmountToCover = grandTotal;
+    const finalPayments = payments
+        .filter((p) => p.paymentMethodId !== "" && Number(p.amount) > 0)
+        .map((p) => {
+            let amountToRegister = Number(p.amount);
+            
+            // If this payment makes the total exceed the bill, and it's cash (assuming ID 1 is cash),
+            // we cap the registered amount to what is actually owed to balance the books perfectly.
+            // *This depends on your specific backend accounting rules, adjust if needed.*
+            if (amountToRegister > remainingAmountToCover) {
+                 amountToRegister = remainingAmountToCover;
+            }
+            remainingAmountToCover -= amountToRegister;
+
+            return {
+              paymentMethodId: Number(p.paymentMethodId),
+              amount: parseFloat(amountToRegister.toFixed(2)),
+              transactionReference: p.transactionReference || null,
+            };
+        });
+
     const payload = {
       employeeId: user?.employeeId || 1, // Fallback if user is null
       customerId: selectedCustomer?.customerId || null,
       receiptType,
       receiptNumber,
-      prescriptionNumber: showMedicalData ? prescriptionNumber : null,
-      doctorName: showMedicalData ? doctorName : null,
+      prescriptionNumber: showMedicalData && prescriptionNumber ? prescriptionNumber : null,
+      doctorName: showMedicalData && doctorName ? doctorName : null,
       currency: "NIO",
       details: cart.map((item) => ({
-        productId: item.product.productId,
-        batchId: item.batch!.batchId,
+        productId: item.medicine.product.product_id,
+        batchId: item.batch!.batch_id,
         quantity: Number(item.quantity),
         promotionId: item.promotionId,
         isFullPresentation: item.isFullPresentation,
       })),
-      payments: payments
-        .filter((p) => p.paymentMethodId !== "" && Number(p.amount) > 0)
-        .map((p) => ({
-          paymentMethodId: Number(p.paymentMethodId),
-          amount: Number(p.amount),
-          transactionReference: p.transactionReference || null,
-        })),
+      payments: finalPayments,
     };
 
     try {
-      console.log("🚀 Payload:", payload);
-      // const { data } = await createSale({ variables: { input: payload } });
-      // toast.success(`Venta procesada con éxito. ID: ${data.createSale.sale.saleId}`);
-      toast.success("Venta validada (Mock de mutación exitoso). Revisa consola.");
+      console.log("🚀 Enviando Payload a API:", payload);
+      const { data } = await createSale({ variables: { input: payload } });
       
-      // Reset form on success
-      setCart([]);
-      setPayments([{ id: Date.now().toString(), paymentMethodId: "", amount: "", transactionReference: "" }]);
-      setReceiptNumber("");
-      setSelectedCustomer(null);
-      setPrescriptionNumber("");
-      setDoctorName("");
-      setSearchQuery("");
+      if (data?.createSale?.success) {
+        toast.success(data.createSale.message || `Venta procesada con éxito. ID: ${data.createSale.saleId}`);
+        
+        // Reset form on success
+        setCart([]);
+        setPayments([{ id: Date.now().toString(), paymentMethodId: "", amount: "", transactionReference: "" }]);
+        setReceiptNumber("");
+        setSelectedCustomer(null);
+        setPrescriptionNumber("");
+        setDoctorName("");
+        setSearchQuery("");
+      } else {
+        toast.error(data?.createSale?.message || "Error al registrar la venta en el servidor.");
+      }
       
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error al procesar la venta:", err);
-      toast.error(err.message || "Error al procesar la venta.");
+      toast.error(err instanceof Error ? err.message : "Error de red o servidor al intentar procesar la venta.");
     }
   };
 
-  // --- HELPERS FOR MOCK RENDER ---
-  // In a real app, productsData?.products?.nodes would populate options
-  const productSearchOptions = productsData?.products?.nodes || [
-    // MOCK DATA for demonstration
-    {
-      productId: 1, name: "Paracetamol 500mg", barcode: "123456", isFractionable: true,
-      batches: [
-        { batchId: 1, batchCode: "L-001", expirationDate: "2025-12-31", stockUnits: 50, pricePerUnit: 2, priceFullPresentation: 20, unitsPerPresentation: 10 },
-        { batchId: 2, batchCode: "L-002", expirationDate: "2026-06-30", stockUnits: 100, pricePerUnit: 2.5, priceFullPresentation: 25, unitsPerPresentation: 10 },
-      ]
-    },
-    {
-       productId: 2, name: "Amoxicilina 500mg", barcode: "789012", isFractionable: false,
-       batches: [ { batchId: 3, batchCode: "L-003", expirationDate: "2024-11-30", stockUnits: 20, pricePerUnit: 5, priceFullPresentation: 50, unitsPerPresentation: 10 } ]
-    }
-  ];
+  // --- FILTER MEDICINES FOR SEARCH ---
+  const productSearchOptions = useMemo(() => {
+    if (!medicinesData?.medicines?.nodes) return [];
+    const nodes = medicinesData.medicines.nodes as Medicine[];
+    
+    if (searchQuery.length < 2) return nodes;
+
+    const lowerQuery = searchQuery.toLowerCase();
+    return nodes.filter(med => 
+      med.name.toLowerCase().includes(lowerQuery) || 
+      (med.product?.barcode && med.product.barcode.toLowerCase().includes(lowerQuery))
+    );
+  }, [medicinesData, searchQuery]);
 
   return (
     <div className="pb-20">
@@ -359,7 +391,7 @@ export default function Sale() {
               />
               
               <div className="flex gap-4">
-                <FormControl size="small" className="w-1/3">
+                <FormControl size="small" fullWidth>
                   <InputLabel>Tipo</InputLabel>
                   <Select
                     value={receiptType}
@@ -370,14 +402,6 @@ export default function Sale() {
                     <MenuItem value="TICKET">Ticket</MenuItem>
                   </Select>
                 </FormControl>
-                <TextField
-                  label="No. Comprobante"
-                  variant="outlined"
-                  size="small"
-                  className="w-2/3"
-                  value={receiptNumber}
-                  onChange={(e) => setReceiptNumber(e.target.value)}
-                />
               </div>
             </div>
 
@@ -414,11 +438,11 @@ export default function Sale() {
             
             <Autocomplete
               options={productSearchOptions}
-              getOptionLabel={(opt: Product) => `${opt.barcode} - ${opt.name}`}
+              getOptionLabel={(opt: Medicine) => `${opt.product?.barcode || 'N/A'} - ${opt.name}`}
               inputValue={searchQuery}
               onInputChange={(_, newInputValue) => setSearchQuery(newInputValue)}
               onChange={(_, val) => {
-                if (val) handleProductSelect(val);
+                if (val) handleProductSelect(val as Medicine);
               }}
               renderInput={(params) => (
                 <TextField {...params} label="Buscar por código de barras o nombre..." variant="outlined" autoFocus />
@@ -451,21 +475,24 @@ export default function Sale() {
                     </tr>
                   ) : (
                     cart.map((item) => {
-                      const price = item.batch 
-                        ? (item.isFullPresentation ? item.batch.priceFullPresentation : item.batch.pricePerUnit) 
+                      const price = item.batch && item.medicine.product
+                        ? (item.isFullPresentation ? item.medicine.product.price_full_presentation : item.medicine.product.price_per_unit) 
                         : 0;
                       const lineTotal = price * item.quantity;
 
                       return (
                         <tr key={item.id} className="border-b bg-white dark:border-gray-700 dark:bg-gray-800">
                           <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">
-                            {item.product.name}
+                            {item.medicine.name}
+                            {item.medicine.requires_prescription && (
+                                <span className="ml-2 inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">Rx</span>
+                            )}
                           </td>
                           <td className="px-4 py-3">
                             {item.batch ? (
                               <span className="text-xs">
-                                {item.batch.batchCode}<br/>
-                                <span className="text-gray-400">{item.batch.expirationDate}</span>
+                                {item.batch.batch_code}<br/>
+                                <span className="text-gray-400">{item.batch.expiration_date}</span>
                               </span>
                             ) : "Sin Lote"}
                           </td>
@@ -476,7 +503,7 @@ export default function Sale() {
                                   size="small"
                                   checked={item.isFullPresentation}
                                   onChange={(e) => updateCartItem(item.id, "isFullPresentation", e.target.checked)}
-                                  disabled={!item.product.isFractionable}
+                                  disabled={!item.medicine.product?.is_fractionable}
                                 />
                               }
                               label={<span className="text-xs">{item.isFullPresentation ? "Caja" : "Unidad"}</span>}
@@ -486,7 +513,7 @@ export default function Sale() {
                             <TextField
                               type="number"
                               size="small"
-                              inputProps={{ min: 1, max: item.batch?.stockUnits || 1 }}
+                              inputProps={{ min: 1, max: item.batch?.current_quantity_units || 1 }}
                               value={item.quantity}
                               onChange={(e) => updateCartItem(item.id, "quantity", e.target.value)}
                             />
@@ -536,7 +563,7 @@ export default function Sale() {
             <h3 className="text-md font-medium text-gray-800 dark:text-white mb-3">Métodos de Pago</h3>
             
             <div className="space-y-4">
-              {payments.map((payment, index) => (
+              {payments.map((payment) => (
                 <div key={payment.id} className="relative p-4 border border-gray-100 rounded-lg bg-gray-50 dark:bg-gray-800/50 dark:border-gray-700">
                   {payments.length > 1 && (
                     <button 
@@ -554,11 +581,9 @@ export default function Sale() {
                         label="Método"
                         onChange={(e) => updatePaymentRow(payment.id, "paymentMethodId", e.target.value)}
                       >
-                        {/* Mock Options */}
-                        <MenuItem value={1}>Efectivo</MenuItem>
-                        <MenuItem value={2}>Tarjeta de Débito/Crédito</MenuItem>
-                        <MenuItem value={3}>Transferencia</MenuItem>
-                        {paymentMethodsData?.paymentMethods?.nodes?.map((pm: any) => (
+                        {paymentMethodsData?.paymentMethods?.nodes
+                            ?.filter((pm: PaymentMethod) => pm.isActive)
+                            .map((pm: PaymentMethod) => (
                           <MenuItem key={pm.paymentMethodId} value={pm.paymentMethodId}>{pm.name}</MenuItem>
                         ))}
                       </Select>
@@ -619,30 +644,32 @@ export default function Sale() {
       </div>
 
       {/* --- MODAL: Seleccionar Lote --- */}
-      <Dialog open={!!selectedProductForBatch} onClose={() => setSelectedProductForBatch(null)} maxWidth="sm" fullWidth>
-        <DialogTitle>Seleccionar Lote - {selectedProductForBatch?.name}</DialogTitle>
+      <Dialog open={!!selectedMedicineForBatch} onClose={() => setSelectedMedicineForBatch(null)} maxWidth="sm" fullWidth>
+        <DialogTitle>Seleccionar Lote - {selectedMedicineForBatch?.name}</DialogTitle>
         <DialogContent dividers>
           <div className="space-y-3">
-            {selectedProductForBatch?.batches.map((batch) => (
+            {selectedMedicineForBatch?.product?.batches
+              ?.filter(b => b.is_active && b.current_quantity_units > 0)
+              .map((batch) => (
               <div 
-                key={batch.batchId} 
+                key={batch.batch_id} 
                 className="flex justify-between items-center p-3 border rounded hover:bg-gray-50 cursor-pointer"
-                onClick={() => addBatchToCart(selectedProductForBatch, batch)}
+                onClick={() => addBatchToCart(selectedMedicineForBatch, batch)}
               >
                 <div>
-                  <div className="font-medium text-gray-900">Lote: {batch.batchCode}</div>
-                  <div className="text-sm text-gray-500">Vence: {batch.expirationDate}</div>
+                  <div className="font-medium text-gray-900">Lote: {batch.batch_code}</div>
+                  <div className="text-sm text-gray-500">Vence: {batch.expiration_date}</div>
                 </div>
                 <div className="text-right">
-                  <div className="font-medium text-emerald-600">Stock: {batch.stockUnits}</div>
-                  <div className="text-sm text-gray-500">Precio: C$ {batch.priceFullPresentation}</div>
+                  <div className="font-medium text-emerald-600">Stock: {batch.current_quantity_units}</div>
+                  <div className="text-sm text-gray-500">Precio: C$ {selectedMedicineForBatch.product.price_full_presentation}</div>
                 </div>
               </div>
             ))}
           </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setSelectedProductForBatch(null)}>Cancelar</Button>
+          <Button onClick={() => setSelectedMedicineForBatch(null)}>Cancelar</Button>
         </DialogActions>
       </Dialog>
 
