@@ -340,7 +340,7 @@ export default function Sale() {
         // Reset form on success
         setCart([]);
         setPayments([{ id: Date.now().toString(), paymentMethodId: "", amount: "", transactionReference: "" }]);
-        setReceiptNumber("");
+        setReceiptNumber(crypto.randomUUID());
         setSelectedCustomer(null);
         setPrescriptionNumber("");
         setDoctorName("");
