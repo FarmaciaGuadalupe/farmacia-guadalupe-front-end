@@ -150,6 +150,7 @@ CREATE TABLE MedicineActiveIngredient (
 );
 
 select * from SupplierType;
+select * from Supplier;
 INSERT INTO Supplier (supplier_type_id, company_name, tax_id, contact_name, phone, address, email, website, is_active) VALUES 
 (1, 'Pfizer S.A.', '20100012341', 'Javier Mondragón', '+51 987654321', 'Av. Javier Prado 123, Lima', 'ventas@pfizer.com', 'www.pfizer.com', 1),
 (1, 'Bayer Pharma Perú', '20100055662', 'Elena Torres', '+51 912334455', 'Parque Industrial Sur, Nave 4', 'contacto.bayer@bayer.com', 'www.bayer.com', 1),
@@ -169,12 +170,14 @@ INSERT INTO Supplier (supplier_type_id, company_name, tax_id, contact_name, phon
 
 select * from Product;
 INSERT INTO Product (
+    barcode,
     supplier_id, 
     presentation_id, 
     unit_of_measure_id, 
     units_per_presentation, 
     stock_units, 
     min_stock_units, 
+    cost_price,
     price_full_presentation, 
     price_per_unit, 
     is_fractionable, 
@@ -182,22 +185,36 @@ INSERT INTO Product (
 )
 VALUES 
     -- 1. Paracetamol 500mg (Caja de 100 tabletas, fraccionable)
-    (2, 2, 5, 100, 500, 100, 250.00, 3.00, 1, 1),
+    ('490568821666', 2, 2, 5, 100, 500, 100, 200, 250.00, 3.00, 1, 1),
 
     -- 2. Amoxicilina Jarabe (Frasco único, NO fraccionable)
-    (2, 3, 6, 1, 20, 5, 120.00, 120.00, 0, 1),
+    ('792808837305', 2, 3, 6, 1, 20, 5, 100, 120.00, 120.00, 0, 1),
 
     -- 3. Alcohol Gel 500ml (Botella, NO fraccionable)
-    (2, 4, 7, 1, 50, 10, 85.00, 85.00, 0, 1),
+    ('425452104797', 2, 4, 7, 1, 50, 10, 50.0, 85.00, 85.00, 0, 1),
 
     -- 4. Ibuprofeno 400mg (Blíster de 10 tabletas dentro de caja, fraccionable)
-    (3, 2, 5, 10, 200, 30, 45.00, 5.00, 1, 1),
+    ('330211681193', 3, 2, 5, 10, 200, 30, 30.9, 45.00, 5.00, 1, 1),
 
     -- 5. Mascarillas Quirúrgicas (Caja de 50 unidades, fraccionable)
-    (2, 2, 8, 50, 500, 100, 150.00, 4.00, 1, 1);\
+    ('172911711947', 2, 2, 8, 50, 500, 100, 90,150.00, 4.00, 1, 1);
 
-
+select * from Product;
+select * from Batch; 
 select * from Medicine;
+select * from Customer;
+select * from Sale; 
+select * from SaleDetail;
+select * from SalePayment;
+select * from InventoryTransaction;
+select * from PaymentMethod
+
+insert into PaymentMethod (name, is_active)
+values ('efectivo', 1)
+
+insert into Customer (identification_type, identification_number, first_name, last_name, address, phone, email, created_at)
+values ('CEDULA', '001-010101-0001A', 'Cliente', 'Generico', '', '', '', GETDATE())
+
 INSERT INTO Medicine (
     product_id, 
     id_brand, 
@@ -227,26 +244,28 @@ VALUES
 
 SELECT * FROM Medicine;
 select * from ActiveIngredient;
+select * from MedicineActiveIngredient;
 select * from UnitOfMeasure;
 INSERT INTO MedicineActiveIngredient (medicine_id, active_ingredient_id, dose_value, dose_unit_id)
 VALUES 
     -- Panadol Niños (ID 6) -> Paracetamol (ID 1) 120mg (común en niños)
-    (3, 1, 120.00, 1), 
+    (1, 1, 120.00, 1), 
 
     -- Amoxicilina MK (ID 7) -> Amoxicilina (ID 2) 500mg
-    (4, 2, 500.00, 1),
+    (2, 2, 500.00, 1),
 
     -- Clotrimazol Genfar (ID 8) -> Clotrimazol (ID 3) 1%
-    (5, 3, 1.00, 4),
+    (3, 3, 1.00, 4),
 
     -- Apronax (ID 9) -> Naproxeno Sódico (ID 4) 550mg
-    (6, 4, 550.00, 1),
+    (4, 4, 550.00, 1),
 
     -- Pepto-Bismol (ID 10) -> Subsalicilato de Bismuto (ID 5) 262mg
-    (7, 5, 262.00, 1);
+    (5, 5, 262.00, 1);
 
 
 select * from Batch;
+select * from Product; 
 INSERT INTO Batch (
     product_id, 
     batch_code, 

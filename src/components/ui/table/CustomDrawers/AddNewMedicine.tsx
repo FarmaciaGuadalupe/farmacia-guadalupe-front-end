@@ -55,6 +55,7 @@ export interface ActiveIngredientInput {
 
 export interface MedicineFormData {
   name: string;
+  barcode: string;
   id_brand: string;
   manufacturer_id: string;
   category_id: string;
@@ -66,6 +67,7 @@ export interface MedicineFormData {
   unit_of_measure_id: string;
   units_per_presentation: number | string;
   currency: string;
+  cost_price: number | string;
   price_per_unit: number | string;
   price_full_presentation: number | string;
   is_fractionable: boolean;
@@ -205,6 +207,17 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
         <div className="flex flex-row gap-4 justify-center  ">
           <div className="w-full">
             <Label>
+              <FormattedMessage id="barcode" />
+            </Label>
+            <Input
+              type="text"
+              name="barcode"
+              value={formData.barcode}
+              onChange={onChange}
+            />
+          </div>
+          <div className="w-full">
+            <Label>
               <FormattedMessage id="medicines" values={{ count: 1 }} />
             </Label>
             <Input
@@ -214,6 +227,8 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
               onChange={onChange}
             />
           </div>
+        </div>
+        <div className="flex flex-row gap-4 justify-center  ">
           <div className="w-full">
             <Label>
               <FormattedMessage id="description" values={{ count: 1 }} />
@@ -498,6 +513,18 @@ function GeneralInfoStep({ formData, onChange, setFormData }: StepProps) {
         <div className="flex flex-row gap-4 justify-center  ">
           <div className="w-full">
             <Label>
+              <FormattedMessage id="cost_price" />
+            </Label>
+            <Input
+              type="number"
+              min="0"
+              name="cost_price"
+              value={formData.cost_price}
+              onChange={onChange}
+            />
+          </div>
+          <div className="w-full">
+            <Label>
               <FormattedMessage
                 id="price_full_presentation"
                 values={{ count: 1 }}
@@ -647,6 +674,7 @@ export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
   // Tipamos el estado inicial con la interfaz MedicineFormData
   const [formData, setFormData] = React.useState<MedicineFormData>({
     name: "",
+    barcode: "",
     id_brand: "",
     manufacturer_id: "",
     category_id: "",
@@ -658,6 +686,7 @@ export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
     unit_of_measure_id: "",
     units_per_presentation: "",
     currency: "USD",
+    cost_price: "",
     price_per_unit: "",
     price_full_presentation: "",
     is_fractionable: false,
@@ -724,6 +753,7 @@ export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
     setActiveStep(0);
     setFormData({
       name: "",
+      barcode: "",
       id_brand: "",
       manufacturer_id: "",
       category_id: "",
@@ -735,6 +765,7 @@ export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
       unit_of_measure_id: "",
       units_per_presentation: "",
       currency: "NIO",
+      cost_price: "",
       price_per_unit: "",
       price_full_presentation: "",
       is_fractionable: false,
@@ -761,6 +792,7 @@ const submitToAPI = async () => {
     // 2. Construimos el objeto garantizando tipos estrictos para GraphQL
     const input = {
       name: formData.name,
+      barcode: formData.barcode,
       idBrand: parseInt(String(formData.id_brand), 10) || 0,
       manufacturerId: parseInt(String(formData.manufacturer_id), 10) || 0,
       categoryId: parseInt(String(formData.category_id), 10) || 0,
@@ -773,6 +805,7 @@ const submitToAPI = async () => {
       unitsPerPresentation: parseInt(String(formData.units_per_presentation), 10) || 0,
       
       currency: formData.currency,
+      costPrice: parseFloat(String(formData.cost_price)) || 0,
       
       // Usamos 'undefined' o '0' en vez de 'null'. Apollo Client filtrará los campos 'undefined' 
       // y GraphQL aplicará sus valores por defecto o los ignorará correctamente.
@@ -836,6 +869,7 @@ const submitToAPI = async () => {
           !!formData.presentation_id &&
           !!formData.unit_of_measure_id &&
           !!formData.units_per_presentation &&
+          !!formData.cost_price &&
           !!formData.price_full_presentation;
 
         if (formData.is_fractionable) {
