@@ -27,6 +27,14 @@ import { ScrollToTop } from "./components/common/ScrollToTop";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Sale from './pages/Sale';
 
+import { IntlProvider } from 'react-intl';
+import messages_es from './lang/es.json';
+import Inventario from "./pages/Inventario";
+import Ventas from "./pages/Ventas";
+import Empleados from "./pages/Empleados";
+import Reportes from "./pages/Reportes";
+
+
 export default function App() {
   
   const locale = 'es';
@@ -45,8 +53,16 @@ export default function App() {
 
             {/* Agrupa todas las rutas protegidas aquí dentro */}
             <Route element={<ProtectedRoute />}>
-              {/* Others Page */}
+              {/* PAGINAS PRINCIPALES */}
               <Route path="/home" element={<Home />}/>
+              <Route path="/inventario" element={<Inventario />} />
+              <Route path="/ventas" element={<Ventas />} />
+              <Route path="/empleados" element={<Empleados />} />
+              <Route path="/reportes" element={<Reportes />} />
+
+
+
+              {/* Others Page */}
               <Route path="/profile" element={<UserProfiles />} />
               <Route path="/calendar" element={<Home />} />
               <Route path="/blank" element={<Blank />} />
