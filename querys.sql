@@ -199,7 +199,7 @@ VALUES
     -- 5. Mascarillas Quirúrgicas (Caja de 50 unidades, fraccionable)
     ('172911711947', 2, 2, 8, 50, 500, 100, 90,150.00, 4.00, 1, 1);
 
-
+select * from Product; 
 select * from Medicine;
 INSERT INTO Medicine (
     product_id, 
