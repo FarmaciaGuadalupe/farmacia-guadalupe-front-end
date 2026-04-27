@@ -343,3 +343,12 @@ query GetBatches(
   }
 }
 `;
+
+export const ADD_BATCH_MUTATION = gql`
+  mutation AddBatch($input: AddBatchInput!) { 
+    addBatch(input: $input) {
+      result
+      message
+    }
+  }
+`;

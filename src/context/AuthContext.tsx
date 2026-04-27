@@ -1,6 +1,8 @@
 import axios from 'axios';
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 
+const baseUrl = import.meta.env.VITE_BASE_API_URL;
+
 // Define la forma de los datos del usuario que vienen en el token/response
 interface UserData {
   employeeId: number;
@@ -60,7 +62,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await axios.post<ApiResponse>(
         // 'http://localhost:5036/api/Auth/login',
-        'https://localhost:44361/api/Auth/login',
+        // 'https://localhost:44361/api/Auth/login',
+        baseUrl +  'api/Auth/login',
         {
           user: username,
           password: password,
