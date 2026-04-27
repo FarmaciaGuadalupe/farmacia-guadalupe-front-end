@@ -27,8 +27,6 @@ import { ScrollToTop } from "./components/common/ScrollToTop";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import Sale from './pages/Sale';
 
-import { IntlProvider } from 'react-intl';
-import messages_es from './lang/es.json';
 import Inventario from "./pages/Inventario";
 import Ventas from "./pages/Ventas";
 import Empleados from "./pages/Empleados";
