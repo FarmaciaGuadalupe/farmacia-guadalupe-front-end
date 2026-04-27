@@ -12,9 +12,14 @@ import { AuthProvider } from "./context/AuthContext.tsx";
 import { ThemeProvider } from "./context/ThemeContext.tsx";
 import { AppWrapper } from "./components/common/PageMeta.tsx";
 
+const baseUrl = import.meta.env.VITE_BASE_API_URL;
+
+
 const client = new ApolloClient({
-  // link: new HttpLink({ uri: "http://localhost:5036/graphql/" }), // TODO poner esto en un .env
-  link: new HttpLink({ uri: "https://localhost:44361/graphql/" }), // TODO poner esto en un .env
+  // link: new HttpLink({ uri: "http://localhost:5036/graphql/" }), 
+  // link: new HttpLink({ uri: "https://localhost:44361/graphql/" }), 
+  link: new HttpLink({ uri: baseUrl + "graphql/" }), 
+
   
   cache: new InMemoryCache(),
 });

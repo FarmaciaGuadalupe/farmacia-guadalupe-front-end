@@ -4,6 +4,10 @@ import { Button } from "@mui/material";
 import { FormattedMessage, useIntl } from "react-intl";
 
 
+const baseUrl = import.meta.env.VITE_BASE_API_URL;
+
+
+
 // --- Definición de Tipos ---
 
 // Las props que este componente espera
@@ -72,7 +76,9 @@ export default function AddEmployeeForm({ onClose, onSaveSuccess }: AddEmployeeF
     try {
       // --- Aquí está la llamada a la API ---
       // const response = await fetch('http://localhost:5036/api/Employee/createEmployee', {
-      const response = await fetch('https://localhost:44361/api/Employee/createEmployee', {
+      // const response = await fetch('https://localhost:44361/api/Employee/createEmployee', {
+      const response = await fetch( baseUrl + 'api/Employee/createEmployee', {
+        
 
         method: 'POST',
         headers: {
