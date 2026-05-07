@@ -166,189 +166,214 @@ export const GET_SUPPLIER_QUERY = () => gql`
 `;
 
 export const GET_MEDICINE_QUERY = () => gql`
-query GetMedicineTherapeuticDetails($first: Int, $after: String, $order: [MedicineSortInput!]) {
-  medicines(first: $first, after: $after, order: $order) {
-    nodes {
-      medicine_id
-      name
-      description
-      requires_prescription
-      
-      # Relación con Ingredientes Activos (Todos los que tenga el ID)
-      medicine_active_ingredients {
-        dose_value
-        dose_unit {
-          abbreviation
+  query GetMedicineTherapeuticDetails(
+    $first: Int
+    $after: String
+    $order: [MedicineSortInput!]
+  ) {
+    medicines(first: $first, after: $after, order: $order) {
+      nodes {
+        medicine_id
+        name
+        description
+        requires_prescription
+
+        # Relación con Ingredientes Activos (Todos los que tenga el ID)
+        medicine_active_ingredients {
+          dose_value
+          dose_unit {
+            abbreviation
+          }
+          active_ingredient {
+            name
+          }
         }
-        active_ingredient {
+
+        # Datos de clasificación
+        brand {
           name
         }
-      }
 
-      # Datos de clasificación
-      brand {
-        name
-      }
+        manufacturer {
+          name
+        }
 
-      manufacturer {
-        name
-      }
+        category {
+          name
+        }
 
-      category {
-        name
-      }
+        administration_route {
+          name
+        }
 
-      administration_route {
-        name
+        product {
+          product_id
+          stock_units
+          min_stock_units
+        }
       }
-
-      product {
-        product_id
-        stock_units
-        min_stock_units
+      pageInfo {
+        hasNextPage
+        endCursor
       }
-    }
-    pageInfo {
-      hasNextPage
-      endCursor
     }
   }
-}
 `;
 
 export const GET_SUPPLIERS_LIST_QUERY = gql`
-query GetSuppliersList {
-	suppliers {
-		nodes {
-			supplier_id
-			company_name
-		}
-	}
-}
+  query GetSuppliersList {
+    suppliers {
+      nodes {
+        supplier_id
+        company_name
+      }
+    }
+  }
 `;
 
 export const GET_PRESENTATION_LIST_QUERY = gql`
-query GetPresentations {
-	presentations {
-		nodes {
-			presentation_id
-			name
-		}
-	}
-}
+  query GetPresentations {
+    presentations {
+      nodes {
+        presentation_id
+        name
+      }
+    }
+  }
 `;
 
 export const GET_BRANDS_LIST_QUERY = gql`
-query GetBrands {
+  query GetBrands {
     brands {
-        nodes {
-            id_brand
-            name
-        }
+      nodes {
+        id_brand
+        name
+      }
     }
-}
+  }
 `;
 
-
 export const GET_MANUFACTURERS_LIST_QUERY = gql`
-query GetManufacturers  {
+  query GetManufacturers {
     manufacturers {
-        nodes {
-            manufacturer_id
-            name
-        }
+      nodes {
+        manufacturer_id
+        name
+      }
     }
-}
+  }
 `;
 
 export const GET_CATEGORIES_LIST_QUERY = gql`
-query GetCategories  {
+  query GetCategories {
     categories {
-        nodes {
-            category_id
-            name
-        }
+      nodes {
+        category_id
+        name
+      }
     }
-}
+  }
 `;
 
 export const GET_ADMINISTRATION_ROUTES_LIST_QUERY = gql`
-query GetAdministrationRoutes {
-  administrationRoutes {
-    nodes { 
-      administration_route_id
-      name
+  query GetAdministrationRoutes {
+    administrationRoutes {
+      nodes {
+        administration_route_id
+        name
+      }
     }
   }
-}
 `;
 
 export const GET_ACTIVE_INGREDIENTS_LIST_QUERY = gql`
-query GetActiveIngredients {
-  activeIngredients{
-    nodes {
-      active_ingredient_id
-      name
+  query GetActiveIngredients {
+    activeIngredients {
+      nodes {
+        active_ingredient_id
+        name
+      }
     }
   }
-}
 `;
 
 export const GET_DOSE_UNITS_LIST_QUERY = gql`
-query GetDoseUnits {
-  doseUnits {
-    nodes {
-      dose_unit_id
-      name
-      abbreviation
+  query GetDoseUnits {
+    doseUnits {
+      nodes {
+        dose_unit_id
+        name
+        abbreviation
+      }
     }
   }
-}
 `;
 
 export const GET_UNIT_OF_MEASURE_LIST_QUERY = gql`
-query GetUnitOfMeasures {
-  unitOfMeasures {
-    nodes {
-      unit_of_measure_id
-      name
+  query GetUnitOfMeasures {
+    unitOfMeasures {
+      nodes {
+        unit_of_measure_id
+        name
+      }
     }
   }
-}
 `;
 
-
 export const GET_BATHCES_BY_PRODUCT_QUERY = () => gql`
-query GetBatches(
-  $first: Int
-  $after: String
-  $order: [BatchSortInput!]
-  $where: BatchFilterInput
-) {
-  batches(first: $first, after: $after, order: $order, where: $where) {
-    nodes {
-      batch_id
-      product_id
-      batch_code
-      expiration_date
-      initial_quantity_units
-      current_quantity_units
-      is_active
-      created_at
-    }
-    pageInfo {
-      hasNextPage
-      endCursor
+  query GetBatches(
+    $first: Int
+    $after: String
+    $order: [BatchSortInput!]
+    $where: BatchFilterInput
+  ) {
+    batches(first: $first, after: $after, order: $order, where: $where) {
+      nodes {
+        batch_id
+        product_id
+        batch_code
+        expiration_date
+        initial_quantity_units
+        current_quantity_units
+        is_active
+        created_at
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
     }
   }
-}
 `;
 
 export const ADD_BATCH_MUTATION = gql`
-  mutation AddBatch($input: AddBatchInput!) { 
+  mutation AddBatch($input: AddBatchInput!) {
     addBatch(input: $input) {
       result
       message
+    }
+  }
+`;
+
+export const GET_DASHBOARD_DAY_METRICS = gql`
+  query {
+    totalSalesByDay(date: "2026-05-04T00:00:00Z") {
+      total
+      percentage
+    }
+
+    numberOfSalesByDay(date: "2026-05-04T00:00:00Z") {
+      total
+      percentage
+    }
+  }
+`;
+
+export const GET_DASHBOARD_SALE_SUMMARY = gql`
+  query GetSalesStats($startDate: DateTime!, $endDate: DateTime!, $type: FrequencyType!) {
+    salesStats(startDate: $startDate, endDate: $endDate, type: $type) {
+      label
+      value
     }
   }
 `;

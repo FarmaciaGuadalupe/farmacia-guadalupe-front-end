@@ -1,11 +1,29 @@
-import Chart from "react-apexcharts";
-import { ApexOptions } from "apexcharts";
-import { Dropdown } from "../ui/dropdown/Dropdown";
-import { DropdownItem } from "../ui/dropdown/DropdownItem";
-import { MoreDotIcon } from "../../icons";
 import { useState } from "react";
+import Chart from "react-apexcharts";
+import { useIntl, FormattedMessage } from "react-intl";
+
+import { ApexOptions } from "apexcharts";
+import ChartTab, { ChartTabOption } from "../common/ChartTab";
+import { useQuery } from "@apollo/client/react";
+import { GET_DASHBOARD_SALE_SUMMARY } from "../ui/table/QuerysDefinitions";
+
 
 export default function MonthlySalesChart() {
+
+  const intl = useIntl(); 
+  const [chartType, setChartType] = useState<ChartTabOption>("DAILY");
+
+  const { data, loading, error } = useQuery(GET_DASHBOARD_SALE_SUMMARY, {
+    variables: {
+      startDate: "2026-01-01T00:00:00Z", // Ampliamos un poco el rango para que YEARLY/MONTHLY tengan sentido
+      endDate: "2026-12-31T23:59:59Z",
+      type: chartType
+    }
+  });
+
+  const chartLabels = data?.salesStats?.map((stat: any) => stat.label) || [];
+  const chartValues = data?.salesStats?.map((stat: any) => stat.value) || [];
+
   const options: ApexOptions = {
     colors: ["#465fff"],
     chart: {
@@ -19,7 +37,7 @@ export default function MonthlySalesChart() {
     plotOptions: {
       bar: {
         horizontal: false,
-        columnWidth: "39%",
+        columnWidth: "15%",
         borderRadius: 5,
         borderRadiusApplication: "end",
       },
@@ -33,20 +51,7 @@ export default function MonthlySalesChart() {
       colors: ["transparent"],
     },
     xaxis: {
-      categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
+      categories: chartLabels,
       axisBorder: {
         show: false,
       },
@@ -87,47 +92,43 @@ export default function MonthlySalesChart() {
   };
   const series = [
     {
-      name: "Sales",
-      data: [168, 385, 201, 298, 187, 195, 291, 110, 215, 390, 280, 112],
+      name: intl.formatMessage({id: "sales"}, {count: 2}),
+      data: chartValues,
     },
   ];
-  const [isOpen, setIsOpen] = useState(false);
 
-  function toggleDropdown() {
-    setIsOpen(!isOpen);
-  }
+  if (loading) return (
+    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6 h-[250px] flex flex-col">
+       <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+          <FormattedMessage id='sales.summary'/>
+        </h3>
+        <ChartTab selected={chartType} onSelect={setChartType} />
+      </div>
+      <div className="flex-1 flex items-center justify-center text-gray-500">Loading...</div>
+    </div>
+  );
 
-  function closeDropdown() {
-    setIsOpen(false);
-  }
+  if (error) return (
+    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6 h-[250px] flex flex-col">
+       <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+          <FormattedMessage id='sales.summary'/>
+        </h3>
+        <ChartTab selected={chartType} onSelect={setChartType} />
+      </div>
+      <div className="flex-1 flex items-center justify-center text-error-500">Error loading sales data</div>
+    </div>
+  );
+
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          Monthly Sales
+          <FormattedMessage id='sales.summary'/>
         </h3>
         <div className="relative inline-block">
-          <button className="dropdown-toggle" onClick={toggleDropdown}>
-            <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 size-6" />
-          </button>
-          <Dropdown
-            isOpen={isOpen}
-            onClose={closeDropdown}
-            className="w-40 p-2"
-          >
-            <DropdownItem
-              onItemClick={closeDropdown}
-              className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-            >
-              View More
-            </DropdownItem>
-            <DropdownItem
-              onItemClick={closeDropdown}
-              className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-            >
-              Delete
-            </DropdownItem>
-          </Dropdown>
+          <ChartTab selected={chartType} onSelect={setChartType} />
         </div>
       </div>
 
