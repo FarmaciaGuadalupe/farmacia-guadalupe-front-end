@@ -356,13 +356,13 @@ export const ADD_BATCH_MUTATION = gql`
 `;
 
 export const GET_DASHBOARD_DAY_METRICS = gql`
-  query {
-    totalSalesByDay(date: "2026-05-04T00:00:00Z") {
+  query GetDayMetrics($date: DateTime!) {
+    totalSalesByDay(date: $date) {
       total
       percentage
     }
 
-    numberOfSalesByDay(date: "2026-05-04T00:00:00Z") {
+    numberOfSalesByDay(date: $date) {
       total
       percentage
     }
