@@ -10,6 +10,7 @@ import { CalenderIcon } from "../../icons";
 import { useQuery } from "@apollo/client/react";
 import ChartTab, { ChartTabOption } from "../common/ChartTab";
 import { GET_DASHBOARD_SALE_SUMMARY } from "../ui/table/QuerysDefinitions";
+import Loading from "../ui/loading/Loading";
 
 
 export default function MonthlySalesChart() {
@@ -147,7 +148,7 @@ export default function MonthlySalesChart() {
 
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
+    <div className="rounded-2xl border border-gray-200 bg-white px-5 pt-5 pb-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6 sm:pb-6">
       <div className="flex flex-col gap-5 mb-6 sm:flex-row sm:justify-between sm:items-center">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
           <FormattedMessage id='sales.summary'/>
@@ -168,9 +169,11 @@ export default function MonthlySalesChart() {
       <div className="max-w-full overflow-x-auto custom-scrollbar">
         <div className="-ml-5 min-w-[650px] xl:min-w-full pl-2">
           {loading ? (
-             <div className="flex items-center justify-center h-[180px] text-gray-500">Loading...</div>
+            <div className="h-75">
+              <Loading className="h-[210px]" />
+            </div>
           ) : error ? (
-            <div className="flex items-center justify-center h-[180px] text-error-500">Error loading sales data</div>
+            <div className="flex items-center justify-center h-[210px] text-error-500">Error loading sales data</div>
           ) : (
             <Chart options={options} series={series} type="bar" height={180} />
           )}
