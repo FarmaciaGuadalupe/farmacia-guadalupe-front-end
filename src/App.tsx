@@ -31,11 +31,12 @@ import Inventario from "./pages/Inventario";
 import Ventas from "./pages/Ventas";
 import Empleados from "./pages/Empleados";
 import Reportes from "./pages/Reportes";
+import Sales from './components/ui/catalogs/Sales';
 
 
 export default function App() {
   
-  const locale = 'es';
+  const locale = 'es-NI';
 
   return (
     <Fragment>
@@ -74,6 +75,7 @@ export default function App() {
               <Route path="/employee-tables" element={<BasicTables />} />
               <Route path="/catalogs" element={<Catalogs />} />
               <Route path="/products" element={<Products />} />
+              <Route path="/transactions" element={<Sales />} />
 
 
               {/* Ui Elements */}

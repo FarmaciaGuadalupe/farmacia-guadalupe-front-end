@@ -1,4 +1,52 @@
 import { gql } from "@apollo/client";
+export const GET_ALL_SALES = () => gql `
+  query GetSalesWithDetails(
+    $first: Int
+    $after: String
+    $order: [SaleSortInput!]
+    $where: SaleFilterInput
+  ) {
+    sales(first: $first, after: $after, order: $order, where: $where) {
+      # Información de la paginación
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      # Nodos (la lista de ventas)
+      nodes {
+        saleId
+        saleDate
+        netTotal
+        currency
+
+        # Empleado
+        employee {
+          names
+          lastnames
+        }
+
+        # Detalles y productos anidados
+        saleDetails {
+          quantity
+          product {
+            medicine {
+              name
+            }
+          }
+        }
+
+        # Pagos
+        salePayments {
+          amount
+          paymentMethod {
+            paymentMethodId
+            name
+          }
+        }
+      }
+    }
+  }
+`
 
 export const GET_EMPLOYEES_QUERY = () => gql`
   query GetEmployees(

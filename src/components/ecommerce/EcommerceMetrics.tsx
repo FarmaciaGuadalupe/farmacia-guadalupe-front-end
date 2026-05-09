@@ -16,7 +16,7 @@ export default function EcommerceMetrics() {
 
   const { data, loading, error } = useQuery(GET_DASHBOARD_DAY_METRICS, {
     variables: { date: today },
-    fetchPolicy: "network-only"
+    fetchPolicy: "network-only",
   });
 
   if (loading) return <p>Loading metrics...</p>;
@@ -26,12 +26,15 @@ export default function EcommerceMetrics() {
   const numberOfSales = data?.numberOfSalesByDay;
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6" space-y-2>
-		<div className="mb-2">
-			<h3 className="text-lg font-semibold text-gray-800 dark:text-white/90 pr-4">
-				<FormattedMessage id="sales.daily" />
-			</h3>
-		</div>
+    <div
+      className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6"
+      space-y-2
+    >
+      <div className="mb-2">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90 pr-4">
+          <FormattedMessage id="sales.daily" />
+        </h3>
+      </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6">
         {/* <!-- Metric Item Start --> */}
         <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] md:p-6">
@@ -42,17 +45,16 @@ export default function EcommerceMetrics() {
           <div className="flex items-end justify-between mt-5">
             <div>
               <span className="text-sm text-gray-500 dark:text-gray-400">
-                <FormattedMessage id='sales.total'/>
+                <FormattedMessage id="sales.total" />
               </span>
               <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
-				<FormattedNumber 
+                <FormattedNumber
 					style="currency"
 					currency="NIO"
-					value={totalSales?.total} 
+					value={totalSales?.total}
 					currencyDisplay="symbol"
-					/>
-
-
+					locale="es-NI"
+                />
               </h4>
             </div>
             <Badge color={totalSales?.percentage >= 0 ? "success" : "error"}>
@@ -75,7 +77,7 @@ export default function EcommerceMetrics() {
           <div className="flex items-end justify-between mt-5">
             <div>
               <span className="text-sm text-gray-500 dark:text-gray-400">
-                <FormattedMessage id="sales.number"/>
+                <FormattedMessage id="sales.number" />
               </span>
               <h4 className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
                 {numberOfSales?.total}
