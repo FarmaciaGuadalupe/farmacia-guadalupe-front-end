@@ -15,6 +15,10 @@ import { BatchCellActions } from "./CustomCells/BatchCellActions";
 import MedicineClasification from "./CustomCells/MedicineClasification";
 import { EmployeeCellActions } from "../table/CustomCells/EmployeeCellActions";
 import MedicineActiveIngredients from "./CustomCells/MedicineActiveIngredients";
+import TransactionDate from "./CustomCells/TransactionDate";
+import TransactionPay from "./CustomCells/TransactionPay";
+import TransactionMedicine from "./CustomCells/TransactionMedicine";
+import TransactionEmployee from "./CustomCells/TransactionEmployee";
 
 export const useEmployeeColumns = () => {
   const intl = useIntl();
@@ -331,7 +335,7 @@ export const useMedicineColumns = () => {
       {
         header: intl.formatMessage({ id: "stock" }),
         id: "product",
-        cell: ({ row }) => <Stock row={row} />
+        cell: ({ row }) => <Stock row={row} />,
       },
       {
         header: intl.formatMessage({ id: "description" }),
@@ -350,16 +354,10 @@ export const useMedicineColumns = () => {
   return columns;
 };
 
-
 export const useBatchColumns = () => {
   const intl = useIntl();
   const columns = useMemo<ColumnDef<any>[]>(
     () => [
-      // {
-      //   header: intl.formatMessage({ id: "name" }),
-      //   accessorKey: "batch_id",
-      //   id: "batch_id",
-      // },
       {
         header: intl.formatMessage({ id: "code" }),
         accessorKey: "batch_code",
@@ -369,40 +367,53 @@ export const useBatchColumns = () => {
         header: intl.formatMessage({ id: "exp_date" }),
         accessorKey: "expiration_date",
         id: "expiration_date",
-        cell: ({ row }) => <BatchExpiration expirationDate={row.original.expiration_date} />
+        cell: ({ row }) => (
+          <BatchExpiration expirationDate={row.original.expiration_date} />
+        ),
       },
       {
         header: intl.formatMessage({ id: "stock" }),
         // id: "product",
-        cell: ({ row }) => <BatchStock current={row.original.current_quantity_units ?? 0} initial={row.original.initial_quantity_units ?? 0} />
+        cell: ({ row }) => (
+          <BatchStock
+            current={row.original.current_quantity_units ?? 0}
+            initial={row.original.initial_quantity_units ?? 0}
+          />
+        ),
       },
-      // {
-      //   header: intl.formatMessage({ id: "is_active" }),
-      //   accessorKey: "is_active",
-      //   id: "is_active",
-      // },
-      // {
-      //   header: intl.formatMessage({ id: "created_at" }),
-      //   accessorKey: "created_at",
-      //   id: "created_at",
-      // },
-      
-      // TODO
-      // {
-      //   id: "actions",
-      //   cell: ({ row }) => (
-      //     <button
-      //       //  onClick={() => handleDeactivate(row.original.batch_id)}
-      //       className="text-red-600 hover:text-red-900 flex items-center gap-1 text-xs font-bold"
-      //     >
-      //       {/* <NoSymbolIcon className="size-4" /> */}
-      //       RETIRAR
-      //     </button>
-      //   )
-      // }
     ],
     [intl],
   );
+  return columns;
+};
 
+export const useSaleColumns = () => {
+  const intl = useIntl();
+  const columns = useMemo<ColumnDef<any>[]>(
+    () => [
+      {
+        header: intl.formatMessage({ id: "date" }),
+        accessorKey: "saleDate",
+        id: "saleDate",
+        cell: ({ row }) => <TransactionDate row={row} />,
+      },
+      {
+        header: intl.formatMessage({ id: "sales.assintant" }),
+        id: "employee",
+        cell: ({ row }) => <TransactionEmployee row={row} />,
+      },
+      {
+        header: intl.formatMessage({ id: "products" }, {count: 2}),
+        id: "saleDetails",
+        cell: ({ row }) => <TransactionMedicine row={row} />,
+      },
+      {
+        header: intl.formatMessage({ id: "paymentMean" }),
+        id: "payment",
+        cell: ({ row }) => <TransactionPay row={row} />,
+      },
+    ],
+    [intl],
+  );
   return columns;
 };

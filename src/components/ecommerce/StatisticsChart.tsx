@@ -1,8 +1,11 @@
+import { useState } from "react";
 import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
-import ChartTab from "../common/ChartTab";
+import ChartTab, { ChartTabOption } from "../common/ChartTab";
 
 export default function StatisticsChart() {
+  const [selectedTab, setSelectedTab] = useState<ChartTabOption>("DAILY");
+
   const options: ApexOptions = {
     legend: {
       show: false, // Hide legend
@@ -123,7 +126,7 @@ export default function StatisticsChart() {
           </p>
         </div>
         <div className="flex items-start w-full gap-3 sm:justify-end">
-          <ChartTab />
+          <ChartTab selected={selectedTab} onSelect={setSelectedTab} />
         </div>
       </div>
 
