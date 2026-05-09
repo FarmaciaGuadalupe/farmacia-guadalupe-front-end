@@ -42,7 +42,6 @@
   "logo": "Logo",
   "logout": "Cerrar sesión",
   "manual": "Manual",
-  "medicine": "Medicina",
   "medicines": "{count, plural, one {Medicina} other {Medicinas}}",
   "monthly": "Mensualmente",
   "transactions": "{count, plural, one {Transacción} other {Transacciones}}",
