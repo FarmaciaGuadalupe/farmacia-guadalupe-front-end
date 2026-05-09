@@ -6,6 +6,7 @@ import { useIntl } from "react-intl";
 
 import SaleTable from "../../tables/BasicTables/SaleTable";
 import PageBreadcrumb from "../../common/PageBreadCrumb";
+import SalesExportButton from "./SalesExportButton";
 
 
 export default function Sales() {   
@@ -14,8 +15,11 @@ export default function Sales() {
     
     return (
         <div className="flex-1">
-            <div className="flex justify-start mb-4"> 
+            <div className="flex items-center justify-between mb-4"> 
                 <PageBreadcrumb pageTitle={intl.formatMessage({ id: "transactions" }, { count: 2 })} />
+                <div className="mb-6">
+                    <SalesExportButton />
+                </div>
             </div>
             
             <SaleTable />
