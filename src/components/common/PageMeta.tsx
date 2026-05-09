@@ -4,12 +4,12 @@ const PageMeta = ({
   title,
   description,
 }: {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
 }) => (
   <Helmet>
-    <title>{title}</title>
-    <meta name="description" content={description} />
+    {/* <title>{title ? `${title} | Farmacia Guadalupe` : "Farmacia Guadalupe"}</title> */}
+    {description && <meta name="description" content={description} />}
   </Helmet>
 );
 
