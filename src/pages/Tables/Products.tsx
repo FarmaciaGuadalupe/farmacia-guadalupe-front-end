@@ -51,39 +51,52 @@ export default function Products() {
     { label: <FormattedMessage id="medicine" values={{ count: 2 }}/>, content: <Medicines /> },
   ];
 
-  return (
-    <div className="h-full w-full">
-      <PageBreadcrumb pageTitle={intl.formatMessage({ id: "products" }, { count: 2 })} />
-      <div
-        className={`rounded-2xl border border-gray-200 bg-slate-50 dark:border-gray-800 dark:bg-white/[0.03] p-4`}>
-        <Box sx={{ width: '100%' }}>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            {/* Renderizado dinámico de las Pestañas (Tabs) */}
-            <Tabs
-              value={value}
-              onChange={handleChange}
-              variant="scrollable"
-              scrollButtons
-              allowScrollButtonsMobile
-              aria-label="scrollable auto tabs example">
-              {items.map((item, index) => (
-                <Tab
-                  key={index}
-                  label={item.label}
-                  {...a11yProps(index)}
-                />
-              ))}
-            </Tabs>
-          </Box>
+  // return (
+  //   <div className="h-full w-full">
+  //     <PageBreadcrumb pageTitle={intl.formatMessage({ id: "products" }, { count: 2 })} />
+  //     <div
+  //       className={`rounded-2xl border border-gray-200 bg-slate-50 dark:border-gray-800 dark:bg-white/[0.03] p-4`}>
+  //       <Box sx={{ width: '100%' }}>
+  //         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+  //           {/* Renderizado dinámico de las Pestañas (Tabs) */}
+  //           <Tabs
+  //             value={value}
+  //             onChange={handleChange}
+  //             variant="scrollable"
+  //             scrollButtons
+  //             allowScrollButtonsMobile
+  //             aria-label="scrollable auto tabs example">
+  //             {items.map((item, index) => (
+  //               <Tab
+  //                 key={index}
+  //                 label={item.label}
+  //                 {...a11yProps(index)}
+  //               />
+  //             ))}
+  //           </Tabs>
+  //         </Box>
 
-          {/* Renderizado dinámico del Contenido (Panels) */}
-          {items.map((item, index) => (
-            <CustomTabPanel key={index} value={value} index={index}>
-              {item.content}
-            </CustomTabPanel>
-          ))}
-        </Box>
-      </div>
-    </div>
-  );
+  //         {/* Renderizado dinámico del Contenido (Panels) */}
+  //         {items.map((item, index) => (
+  //           <CustomTabPanel key={index} value={value} index={index}>
+  //             {item.content}
+  //           </CustomTabPanel>
+  //         ))}
+  //       </Box>
+  //     </div>
+  //   </div>
+  // );
+
+  return (
+    <div className="flex-1">
+            <div className="flex items-center justify-between mb-4"> 
+                <PageBreadcrumb pageTitle={intl.formatMessage({ id: "medicines" }, { count: 2 })} />
+                {/* <div className="mb-6">
+                    <SalesExportButton />
+                </div> */}
+            </div>
+            
+            <Medicines />
+        </div>
+  ); 
 }

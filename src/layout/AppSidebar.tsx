@@ -1,23 +1,19 @@
 import { useIntl } from "react-intl";
 import { Link, useLocation } from "react-router";
 import { AiOutlineMedicineBox } from "react-icons/ai";
-import { FolderOpenIcon, ShoppingCartIcon } from "@heroicons/react/24/outline";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { FolderOpenIcon, ShoppingCartIcon, ReceiptPercentIcon } from "@heroicons/react/24/outline";
 
 
 import {
-    BoxCubeIcon,
     ChevronDownIcon,
     GridIcon,
     HorizontaLDots,
     ListIcon,
-    PageIcon,
-    PieChartIcon,
-    PlugInIcon,
-    TableIcon,
-    UserCircleIcon,
+    TableIcon
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
+
 
 
 type NavItem = {
@@ -48,6 +44,11 @@ const AppSidebar: React.FC = () => {
             path: "/sales",
         },
         {
+            icon: <ReceiptPercentIcon />,
+            name: intl.formatMessage({ id: 'transactions' }, { count: 2 }),
+            path: "/transactions",
+        },
+        {
             icon: <AiOutlineMedicineBox />,
             name: intl.formatMessage({ id: 'products' }, { count: 2 }),
             path: "/products"
@@ -62,16 +63,16 @@ const AppSidebar: React.FC = () => {
             name: "User Profile",
             path: "/profile",
         },**/
-        {
-            name: "Forms",
-            icon: <ListIcon />,
-            subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
-        },
-        {
-            name: "Tables",
-            icon: <TableIcon />,
-            subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
-        },
+        // {
+        //     name: "Forms",
+        //     icon: <ListIcon />,
+        //     subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
+        // },
+        // {
+        //     name: "Tables",
+        //     icon: <TableIcon />,
+        //     subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
+        // },
 /**        {
             name: "Pages",
             icon: <PageIcon />,

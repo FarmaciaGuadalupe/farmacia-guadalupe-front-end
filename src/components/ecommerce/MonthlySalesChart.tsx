@@ -1,11 +1,43 @@
+import flatpickr from "flatpickr";
 import Chart from "react-apexcharts";
+import "flatpickr/dist/flatpickr.css";
+import { useState, useEffect, useRef } from "react";
+import { Spanish } from "flatpickr/dist/l10n/es.js";
+import { useIntl, FormattedMessage } from "react-intl";
+
 import { ApexOptions } from "apexcharts";
-import { Dropdown } from "../ui/dropdown/Dropdown";
-import { DropdownItem } from "../ui/dropdown/DropdownItem";
-import { MoreDotIcon } from "../../icons";
-import { useState } from "react";
+import { CalenderIcon } from "../../icons";
+import { useQuery } from "@apollo/client/react";
+import ChartTab, { ChartTabOption } from "../common/ChartTab";
+import { GET_DASHBOARD_SALE_SUMMARY } from "../ui/table/QuerysDefinitions";
+import Loading from "../ui/loading/Loading";
+
 
 export default function MonthlySalesChart() {
+
+  const intl = useIntl(); 
+  const [chartType, setChartType] = useState<ChartTabOption>("DAILY");
+  
+  // Default range: last 7 days
+  const [dateRange, setDateRange] = useState<{start: Date, end: Date}>(() => {
+    const end = new Date();
+    const start = new Date();
+    start.setDate(end.getDate() - 6);
+    return { start, end };
+  });
+
+  const { data, loading, error } = useQuery(GET_DASHBOARD_SALE_SUMMARY, {
+    variables: {
+      startDate: dateRange.start.toISOString().split('T')[0] + "T00:00:00Z",
+      endDate: dateRange.end.toISOString().split('T')[0] + "T23:59:59Z",
+      type: chartType
+    },
+    fetchPolicy: "network-only"
+  });
+
+  const chartLabels = data?.salesStats?.map((stat: any) => stat.label) || [];
+  const chartValues = data?.salesStats?.map((stat: any) => stat.value) || [];
+
   const options: ApexOptions = {
     colors: ["#465fff"],
     chart: {
@@ -19,7 +51,7 @@ export default function MonthlySalesChart() {
     plotOptions: {
       bar: {
         horizontal: false,
-        columnWidth: "39%",
+        columnWidth: "15%",
         borderRadius: 5,
         borderRadiusApplication: "end",
       },
@@ -33,20 +65,7 @@ export default function MonthlySalesChart() {
       colors: ["transparent"],
     },
     xaxis: {
-      categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
+      categories: chartLabels,
       axisBorder: {
         show: false,
       },
@@ -85,55 +104,79 @@ export default function MonthlySalesChart() {
       },
     },
   };
+
   const series = [
     {
-      name: "Sales",
-      data: [168, 385, 201, 298, 187, 195, 291, 110, 215, 390, 280, 112],
+      name: intl.formatMessage({id: "sales"}, {count: 2}),
+      data: chartValues,
     },
   ];
-  const [isOpen, setIsOpen] = useState(false);
 
-  function toggleDropdown() {
-    setIsOpen(!isOpen);
-  }
+  const datePickerRef = useRef<HTMLInputElement>(null);
 
-  function closeDropdown() {
-    setIsOpen(false);
-  }
+  useEffect(() => {
+    if (!datePickerRef.current) return;
+
+    const fp = flatpickr(datePickerRef.current, {
+      mode: "range",
+      locale: Spanish,
+      static: true,
+      monthSelectorType: "static",
+      dateFormat: "M d",
+      defaultDate: [dateRange.start, dateRange.end],
+      clickOpens: true,
+      onChange: (selectedDates) => {
+        if (selectedDates.length === 2) {
+          setDateRange({
+            start: selectedDates[0],
+            end: selectedDates[1]
+          });
+        }
+      },
+      prevArrow:
+        '<svg class="stroke-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12.5 15L7.5 10L12.5 5" stroke="" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      nextArrow:
+        '<svg class="stroke-current" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.5 15L12.5 10L7.5 5" stroke="" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    });
+
+    return () => {
+      if (!Array.isArray(fp)) {
+        fp.destroy();
+      }
+    };
+  }, []); 
+
+
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
-      <div className="flex items-center justify-between">
+    <div className="rounded-2xl border border-gray-200 bg-white px-5 pt-5 pb-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6 sm:pb-6">
+      <div className="flex flex-col gap-5 mb-6 sm:flex-row sm:justify-between sm:items-center">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-          Monthly Sales
+          <FormattedMessage id='sales.summary'/>
         </h3>
-        <div className="relative inline-block">
-          <button className="dropdown-toggle" onClick={toggleDropdown}>
-            <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 size-6" />
-          </button>
-          <Dropdown
-            isOpen={isOpen}
-            onClose={closeDropdown}
-            className="w-40 p-2"
-          >
-            <DropdownItem
-              onItemClick={closeDropdown}
-              className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-            >
-              View More
-            </DropdownItem>
-            <DropdownItem
-              onItemClick={closeDropdown}
-              className="flex w-full font-normal text-left text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-            >
-              Delete
-            </DropdownItem>
-          </Dropdown>
+        <div className="flex flex-wrap items-center gap-3">
+          <ChartTab selected={chartType} onSelect={setChartType} />
+          <div className="relative inline-flex items-center">
+            <CalenderIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-500 dark:text-gray-400 pointer-events-none z-10" />
+            <input
+              ref={datePickerRef}
+              className="z-100 h-10 w-45 pl-10 pr-3 py-2 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700 outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 cursor-pointer"
+              placeholder="Select date range"
+            />
+          </div>
         </div>
       </div>
 
       <div className="max-w-full overflow-x-auto custom-scrollbar">
         <div className="-ml-5 min-w-[650px] xl:min-w-full pl-2">
-          <Chart options={options} series={series} type="bar" height={180} />
+          {loading ? (
+            <div className="h-75">
+              <Loading className="h-[210px]" />
+            </div>
+          ) : error ? (
+            <div className="flex items-center justify-center h-[210px] text-error-500">Error loading sales data</div>
+          ) : (
+            <Chart options={options} series={series} type="bar" height={180} />
+          )}
         </div>
       </div>
     </div>
