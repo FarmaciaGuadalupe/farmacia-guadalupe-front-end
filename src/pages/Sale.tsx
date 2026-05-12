@@ -21,6 +21,7 @@ import { TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { toast } from "sonner";
 import PageBreadcrumb from "../components/common/PageBreadCrumb";
 import { useAuth } from "../context/AuthContext";
+import { generateSaleVoucherPDF, SaleSummary } from "../utils/generateSaleVoucher";
 
 // --- GRAPHQL DEFINITIONS ---
 const GET_CUSTOMERS = gql`
@@ -159,6 +160,9 @@ export default function Sale() {
   const [payments, setPayments] = useState<PaymentItem[]>([
     { id: Date.now().toString(), paymentMethodId: "", amount: "", transactionReference: "" },
   ]);
+
+  // --- STATE: Voucher ---
+  const [completedSaleData, setCompletedSaleData] = useState<SaleSummary | null>(null);
 
   // --- QUERIES & MUTATIONS ---
   const { data: customersData, refetch: refetchCustomers } = useQuery(GET_CUSTOMERS);
@@ -336,6 +340,34 @@ export default function Sale() {
       
       if (data?.createSale?.success) {
         toast.success(data.createSale.message || `Venta procesada con éxito. ID: ${data.createSale.saleId}`);
+        
+        // --- Generate Voucher Data ---
+        const saleSummary: SaleSummary = {
+          receiptNumber: data.createSale.receiptNumber || receiptNumber,
+          receiptType,
+          date: new Date(),
+          customer: selectedCustomer ? `${selectedCustomer.firstName} ${selectedCustomer.lastName}` : "Consumidor Final",
+          items: cart.map(item => {
+            const price = item.batch && item.medicine.product
+              ? (item.isFullPresentation ? item.medicine.product.price_full_presentation : item.medicine.product.price_per_unit)
+              : 0;
+            return {
+              name: item.medicine.name,
+              quantity: item.quantity,
+              price: price,
+              total: item.quantity * price,
+              presentation: item.isFullPresentation ? "Caja" : "Unidad"
+            };
+          }),
+          subtotal,
+          iva,
+          grandTotal,
+          totalPaid,
+          changeDue
+        };
+
+        setCompletedSaleData(saleSummary);
+        generateSaleVoucherPDF(saleSummary); // Generate PDF in new window
         
         // Refetch queries to update stock and catalogs for the next sale
         refetchCustomers();
@@ -675,6 +707,78 @@ export default function Sale() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setSelectedMedicineForBatch(null)}>Cancelar</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* --- MODAL: Voucher de Venta --- */}
+      <Dialog open={!!completedSaleData} onClose={() => setCompletedSaleData(null)} maxWidth="sm" fullWidth>
+        <DialogTitle className="text-center font-bold text-xl">
+          Farmacia Guadalupe
+        </DialogTitle>
+        <DialogContent dividers>
+          {completedSaleData && (
+            <div className="space-y-4 text-sm text-gray-800 dark:text-gray-200">
+              <div className="text-center mb-6">
+                <p className="font-semibold text-lg uppercase">{completedSaleData.receiptType}</p>
+                <p>Nro: {completedSaleData.receiptNumber}</p>
+                <p>Fecha: {completedSaleData.date.toLocaleString()}</p>
+              </div>
+              <div className="mb-4">
+                <strong>Cliente:</strong> {completedSaleData.customer}
+              </div>
+              
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm border-collapse">
+                  <thead>
+                    <tr className="border-b border-gray-300 dark:border-gray-700">
+                      <th className="py-2">Cant</th>
+                      <th className="py-2">Descripción</th>
+                      <th className="py-2 text-right">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {completedSaleData.items.map((item, idx) => (
+                      <tr key={idx} className="border-b border-gray-100 dark:border-gray-800">
+                        <td className="py-2">{item.quantity}</td>
+                        <td className="py-2">{item.name} <span className="text-xs text-gray-500">({item.presentation})</span></td>
+                        <td className="py-2 text-right font-mono">C$ {item.total.toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="space-y-1 text-right mt-6 border-t border-gray-300 dark:border-gray-700 pt-4">
+                <p>Subtotal: <span className="font-mono">C$ {completedSaleData.subtotal.toFixed(2)}</span></p>
+                <p>IVA (15%): <span className="font-mono">C$ {completedSaleData.iva.toFixed(2)}</span></p>
+                <p className="font-bold text-lg mt-2">
+                  Total: <span className="font-mono">C$ {completedSaleData.grandTotal.toFixed(2)}</span>
+                </p>
+                
+                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Pagado: <span className="font-mono">C$ {completedSaleData.totalPaid.toFixed(2)}</span>
+                  </p>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Cambio: <span className="font-mono">C$ {Math.abs(completedSaleData.changeDue).toFixed(2)}</span>
+                  </p>
+                </div>
+              </div>
+              <div className="text-center mt-6 italic text-gray-500">
+                ¡Gracias por su compra!
+              </div>
+            </div>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setCompletedSaleData(null)}>Cerrar</Button>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={() => completedSaleData && generateSaleVoucherPDF(completedSaleData, true)}
+          >
+            Imprimir / Ver PDF
+          </Button>
         </DialogActions>
       </Dialog>
 
