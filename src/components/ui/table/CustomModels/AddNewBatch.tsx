@@ -11,20 +11,16 @@ import DatePicker from "../../../form/date-picker";
 import { useMutation } from "@apollo/client/react";
 import { ADD_BATCH_MUTATION } from "../QuerysDefinitions";
 import { toast } from "sonner";
+import { nicaDate, nowInNica } from "../../../../utils/dateUtils";
 
 export default function AddNewBatch({ productId, onClose }: { productId: number, onClose?: () => void }) {
     // Calcular la fecha por defecto (hoy + 10 meses)
     const defaultDateObj = useMemo(() => {
-        const date = new Date();
-        date.setMonth(date.getMonth() + 10);
-        return date;
+        return nowInNica().add(10, 'month');
     }, []);
 
-    const formatToISO = (date: Date) => {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}T00:00:00Z`;
+    const formatToISO = (date: any) => {
+        return nicaDate(date).startOf('day').toISOString();
     };
 
     const [formData, setFormData] = useState({
@@ -60,15 +56,10 @@ export default function AddNewBatch({ productId, onClose }: { productId: number,
             const date = selectedDates[0];
             
             // Validar que tenga al menos 10 meses de vida útil
-            const minDate = new Date();
-            minDate.setMonth(minDate.getMonth() + 10);
-            
-            // Normalizar a inicio del día para la comparación
-            minDate.setHours(0, 0, 0, 0);
-            const compareDate = new Date(date);
-            compareDate.setHours(0, 0, 0, 0);
+            const minDate = nowInNica().add(10, 'month').startOf('day');
+            const compareDate = nicaDate(date).startOf('day');
 
-            if (compareDate < minDate) {
+            if (compareDate.isBefore(minDate)) {
                 toast.error("La fecha de expiración debe ser de al menos 10 meses a partir de hoy");
                 // Revertir a la fecha por defecto si la seleccionada es inválida
                 setFormData(prev => ({

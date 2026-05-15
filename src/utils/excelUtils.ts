@@ -1,5 +1,5 @@
 import * as XLSX from 'xlsx';
-import dayjs from 'dayjs';
+import { nicaDate } from './dateUtils';
 
 /**
  * Configuración para una columna del Excel.
@@ -47,6 +47,6 @@ export const exportToExcel = <T,>(
   XLSX.utils.book_append_sheet(workbook, worksheet, 'Datos');
 
   // 4. Generar el archivo y disparar la descarga en el navegador
-  const fullFilename = `${filename}_${dayjs().format('YYYY-MM-DD_HHmm')}.xlsx`;
+  const fullFilename = `${filename}_${nicaDate().format('YYYY-MM-DD_HHmm')}.xlsx`;
   XLSX.writeFile(workbook, fullFilename);
 };

@@ -1,11 +1,8 @@
-import "dayjs/locale/es";
-import dayjs from "dayjs";
 import { CalendarIcon } from "@heroicons/react/24/outline";
-
-dayjs.locale("es");
+import { nicaDate } from "../../../../utils/dateUtils";
 
 const TransactionDate = ({ row }: any) => {
-  const date = dayjs(row.original.saleDate);
+  const date = nicaDate(row.original.saleDate);
 
   return (
     <div className="flex flex-row items-center gap-2">

@@ -1,6 +1,5 @@
 import React from 'react';
 import { useLazyQuery } from '@apollo/client/react';
-import dayjs from 'dayjs';
 import { useIntl } from 'react-intl';
 import { toast } from 'sonner';
 
@@ -8,6 +7,7 @@ import Button from '../button/Button';
 import { DownloadIcon } from '../../../icons';
 import { exportToExcel, ExcelColumnConfig } from '../../../utils/excelUtils';
 import { GET_ALL_SALES } from '../table/QuerysDefinitions';
+import { nicaDate } from '../../../utils/dateUtils';
 
 /**
  * Configuración de columnas específica para la exportación de Ventas
@@ -20,7 +20,7 @@ const salesColumnsConfig: ExcelColumnConfig<any>[] = [
   },
   { 
     header: 'Fecha', 
-    formatter: (sale) => sale.saleDate ? dayjs(sale.saleDate).format('DD/MM/YYYY HH:mm') : 'N/A' 
+    formatter: (sale) => sale.saleDate ? nicaDate(sale.saleDate).format('DD/MM/YYYY HH:mm') : 'N/A' 
   },
   { 
     header: 'Empleado', 

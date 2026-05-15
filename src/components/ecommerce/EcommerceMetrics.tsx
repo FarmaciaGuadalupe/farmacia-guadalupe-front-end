@@ -10,9 +10,10 @@ import {
   GroupIcon,
 } from "../../icons";
 import { GET_DASHBOARD_DAY_METRICS } from "../ui/table/QuerysDefinitions";
+import { nowInNica } from "../../utils/dateUtils";
 
 export default function EcommerceMetrics() {
-  const today = new Date().toISOString().split("T")[0] + "T00:00:00Z";
+  const today = nowInNica().startOf("day").toISOString();
 
   const { data, loading, error } = useQuery(GET_DASHBOARD_DAY_METRICS, {
     variables: { date: today },

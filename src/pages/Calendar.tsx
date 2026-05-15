@@ -7,6 +7,7 @@ import { EventInput, DateSelectArg, EventClickArg } from "@fullcalendar/core";
 import { Modal } from "../components/ui/modal";
 import { useModal } from "../hooks/useModal";
 import PageMeta from "../components/common/PageMeta";
+import { nicaDate, nowInNica } from "../utils/dateUtils";
 
 interface CalendarEvent extends EventInput {
   extendedProps: {
@@ -34,25 +35,30 @@ const Calendar: React.FC = () => {
   };
 
   useEffect(() => {
-    // Initialize with some events
+    // Initialize with some events using NIC time
+    const today = nowInNica().format("YYYY-MM-DD");
+    const tomorrow = nowInNica().add(1, "day").format("YYYY-MM-DD");
+    const nextWeekStart = nowInNica().add(2, "day").format("YYYY-MM-DD");
+    const nextWeekEnd = nowInNica().add(3, "day").format("YYYY-MM-DD");
+
     setEvents([
       {
         id: "1",
         title: "Event Conf.",
-        start: new Date().toISOString().split("T")[0],
+        start: today,
         extendedProps: { calendar: "Danger" },
       },
       {
         id: "2",
         title: "Meeting",
-        start: new Date(Date.now() + 86400000).toISOString().split("T")[0],
+        start: tomorrow,
         extendedProps: { calendar: "Success" },
       },
       {
         id: "3",
         title: "Workshop",
-        start: new Date(Date.now() + 172800000).toISOString().split("T")[0],
-        end: new Date(Date.now() + 259200000).toISOString().split("T")[0],
+        start: nextWeekStart,
+        end: nextWeekEnd,
         extendedProps: { calendar: "Primary" },
       },
     ]);
@@ -69,8 +75,8 @@ const Calendar: React.FC = () => {
     const event = clickInfo.event;
     setSelectedEvent(event as unknown as CalendarEvent);
     setEventTitle(event.title);
-    setEventStartDate(event.start?.toISOString().split("T")[0] || "");
-    setEventEndDate(event.end?.toISOString().split("T")[0] || "");
+    setEventStartDate(event.start ? nicaDate(event.start).format("YYYY-MM-DD") : "");
+    setEventEndDate(event.end ? nicaDate(event.end).format("YYYY-MM-DD") : "");
     setEventLevel(event.extendedProps.calendar);
     openModal();
   };

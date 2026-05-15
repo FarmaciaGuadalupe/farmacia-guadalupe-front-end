@@ -1,18 +1,12 @@
- import dayjs from "dayjs";
- import "dayjs/locale/es"; // Para que los textos salgan en español
- import relativeTime from "dayjs/plugin/relativeTime";
-
- // Activamos los plugins necesarios
- dayjs.extend(relativeTime);
- dayjs.locale("es");
+ import { nicaDate, nowInNica } from "../../../../utils/dateUtils";
 
  interface BatchExpirationProps {
    expirationDate: string; // La fecha que viene de la base de datos
  }
 
  const BatchExpiration = ({ expirationDate }: BatchExpirationProps) => {
-   const exp = dayjs(expirationDate);
-   const today = dayjs();
+   const exp = nicaDate(expirationDate);
+   const today = nowInNica();
    
    // Calculamos la diferencia en días para la lógica de colores
    const diffDays = exp.diff(today, "days");

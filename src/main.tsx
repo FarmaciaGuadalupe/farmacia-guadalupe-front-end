@@ -5,6 +5,7 @@ import { ApolloProvider } from "@apollo/client/react";
 import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
 
 import "./index.css";
+import "./utils/dateUtils";
 import App from "./App.tsx";
 import "swiper/swiper-bundle.css";
 import "flatpickr/dist/flatpickr.css";

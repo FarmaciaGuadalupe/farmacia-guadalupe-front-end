@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import PageBreadcrumb from "../components/common/PageBreadCrumb";
 import { useAuth } from "../context/AuthContext";
 import { generateSaleVoucherPDF, SaleSummary } from "../utils/generateSaleVoucher";
+import { nicaDate, nowInNica } from "../utils/dateUtils";
 
 // --- GRAPHQL DEFINITIONS ---
 const GET_CUSTOMERS = gql`
@@ -345,7 +346,7 @@ export default function Sale() {
         const saleSummary: SaleSummary = {
           receiptNumber: data.createSale.receiptNumber || receiptNumber,
           receiptType,
-          date: new Date(),
+          date: nowInNica().toDate(),
           customer: selectedCustomer ? `${selectedCustomer.firstName} ${selectedCustomer.lastName}` : "Consumidor Final",
           items: cart.map(item => {
             const price = item.batch && item.medicine.product
@@ -721,7 +722,7 @@ export default function Sale() {
               <div className="text-center mb-6">
                 <p className="font-semibold text-lg uppercase">{completedSaleData.receiptType}</p>
                 <p>Nro: {completedSaleData.receiptNumber}</p>
-                <p>Fecha: {completedSaleData.date.toLocaleString()}</p>
+                <p>Fecha: {nicaDate(completedSaleData.date).format("DD/MM/YYYY hh:mm A")}</p>
               </div>
               <div className="mb-4">
                 <strong>Cliente:</strong> {completedSaleData.customer}

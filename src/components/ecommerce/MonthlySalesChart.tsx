@@ -11,25 +11,27 @@ import { useQuery } from "@apollo/client/react";
 import ChartTab, { ChartTabOption } from "../common/ChartTab";
 import { GET_DASHBOARD_SALE_SUMMARY } from "../ui/table/QuerysDefinitions";
 import Loading from "../ui/loading/Loading";
+import { nicaDate, nowInNica } from "../../utils/dateUtils";
 
+
+import dayjs from "dayjs";
 
 export default function MonthlySalesChart() {
 
   const intl = useIntl(); 
   const [chartType, setChartType] = useState<ChartTabOption>("DAILY");
   
-  // Default range: last 7 days
-  const [dateRange, setDateRange] = useState<{start: Date, end: Date}>(() => {
-    const end = new Date();
-    const start = new Date();
-    start.setDate(end.getDate() - 6);
+  // Default range: last 7 days in NIC time
+  const [dateRange, setDateRange] = useState<{start: dayjs.Dayjs, end: dayjs.Dayjs}>(() => {
+    const end = nowInNica();
+    const start = nowInNica().subtract(6, 'day');
     return { start, end };
   });
 
   const { data, loading, error } = useQuery(GET_DASHBOARD_SALE_SUMMARY, {
     variables: {
-      startDate: dateRange.start.toISOString().split('T')[0] + "T00:00:00Z",
-      endDate: dateRange.end.toISOString().split('T')[0] + "T23:59:59Z",
+      startDate: nicaDate(dateRange.start).startOf('day').toISOString(),
+      endDate: nicaDate(dateRange.end).endOf('day').toISOString(),
       type: chartType
     },
     fetchPolicy: "network-only"
@@ -123,13 +125,13 @@ export default function MonthlySalesChart() {
       static: true,
       monthSelectorType: "static",
       dateFormat: "M d",
-      defaultDate: [dateRange.start, dateRange.end],
+      defaultDate: [nicaDate(dateRange.start).toDate(), nicaDate(dateRange.end).toDate()],
       clickOpens: true,
       onChange: (selectedDates) => {
         if (selectedDates.length === 2) {
           setDateRange({
-            start: selectedDates[0],
-            end: selectedDates[1]
+            start: nicaDate(selectedDates[0]),
+            end: nicaDate(selectedDates[1])
           });
         }
       },

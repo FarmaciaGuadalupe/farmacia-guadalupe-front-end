@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { nicaDate } from "./dateUtils";
 
 export interface SaleSummaryItem {
   name: string;
@@ -34,7 +35,7 @@ export const generateSaleVoucherPDF = (saleData: SaleSummary, openInNewWindow: b
   
   doc.setFontSize(10);
   doc.text(`Nro: ${saleData.receiptNumber}`, 14, 40);
-  doc.text(`Fecha: ${saleData.date.toLocaleString()}`, 14, 46);
+  doc.text(`Fecha: ${nicaDate(saleData.date).format("DD/MM/YYYY hh:mm A")}`, 14, 46);
   doc.text(`Cliente: ${saleData.customer}`, 14, 52);
 
   const tableColumn = ["Cant", "Descripción", "Presentación", "P.Unitario", "Total"];
