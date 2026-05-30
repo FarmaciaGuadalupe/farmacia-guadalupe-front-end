@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useIntl } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
 
 import SimpleModal from "../utils/SimpleModal";
@@ -38,7 +38,7 @@ export default function Medicines() {
             <div className="flex justify-end mb-4"> 
                 <button onClick={() => setShowDrawer(true)} className="px-4 py-2 text-white rounded-xl transition-colors flex items-center gap-2 bg-brand-500">
                     <PlusCircleIcon className="h-5 w-5" />
-                    Add New Medicine
+                    <FormattedMessage id='medicine.add' /> 
                 </button>
             </div>
             

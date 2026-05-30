@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Fragment, useState } from "react";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { gql } from "@apollo/client";
 import { useMutation } from "@apollo/client/react";
 import { useQuery } from "@apollo/client/react"; // Cambiamos fetch por useQuery
@@ -97,6 +97,8 @@ const steps: string[] = [
 // --- COMPONENTES DE CADA PASO ---
 
 function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
+  const intl = useIntl();
+
   const { data: brandsData } = useQuery(GET_BRANDS_LIST_QUERY);
   const brandsOptions = React.useMemo(() => {
     if (!brandsData?.brands?.nodes) return [];
@@ -246,7 +248,7 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
             </Label>
             <Select
               options={brandsOptions}
-              placeholder="Select Option"
+              placeholder={intl.formatMessage({ id: "option.select" })}
               value={formData.id_brand}
               onChange={(val) => handleSelectChange("id_brand", val)}
               className="dark:bg-dark-900"
@@ -260,7 +262,7 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
             </Label>
             <Select
               options={manufacturersOptions}
-              placeholder="Select Option"
+              placeholder={intl.formatMessage({ id: "option.select" })}
               value={formData.manufacturer_id}
               onChange={(val) => handleSelectChange("manufacturer_id", val)}
               className="dark:bg-dark-900"
@@ -272,7 +274,7 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
             </Label>
             <Select
               options={categoriesOptions}
-              placeholder="Select Option"
+              placeholder={intl.formatMessage({ id: "option.select" })}
               value={formData.category_id}
               onChange={(val) => handleSelectChange("category_id", val)}
               className="dark:bg-dark-900"
@@ -281,13 +283,13 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
           <div className="w-full">
             <Label>
               <FormattedMessage
-                id="administrationRoutes"
+                id="administration_routes"
                 values={{ count: 1 }}
               />
             </Label>
             <Select
               options={administrationRoutesOptions}
-              placeholder="Select Option"
+              placeholder={intl.formatMessage({ id: "option.select" })}
               value={formData.administration_route_id}
               onChange={(val) =>
                 handleSelectChange("administration_route_id", val)
@@ -306,7 +308,7 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
                 }
               />
               <Label>
-                <FormattedMessage id="requiresPrescription" />
+                <FormattedMessage id="requires.prescription" />
               </Label>
             </div>
           </div>
@@ -330,10 +332,12 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
                     className="flex flex-row gap-3 items-end mb-4"
                   >
                     <div className="w-full">
-                      <Label>Principio Activo</Label>
+                      <Label>
+                        <FormattedMessage id="active_ingredient" />
+                      </Label>
                       <Select
                         options={ingredientsOptions}
-                        placeholder="Buscar componente..."
+                        placeholder={intl.formatMessage({ id: "option.select" })}
                         value={String(ingredient.active_ingredient_id)}
                         onChange={(val) =>
                           handleIngredientChange(
@@ -346,7 +350,9 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
                     </div>
 
                     <div className="w-full">
-                      <Label>Dosis</Label>
+                      <Label>
+                        <FormattedMessage id="dose" />
+                      </Label>
                       <Input
                         type="number"
                         min="0"
@@ -362,10 +368,12 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
                     </div>
 
                     <div className="w-full">
-                      <Label>Unidad</Label>
+                      <Label>
+                        <FormattedMessage id="unit" />
+                      </Label>
                       <Select
                         options={doseUnitsOptions}
-                        placeholder="Ej. mg"
+                        placeholder={intl.formatMessage({ id: "option.select" })}
                         value={String(ingredient.dose_unit_id)}
                         onChange={(val) =>
                           handleIngredientChange(index, "dose_unit_id", val)
@@ -408,6 +416,7 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
 }
 
 function GeneralInfoStep({ formData, onChange, setFormData }: StepProps) {
+  const intl = useIntl();
   const { data: suppliersData } = useQuery(GET_SUPPLIERS_LIST_QUERY);
   const suppliersOptions = React.useMemo(() => {
     if (!suppliersData?.suppliers?.nodes) return [];
@@ -464,7 +473,7 @@ function GeneralInfoStep({ formData, onChange, setFormData }: StepProps) {
             </Label>
             <Select
               options={suppliersOptions}
-              placeholder="Select Option"
+              placeholder={intl.formatMessage({ id: "option.select" })}
               value={formData.supplier_id}
               onChange={(val) => handleSelectChange("supplier_id", val)}
               className="dark:bg-dark-900"
@@ -476,7 +485,7 @@ function GeneralInfoStep({ formData, onChange, setFormData }: StepProps) {
             </Label>
             <Select
               options={presentationsOptions}
-              placeholder="Select Option"
+              placeholder={intl.formatMessage({ id: "option.select" })}
               value={formData.presentation_id}
               onChange={(val) => handleSelectChange("presentation_id", val)}
               className="dark:bg-dark-900"
@@ -484,11 +493,11 @@ function GeneralInfoStep({ formData, onChange, setFormData }: StepProps) {
           </div>
           <div className="w-full">
             <Label>
-              <FormattedMessage id="unit_of_measure" values={{ count: 1 }} />
+              <FormattedMessage id="unit_of_measures" values={{ count: 1 }} />
             </Label>
             <Select
               options={unitOfMeasureOptions}
-              placeholder="Select Option"
+              placeholder={intl.formatMessage({ id: "option.select" })}
               value={formData.unit_of_measure_id}
               onChange={(val) => handleSelectChange("unit_of_measure_id", val)}
               className="dark:bg-dark-900"
@@ -551,7 +560,7 @@ function GeneralInfoStep({ formData, onChange, setFormData }: StepProps) {
             <div className="w-full">
               <Label>
                 <FormattedMessage
-                  id="price_full_presentation"
+                  id="price_per_unit"
                   values={{ count: 1 }}
                 />
               </Label>
@@ -571,6 +580,7 @@ function GeneralInfoStep({ formData, onChange, setFormData }: StepProps) {
 }
 
 function CompositionStep({ formData, onChange, setFormData }: StepProps) {
+  const intl = useIntl();
   // Función dinámica para actualizar cualquier select/date en el padre
   const handleSelectChange = (field: keyof MedicineFormData, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -608,7 +618,7 @@ function CompositionStep({ formData, onChange, setFormData }: StepProps) {
             </Label>
             <DatePicker
               id="expiration_date"
-              placeholder="Select a date"
+              placeholder={intl.formatMessage({ id: "option.select" })}
               value={formData.expiration_date}
               onChange={(_, currentDateString) => {
                 handleSelectChange("expiration_date", currentDateString);
@@ -667,9 +677,12 @@ function CompositionStep({ formData, onChange, setFormData }: StepProps) {
 export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
   const [activeStep, setActiveStep] = React.useState<number>(0);
 
-  const [addMedicine, { loading: isSubmitting }] = useMutation(ADD_MEDICINE_MUTATION, {
-    refetchQueries: [{ query: GET_MEDICINE_QUERY() }]
-  });
+  const [addMedicine, { loading: isSubmitting }] = useMutation(
+    ADD_MEDICINE_MUTATION,
+    {
+      refetchQueries: [{ query: GET_MEDICINE_QUERY() }],
+    },
+  );
 
   // Tipamos el estado inicial con la interfaz MedicineFormData
   const [formData, setFormData] = React.useState<MedicineFormData>({
@@ -782,7 +795,7 @@ export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
     });
   };
 
-const submitToAPI = async () => {
+  const submitToAPI = async () => {
     // 1. Aplicamos lógica de stock mínimo asegurándonos de que sea un número válido
     const finalMinStock =
       formData.min_stock_units === ""
@@ -796,28 +809,35 @@ const submitToAPI = async () => {
       idBrand: parseInt(String(formData.id_brand), 10) || 0,
       manufacturerId: parseInt(String(formData.manufacturer_id), 10) || 0,
       categoryId: parseInt(String(formData.category_id), 10) || 0,
-      administrationRouteId: parseInt(String(formData.administration_route_id), 10) || 0,
+      administrationRouteId:
+        parseInt(String(formData.administration_route_id), 10) || 0,
       requiresPrescription: Boolean(formData.requires_prescription),
 
       supplierId: parseInt(String(formData.supplier_id), 10) || 0,
       presentationId: parseInt(String(formData.presentation_id), 10) || 0,
       unitOfMeasureId: parseInt(String(formData.unit_of_measure_id), 10) || 0,
-      unitsPerPresentation: parseInt(String(formData.units_per_presentation), 10) || 0,
-      
+      unitsPerPresentation:
+        parseInt(String(formData.units_per_presentation), 10) || 0,
+
       currency: formData.currency,
       costPrice: parseFloat(String(formData.cost_price)) || 0,
-      
-      // Usamos 'undefined' o '0' en vez de 'null'. Apollo Client filtrará los campos 'undefined' 
+
+      // Usamos 'undefined' o '0' en vez de 'null'. Apollo Client filtrará los campos 'undefined'
       // y GraphQL aplicará sus valores por defecto o los ignorará correctamente.
-      pricePerUnit: formData.is_fractionable ? parseFloat(String(formData.price_per_unit)) || 0 : 0,
-      priceFullPresentation: parseFloat(String(formData.price_full_presentation)) || 0,
+      pricePerUnit: formData.is_fractionable
+        ? parseFloat(String(formData.price_per_unit)) || 0
+        : 0,
+      priceFullPresentation:
+        parseFloat(String(formData.price_full_presentation)) || 0,
       isFractionable: Boolean(formData.is_fractionable),
-      
+
       description: formData.description || "Sin descripción",
-      
+
       batchCode: formData.batch_code,
-      expirationDate: formData.expiration_date ? `${formData.expiration_date}T23:59:59Z` : undefined,
-      
+      expirationDate: formData.expiration_date
+        ? `${formData.expiration_date}T23:59:59Z`
+        : undefined,
+
       units: parseInt(String(formData.units), 10) || 0,
       stockUnits: parseInt(String(formData.stock_units), 10) || 0,
       minStockUnits: finalMinStock || 0,
@@ -833,16 +853,22 @@ const submitToAPI = async () => {
 
     try {
       const { data } = await addMedicine({ variables: { input } });
-      
+
       if (data?.addMedicine?.result) {
-        toast.success(data.addMedicine.message || "¡Medicamento guardado con éxito!");
+        toast.success(
+          data.addMedicine.message || "¡Medicamento guardado con éxito!",
+        );
         if (onClose) onClose();
       } else {
-        toast.error(data?.addMedicine?.message || "Error al guardar el medicamento");
+        toast.error(
+          data?.addMedicine?.message || "Error al guardar el medicamento",
+        );
       }
     } catch (error: any) {
       console.error("❌ Error GraphQL:", error);
-      toast.error(error.message || "Error de red o servidor al intentar guardar");
+      toast.error(
+        error.message || "Error de red o servidor al intentar guardar",
+      );
     }
   };
 
@@ -958,7 +984,11 @@ const submitToAPI = async () => {
               onClick={handleNext}
               disabled={!isStepValid() || isSubmitting}
             >
-              {isSubmitting ? "Enviando..." : activeStep === steps.length - 1 ? "Enviar al API" : "Siguiente"}
+              {isSubmitting
+                ? "Enviando..."
+                : activeStep === steps.length - 1
+                  ? "Enviar al API"
+                  : "Siguiente"}
             </Button>
           </div>
         </Fragment>
