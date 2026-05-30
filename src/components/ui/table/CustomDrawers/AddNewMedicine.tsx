@@ -673,6 +673,7 @@ function CompositionStep({ formData, onChange, setFormData }: StepProps) {
 }
 
 // --- COMPONENTE PRINCIPAL ---
+import dayjs from "../../../../utils/dateUtils";
 
 export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
   const [activeStep, setActiveStep] = React.useState<number>(0);
@@ -683,6 +684,8 @@ export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
       refetchQueries: [{ query: GET_MEDICINE_QUERY() }],
     },
   );
+
+  const defaultExpirationDate = dayjs().add(2, "year").format("YYYY-MM-DD");
 
   // Tipamos el estado inicial con la interfaz MedicineFormData
   const [formData, setFormData] = React.useState<MedicineFormData>({
@@ -706,7 +709,7 @@ export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
 
     description: "",
     batch_code: "",
-    expiration_date: "",
+    expiration_date: defaultExpirationDate,
     units: "",
     stock_units: "",
     min_stock_units: "",

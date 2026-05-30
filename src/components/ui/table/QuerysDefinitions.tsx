@@ -270,7 +270,7 @@ export const GET_MEDICINE_QUERY = () => gql`
 
 export const GET_SUPPLIERS_LIST_QUERY = gql`
   query GetSuppliersList {
-    suppliers {
+    suppliers(first: 100, order: [{ company_name: ASC }]) {
       nodes {
         supplier_id
         company_name
@@ -281,7 +281,7 @@ export const GET_SUPPLIERS_LIST_QUERY = gql`
 
 export const GET_PRESENTATION_LIST_QUERY = gql`
   query GetPresentations {
-    presentations {
+    presentations(first: 100, order: [{ name: ASC }]) {
       nodes {
         presentation_id
         name
@@ -292,7 +292,7 @@ export const GET_PRESENTATION_LIST_QUERY = gql`
 
 export const GET_BRANDS_LIST_QUERY = gql`
   query GetBrands {
-    brands {
+    brands(first: 100, order: [{ name: ASC }]) {
       nodes {
         id_brand
         name
@@ -303,7 +303,7 @@ export const GET_BRANDS_LIST_QUERY = gql`
 
 export const GET_MANUFACTURERS_LIST_QUERY = gql`
   query GetManufacturers {
-    manufacturers {
+    manufacturers(first: 100, order: [{ name: ASC }]) {
       nodes {
         manufacturer_id
         name
@@ -314,7 +314,7 @@ export const GET_MANUFACTURERS_LIST_QUERY = gql`
 
 export const GET_CATEGORIES_LIST_QUERY = gql`
   query GetCategories {
-    categories {
+    categories(first: 100, order: [{ name: ASC }]) {
       nodes {
         category_id
         name
@@ -325,7 +325,7 @@ export const GET_CATEGORIES_LIST_QUERY = gql`
 
 export const GET_ADMINISTRATION_ROUTES_LIST_QUERY = gql`
   query GetAdministrationRoutes {
-    administrationRoutes {
+    administrationRoutes(first: 100, order: [{ name: ASC }]) {
       nodes {
         administration_route_id
         name
@@ -336,7 +336,7 @@ export const GET_ADMINISTRATION_ROUTES_LIST_QUERY = gql`
 
 export const GET_ACTIVE_INGREDIENTS_LIST_QUERY = gql`
   query GetActiveIngredients {
-    activeIngredients {
+    activeIngredients(first: 100, order: [{ name: ASC }]) {
       nodes {
         active_ingredient_id
         name
@@ -347,7 +347,7 @@ export const GET_ACTIVE_INGREDIENTS_LIST_QUERY = gql`
 
 export const GET_DOSE_UNITS_LIST_QUERY = gql`
   query GetDoseUnits {
-    doseUnits {
+    doseUnits(first: 100, order: [{ name: ASC }]) {
       nodes {
         dose_unit_id
         name
@@ -359,7 +359,7 @@ export const GET_DOSE_UNITS_LIST_QUERY = gql`
 
 export const GET_UNIT_OF_MEASURE_LIST_QUERY = gql`
   query GetUnitOfMeasures {
-    unitOfMeasures {
+    unitOfMeasures(first: 100, order: [{ name: ASC }]) {
       nodes {
         unit_of_measure_id
         name
