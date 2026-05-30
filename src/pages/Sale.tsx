@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { gql } from "@apollo/client";
 import { useQuery, useMutation } from "@apollo/client/react";
+import { useIntl, FormattedMessage } from "react-intl";
 import {
   Autocomplete,
   TextField,
@@ -146,6 +147,7 @@ interface PaymentItem {
 
 export default function Sale() {
   const { user } = useAuth();
+  const intl = useIntl();
 
   // --- STATE: Header Section ---
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
@@ -217,7 +219,7 @@ export default function Sale() {
       !medicine.product.batches ||
       medicine.product.batches.length === 0
     ) {
-      toast.error("Este producto no tiene lotes disponibles.");
+      toast.error(intl.formatMessage({ id: "sale.error.no_batches" }));
       return;
     }
 
@@ -227,7 +229,7 @@ export default function Sale() {
     );
 
     if (availableBatches.length === 0) {
-      toast.error("Este producto no tiene lotes activos con stock disponible.");
+      toast.error(intl.formatMessage({ id: "sale.error.no_active_batches" }));
       return;
     }
 
@@ -235,7 +237,7 @@ export default function Sale() {
     if (medicine.requires_prescription) {
        setSaleType("RECETA");
        setShowMedicalData(true);
-       toast.info(`El producto ${medicine.name} requiere receta médica.`);
+       toast.info(intl.formatMessage({ id: "sale.info.requires_prescription" }, { name: medicine.name }));
     }
 
     if (availableBatches.length === 1) {
@@ -276,7 +278,7 @@ export default function Sale() {
             const valNum = Number(value);
             if (valNum > item.batch.current_quantity_units) {
               toast.error(
-                `La cantidad no puede superar el stock del lote (${item.batch.current_quantity_units})`,
+                intl.formatMessage({ id: "sale.error.quantity_exceeds_stock" }, { stock: item.batch.current_quantity_units })
               );
               return { ...item, [field]: item.batch.current_quantity_units };
             }
@@ -326,25 +328,25 @@ export default function Sale() {
   const handleProcessSale = async () => {
     // Validations
     if (cart.length === 0) {
-      toast.error("El carrito está vacío.");
+      toast.error(intl.formatMessage({ id: "sale.error.cart_empty" }));
       return;
     }
     if (cart.some((item) => !item.batch)) {
-      toast.error("Todos los productos deben tener un lote asignado.");
+      toast.error(intl.formatMessage({ id: "sale.error.no_batch_assigned" }));
       return;
     }
     if (totalPaid < grandTotal) {
-      toast.error("El monto pagado es menor al total de la venta.");
+      toast.error(intl.formatMessage({ id: "sale.error.insufficient_payment" }));
       return;
     }
     if (!receiptNumber) {
-      toast.error("Debe ingresar el número de comprobante.");
+      toast.error(intl.formatMessage({ id: "sale.error.missing_receipt_number" }));
       return;
     }
     
     // Medical validation
     if (saleType === "RECETA" && (!prescriptionNumber.trim() || !doctorName.trim())) {
-      toast.error("Los datos médicos son obligatorios para ventas con receta.");
+      toast.error(intl.formatMessage({ id: "sale.error.medical_data_required" }));
       return;
     }
 
@@ -389,7 +391,7 @@ export default function Sale() {
       const { data } = await createSale({ variables: { input: payload } });
 
       if (data?.createSale?.success) {
-        toast.success(data.createSale.message || "Venta procesada con éxito.");
+        toast.success(data.createSale.message || intl.formatMessage({ id: "sale.success.message" }));
 
         const saleSummary: SaleSummary = {
           receiptNumber: data.createSale.receiptNumber || receiptNumber,
@@ -397,7 +399,7 @@ export default function Sale() {
           date: nowInNica().toDate(),
           customer: selectedCustomer
             ? `${selectedCustomer.firstName} ${selectedCustomer.lastName}`
-            : "Consumidor Final",
+            : intl.formatMessage({ id: "sale.final_consumer" }),
           items: cart.map((item) => {
             const price = item.isFullPresentation
                   ? item.medicine.product.price_full_presentation
@@ -407,7 +409,9 @@ export default function Sale() {
               quantity: item.quantity,
               price: price,
               total: item.quantity * price,
-              presentation: item.isFullPresentation ? "Caja" : "Unidad",
+              presentation: item.isFullPresentation 
+                ? intl.formatMessage({ id: "sale.presentation.box" }) 
+                : intl.formatMessage({ id: "sale.presentation.unit" }),
             };
           }),
           subtotal,
@@ -435,11 +439,11 @@ export default function Sale() {
         refetchMedicines();
         refetchPaymentMethods();
       } else {
-        toast.error(data?.createSale?.message || "Error al registrar la venta.");
+        toast.error(data?.createSale?.message || intl.formatMessage({ id: "sale.error.save" }));
       }
     } catch (err) {
       console.error(err);
-      toast.error("Error al procesar la venta.");
+      toast.error(intl.formatMessage({ id: "sale.error.process" }));
     }
   };
 
@@ -457,14 +461,14 @@ export default function Sale() {
 
   return (
     <div className="pb-20">
-      <PageBreadcrumb pageTitle="Punto de Venta" />
+      <PageBreadcrumb pageTitle={intl.formatMessage({ id: "sale.page_title" })} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
-                Datos de Venta
+                <FormattedMessage id="sale.data" />
               </h2>
               
               <div className="flex items-center gap-4">
@@ -474,15 +478,15 @@ export default function Sale() {
                     getOptionLabel={(opt: Customer) => `${opt.firstName} ${opt.lastName}`}
                     value={selectedCustomer}
                     onChange={(_, val) => setSelectedCustomer(val)}
-                    renderInput={(params) => <TextField {...params} label="Cliente" variant="outlined" size="small" />}
+                    renderInput={(params) => <TextField {...params} label={intl.formatMessage({ id: "sale.customer" })} variant="outlined" size="small" />}
                   />
                 </div>
 
                 <FormControl size="small" sx={{ minWidth: 200 }}>
-                  <InputLabel>Tipo de Venta</InputLabel>
+                  <InputLabel><FormattedMessage id="sale.type" /></InputLabel>
                   <Select
                     value={saleType}
-                    label="Tipo de Venta"
+                    label={intl.formatMessage({ id: "sale.type" })}
                     onChange={(e) => {
                       const val = e.target.value;
                       setSaleType(val);
@@ -490,8 +494,8 @@ export default function Sale() {
                       else setShowMedicalData(false);
                     }}
                   >
-                    <MenuItem value="LIBRE">Venta Libre</MenuItem>
-                    <MenuItem value="RECETA">Venta con Receta</MenuItem>
+                    <MenuItem value="LIBRE"><FormattedMessage id="sale.type_free" /></MenuItem>
+                    <MenuItem value="RECETA"><FormattedMessage id="sale.type_prescription" /></MenuItem>
                   </Select>
                 </FormControl>
               </div>
@@ -506,12 +510,12 @@ export default function Sale() {
                     disabled={saleType === "RECETA"}
                   />
                 }
-                label="Incluir Datos Médicos"
+                label={intl.formatMessage({ id: "sale.include_medical_data" })}
               />
               {showMedicalData && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                   <TextField
-                    label="Número de Receta"
+                    label={intl.formatMessage({ id: "sale.prescription_number" })}
                     variant="outlined"
                     size="small"
                     required={saleType === "RECETA"}
@@ -520,7 +524,7 @@ export default function Sale() {
                     error={saleType === "RECETA" && !prescriptionNumber.trim()}
                   />
                   <TextField
-                    label="Nombre del Médico"
+                    label={intl.formatMessage({ id: "sale.doctor_name" })}
                     variant="outlined"
                     size="small"
                     required={saleType === "RECETA"}
@@ -535,7 +539,7 @@ export default function Sale() {
 
           <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
             <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
-              Productos
+              <FormattedMessage id="products" values={{ count: 2 }} />
             </h2>
 
             <Autocomplete
@@ -552,7 +556,7 @@ export default function Sale() {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Buscar por código de barras o nombre..."
+                  label={intl.formatMessage({ id: "sale.search_placeholder" })}
                   variant="outlined"
                   autoFocus
                 />
@@ -566,20 +570,20 @@ export default function Sale() {
               <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
                 <thead className="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
                   <tr>
-                    <th className="px-4 py-3">Producto</th>
-                    <th className="px-4 py-3">Lote/Venc.</th>
-                    <th className="px-4 py-3">Presentación</th>
-                    <th className="px-4 py-3">Cant.</th>
-                    <th className="px-4 py-3 text-right">Precio U.</th>
-                    <th className="px-4 py-3 text-right">Total</th>
-                    <th className="px-4 py-3 text-center">Acción</th>
+                    <th className="px-4 py-3"><FormattedMessage id="sale.table.product" /></th>
+                    <th className="px-4 py-3"><FormattedMessage id="sale.table.batch_exp" /></th>
+                    <th className="px-4 py-3"><FormattedMessage id="sale.table.presentation" /></th>
+                    <th className="px-4 py-3"><FormattedMessage id="sale.table.quantity" /></th>
+                    <th className="px-4 py-3 text-right"><FormattedMessage id="sale.table.unit_price" /></th>
+                    <th className="px-4 py-3 text-right"><FormattedMessage id="sale.table.total" /></th>
+                    <th className="px-4 py-3 text-center"><FormattedMessage id="actions" /></th>
                   </tr>
                 </thead>
                 <tbody>
                   {cart.length === 0 ? (
                     <tr>
                       <td colSpan={7} className="px-4 py-8 text-center">
-                        El carrito está vacío
+                        <FormattedMessage id="sale.cart_empty" />
                       </td>
                     </tr>
                   ) : (
@@ -606,7 +610,7 @@ export default function Sale() {
                                 <br />
                                 <span className="text-gray-400">{item.batch.expiration_date}</span>
                               </span>
-                            ) : "Sin Lote"}
+                            ) : intl.formatMessage({ id: "sale.no_batch" })}
                           </td>
                           <td className="px-4 py-3">
                             <FormControlLabel
@@ -618,7 +622,7 @@ export default function Sale() {
                                   disabled={!item.medicine.product?.is_fractionable}
                                 />
                               }
-                              label={<span className="text-xs">{item.isFullPresentation ? "Caja" : "Unidad"}</span>}
+                              label={<span className="text-xs">{item.isFullPresentation ? intl.formatMessage({ id: "sale.presentation.box" }) : intl.formatMessage({ id: "sale.presentation.unit" })}</span>}
                             />
                           </td>
                           <td className="px-4 py-3 w-24">
@@ -649,23 +653,23 @@ export default function Sale() {
 
         <div className="space-y-6">
           <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
-            <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Resumen</h2>
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4"><FormattedMessage id="sale.summary_title" /></h2>
             <div className="space-y-3 mb-6 border-b border-gray-200 pb-6 dark:border-gray-700">
               <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
-                <span>Subtotal Bruto</span>
+                <span><FormattedMessage id="sale.subtotal_bruto" /></span>
                 <span className="font-mono">C$ {subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
-                <span>IVA (15%)</span>
+                <span><FormattedMessage id="sale.iva" /></span>
                 <span className="font-mono">C$ {iva.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-xl font-bold text-gray-900 dark:text-white mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-                <span>TOTAL A PAGAR</span>
+                <span><FormattedMessage id="sale.grand_total" /></span>
                 <span className="font-mono text-emerald-600 dark:text-emerald-400">C$ {grandTotal.toFixed(2)}</span>
               </div>
             </div>
 
-            <h3 className="text-md font-medium text-gray-800 dark:text-white mb-3">Métodos de Pago</h3>
+            <h3 className="text-md font-medium text-gray-800 dark:text-white mb-3"><FormattedMessage id="sale.payment_methods" /></h3>
             <div className="space-y-4">
               {payments.map((payment) => (
                 <div key={payment.id} className="relative p-4 border border-gray-100 rounded-lg bg-gray-50 dark:bg-gray-800/50 dark:border-gray-700">
@@ -676,10 +680,10 @@ export default function Sale() {
                   )}
                   <div className="grid grid-cols-2 gap-3 mb-3">
                     <FormControl size="small" fullWidth>
-                      <InputLabel>Método</InputLabel>
+                      <InputLabel><FormattedMessage id="sale.payment_method" /></InputLabel>
                       <Select
                         value={payment.paymentMethodId}
-                        label="Método"
+                        label={intl.formatMessage({ id: "sale.payment_method" })}
                         onChange={(e) => updatePaymentRow(payment.id, "paymentMethodId", e.target.value)}
                       >
                         {paymentMethodsData?.paymentMethods?.nodes
@@ -690,7 +694,7 @@ export default function Sale() {
                       </Select>
                     </FormControl>
                     <TextField
-                      label="Monto"
+                      label={intl.formatMessage({ id: "sale.amount" })}
                       type="number"
                       size="small"
                       fullWidth
@@ -700,7 +704,7 @@ export default function Sale() {
                   </div>
                   {payment.paymentMethodId !== 1 && payment.paymentMethodId !== "" && (
                     <TextField
-                      label="Referencia / Voucher"
+                      label={intl.formatMessage({ id: "sale.reference_voucher" })}
                       size="small"
                       fullWidth
                       value={payment.transactionReference}
@@ -709,25 +713,25 @@ export default function Sale() {
                   )}
                 </div>
               ))}
-              <Button variant="outlined" color="primary" fullWidth startIcon={<PlusIcon className="h-4 w-4" />} onClick={addPaymentRow}>Añadir otro pago</Button>
+              <Button variant="outlined" color="primary" fullWidth startIcon={<PlusIcon className="h-4 w-4" />} onClick={addPaymentRow}><FormattedMessage id="sale.add_payment" /></Button>
             </div>
 
             <div className={`mt-6 p-4 rounded-lg ${changeDue >= 0 ? "bg-emerald-50 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-300" : "bg-rose-50 text-rose-800 dark:bg-rose-900/20 dark:text-rose-300"}`}>
               <div className="flex justify-between font-medium">
-                <span>{changeDue >= 0 ? "Cambio a Devolver" : "Monto Faltante"}</span>
+                <span>{changeDue >= 0 ? <FormattedMessage id="sale.change_due" /> : <FormattedMessage id="sale.amount_missing" />}</span>
                 <span className="font-mono">C$ {Math.abs(changeDue).toFixed(2)}</span>
               </div>
             </div>
 
             <Button variant="contained" color="primary" size="large" fullWidth className="mt-6 !py-3 !text-lg !font-bold" onClick={handleProcessSale} disabled={isSubmitting || cart.length === 0 || totalPaid < grandTotal}>
-              {isSubmitting ? "Procesando..." : "Procesar Venta"}
+              {isSubmitting ? intl.formatMessage({ id: "sale.processing" }) : intl.formatMessage({ id: "sale.process_sale" })}
             </Button>
           </div>
         </div>
       </div>
 
       <Dialog open={!!selectedMedicineForBatch} onClose={() => setSelectedMedicineForBatch(null)} maxWidth="sm" fullWidth>
-        <DialogTitle>Seleccionar Lote - {selectedMedicineForBatch?.name}</DialogTitle>
+        <DialogTitle><FormattedMessage id="sale.select_batch_title" values={{ name: selectedMedicineForBatch?.name }} /></DialogTitle>
         <DialogContent dividers>
           <div className="space-y-3">
             {selectedMedicineForBatch?.product?.batches
@@ -735,38 +739,38 @@ export default function Sale() {
               .map((batch) => (
                 <div key={batch.batch_id} className="flex justify-between items-center p-3 border rounded hover:bg-gray-50 cursor-pointer" onClick={() => addBatchToCart(selectedMedicineForBatch, batch)}>
                   <div>
-                    <div className="font-medium text-gray-900">Lote: {batch.batch_code}</div>
-                    <div className="text-sm text-gray-500">Vence: {batch.expiration_date}</div>
+                    <div className="font-medium text-gray-900"><FormattedMessage id="sale.batch_label" values={{ batch_code: batch.batch_code }} /></div>
+                    <div className="text-sm text-gray-500"><FormattedMessage id="sale.exp_label" values={{ expiration_date: batch.expiration_date }} /></div>
                   </div>
                   <div className="text-right">
-                    <div className="font-medium text-emerald-600">Stock: {batch.current_quantity_units}</div>
-                    <div className="text-sm text-gray-500">Precio: C$ {selectedMedicineForBatch.product.price_full_presentation}</div>
+                    <div className="font-medium text-emerald-600"><FormattedMessage id="sale.stock_label" values={{ current_quantity_units: batch.current_quantity_units }} /></div>
+                    <div className="text-sm text-gray-500"><FormattedMessage id="sale.price_label" values={{ price: selectedMedicineForBatch.product.price_full_presentation }} /></div>
                   </div>
                 </div>
               ))}
           </div>
         </DialogContent>
-        <DialogActions><Button onClick={() => setSelectedMedicineForBatch(null)}>Cancelar</Button></DialogActions>
+        <DialogActions><Button onClick={() => setSelectedMedicineForBatch(null)}><FormattedMessage id="cancel" /></Button></DialogActions>
       </Dialog>
 
       <Dialog open={!!completedSaleData} onClose={() => setCompletedSaleData(null)} maxWidth="sm" fullWidth>
-        <DialogTitle className="text-center font-bold text-xl">Farmacia Guadalupe</DialogTitle>
+        <DialogTitle className="text-center font-bold text-xl"><FormattedMessage id="sale.pharmacy_name" /></DialogTitle>
         <DialogContent dividers>
           {completedSaleData && (
             <div className="space-y-4 text-sm text-gray-800 dark:text-gray-200">
               <div className="text-center mb-6">
                 <p className="font-semibold text-lg uppercase">{completedSaleData.receiptType}</p>
-                <p>Nro: {completedSaleData.receiptNumber}</p>
-                <p>Fecha: {nicaDate(completedSaleData.date).format("DD/MM/YYYY hh:mm A")}</p>
+                <p><FormattedMessage id="sale.receipt_number" values={{ receiptNumber: completedSaleData.receiptNumber }} /></p>
+                <p><FormattedMessage id="sale.date_label" values={{ date: nicaDate(completedSaleData.date).format("DD/MM/YYYY hh:mm A") }} /></p>
               </div>
-              <div className="mb-4"><strong>Cliente:</strong> {completedSaleData.customer}</div>
+              <div className="mb-4"><strong><FormattedMessage id="sale.customer" />:</strong> {completedSaleData.customer}</div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm border-collapse">
                   <thead>
                     <tr className="border-b border-gray-300 dark:border-gray-700">
-                      <th className="py-2">Cant</th>
-                      <th className="py-2">Descripción</th>
-                      <th className="py-2 text-right">Total</th>
+                      <th className="py-2"><FormattedMessage id="sale.table.quantity_short" /></th>
+                      <th className="py-2"><FormattedMessage id="description" /></th>
+                      <th className="py-2 text-right"><FormattedMessage id="sale.table.total" /></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -781,21 +785,21 @@ export default function Sale() {
                 </table>
               </div>
               <div className="space-y-1 text-right mt-6 border-t border-gray-300 dark:border-gray-700 pt-4">
-                <p>Subtotal: <span className="font-mono">C$ {completedSaleData.subtotal.toFixed(2)}</span></p>
-                <p>IVA (15%): <span className="font-mono">C$ {completedSaleData.iva.toFixed(2)}</span></p>
-                <p className="font-bold text-lg mt-2">Total: <span className="font-mono">C$ {completedSaleData.grandTotal.toFixed(2)}</span></p>
+                <p><FormattedMessage id="sale.subtotal" /> <span className="font-mono">C$ {completedSaleData.subtotal.toFixed(2)}</span></p>
+                <p><FormattedMessage id="sale.iva_label" /> <span className="font-mono">C$ {completedSaleData.iva.toFixed(2)}</span></p>
+                <p className="font-bold text-lg mt-2"><FormattedMessage id="sale.total_label" /> <span className="font-mono">C$ {completedSaleData.grandTotal.toFixed(2)}</span></p>
                 <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-                  <p className="text-gray-600 dark:text-gray-400">Pagado: <span className="font-mono">C$ {completedSaleData.totalPaid.toFixed(2)}</span></p>
-                  <p className="text-gray-600 dark:text-gray-400">Cambio: <span className="font-mono">C$ {Math.abs(completedSaleData.changeDue).toFixed(2)}</span></p>
+                  <p className="text-gray-600 dark:text-gray-400"><FormattedMessage id="sale.paid_label" /> <span className="font-mono">C$ {completedSaleData.totalPaid.toFixed(2)}</span></p>
+                  <p className="text-gray-600 dark:text-gray-400"><FormattedMessage id="sale.change_label" /> <span className="font-mono">C$ {Math.abs(completedSaleData.changeDue).toFixed(2)}</span></p>
                 </div>
               </div>
-              <div className="text-center mt-6 italic text-gray-500">¡Gracias por su compra!</div>
+              <div className="text-center mt-6 italic text-gray-500"><FormattedMessage id="sale.thanks_message" /></div>
             </div>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCompletedSaleData(null)}>Cerrar</Button>
-          <Button variant="contained" color="primary" onClick={() => completedSaleData && generateSaleVoucherPDF(completedSaleData, true)}>Imprimir / Ver PDF</Button>
+          <Button onClick={() => setCompletedSaleData(null)}><FormattedMessage id="sale.close" /></Button>
+          <Button variant="contained" color="primary" onClick={() => completedSaleData && generateSaleVoucherPDF(completedSaleData, true)}><FormattedMessage id="sale.print_pdf" /></Button>
         </DialogActions>
       </Dialog>
     </div>

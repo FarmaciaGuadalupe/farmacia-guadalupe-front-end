@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { EnvelopeIcon, PhoneIcon } from "@heroicons/react/24/outline";
+import { toast } from "sonner";
 
 import Label from "../../../form/Label";
 import Input from "../../../form/input/InputField";
@@ -43,13 +44,13 @@ const handleSubmit = async () => {
       }
     });
     
-    alert("Marca guardada correctamente");
+    toast.success(intl.formatMessage({ id: "brand.create.success" }));
     setName("");
     setEmail("");
     setPhone("");
   } catch (err) {
     console.error("Error al guardar:", err);
-    alert("Error al guardar");
+    toast.error(intl.formatMessage({ id: "brand.create.error" }));
   }
 };
 
@@ -92,7 +93,7 @@ const handleSubmit = async () => {
               id="phone_input"
               type="text"
               value={phone}
-              placeholder="+505 8888-8888"
+              placeholder={intl.formatMessage({ id: "contact_phone" })}
               className="pl-[62px]"
               onChange={(e) => setPhone(e.target.value)}
             />
@@ -114,7 +115,7 @@ const handleSubmit = async () => {
               value={email}
               error={error}
               onChange={handleEmailChange}
-              placeholder="example@domain.com"
+              placeholder={intl.formatMessage({ id: "contact_email" })}
               className="pl-[62px]"
             />
             <span className="absolute left-0 top-1/2 -translate-y-1/2 border-r border-gray-200 px-3.5 py-3 text-gray-500 dark:border-gray-800 dark:text-gray-400">

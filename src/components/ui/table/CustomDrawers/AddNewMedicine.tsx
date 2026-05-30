@@ -88,10 +88,10 @@ interface StepProps {
   setFormData: React.Dispatch<React.SetStateAction<MedicineFormData>>; // Importante para arreglos
 }
 
-const steps: string[] = [
-  "Identificación del Medicamento",
-  "Empaque y Precios",
-  "Lote",
+const stepKeys: string[] = [
+  "medicine.step.identification",
+  "medicine.step.packaging",
+  "medicine.step.batch",
 ];
 
 // --- COMPONENTES DE CADA PASO ---
@@ -204,7 +204,7 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
           fontWeight="bold"
           className="mb-2 text-gray-700"
         >
-          Datos del medicamento
+          <FormattedMessage id="medicine.section.data" />
         </Typography>
         <div className="flex flex-row gap-4 justify-center  ">
           <div className="w-full">
@@ -323,7 +323,7 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
                   fontWeight="bold"
                   className="mb-2 text-gray-700"
                 >
-                  Fórmula / Principios Activos
+                  <FormattedMessage id="medicine.section.formula" />
                 </Typography>
 
                 {formData.ingredients.map((ingredient, index) => (
@@ -404,7 +404,7 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
                   onClick={addIngredient}
                   sx={{ mt: 1 }}
                 >
-                  + Agregar otro componente
+                  <FormattedMessage id="medicine.action.add_ingredient" />
                 </Button>
               </div>
             </div>
@@ -464,7 +464,7 @@ function GeneralInfoStep({ formData, onChange, setFormData }: StepProps) {
           fontWeight="bold"
           className="mb-2 text-gray-700"
         >
-          Empaque y Precios
+          <FormattedMessage id="medicine.step.packaging" />
         </Typography>
         <div className="flex flex-row gap-4 justify-center  ">
           <div className="w-full">
@@ -598,7 +598,7 @@ function CompositionStep({ formData, onChange, setFormData }: StepProps) {
           fontWeight="bold"
           className="mb-2 text-gray-700"
         >
-          Lote
+          <FormattedMessage id="medicine.step.batch" />
         </Typography>
         <div className="flex flex-row gap-4 justify-center  ">
           <div className="w-full">
@@ -676,6 +676,7 @@ function CompositionStep({ formData, onChange, setFormData }: StepProps) {
 import dayjs from "../../../../utils/dateUtils";
 
 export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
+  const intl = useIntl();
   const [activeStep, setActiveStep] = React.useState<number>(0);
 
   const [addMedicine, { loading: isSubmitting }] = useMutation(
@@ -754,7 +755,7 @@ export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
   }, [formData.units, formData.units_per_presentation]);
 
   const handleNext = () => {
-    if (activeStep === steps.length - 1) {
+    if (activeStep === stepKeys.length - 1) {
       submitToAPI();
     } else {
       setActiveStep((prev) => prev + 1);
@@ -834,7 +835,7 @@ export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
         parseFloat(String(formData.price_full_presentation)) || 0,
       isFractionable: Boolean(formData.is_fractionable),
 
-      description: formData.description || "Sin descripción",
+      description: formData.description || intl.formatMessage({ id: "medicine.description.default" }),
 
       batchCode: formData.batch_code,
       expirationDate: formData.expiration_date
@@ -859,18 +860,18 @@ export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
 
       if (data?.addMedicine?.result) {
         toast.success(
-          data.addMedicine.message || "¡Medicamento guardado con éxito!",
+          data.addMedicine.message || intl.formatMessage({ id: "medicine.success.message" }),
         );
         if (onClose) onClose();
       } else {
         toast.error(
-          data?.addMedicine?.message || "Error al guardar el medicamento",
+          data?.addMedicine?.message || intl.formatMessage({ id: "medicine.error.save" }),
         );
       }
     } catch (error: any) {
       console.error("❌ Error GraphQL:", error);
       toast.error(
-        error.message || "Error de red o servidor al intentar guardar",
+        error.message || intl.formatMessage({ id: "medicine.error.network" }),
       );
     }
   };
@@ -944,7 +945,7 @@ export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
           />
         );
       default:
-        return <Typography>Paso desconocido</Typography>;
+        return <Typography><FormattedMessage id="medicine.error.unknown_step" /></Typography>;
     }
   };
 
@@ -952,21 +953,21 @@ export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
     <Box className="p-3">
       {/* sx={{ width: '100%', maxWidth: 600, mx: 'auto', p: 3 }}> */}
       <Stepper className="m-4 " activeStep={activeStep} alternativeLabel>
-        {steps.map((label) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
+        {stepKeys.map((key) => (
+          <Step key={key}>
+            <StepLabel><FormattedMessage id={key} /></StepLabel>
           </Step>
         ))}
       </Stepper>
 
-      {activeStep === steps.length ? (
+      {activeStep === stepKeys.length ? (
         <Fragment>
           <Typography sx={{ mt: 4, mb: 2, textAlign: "center" }}>
-            ¡Producto guardado exitosamente!
+            <FormattedMessage id="medicine.success.saved" />
           </Typography>
           <Box sx={{ display: "flex", justifyContent: "center", pt: 2 }}>
             <Button variant="contained" onClick={handleReset}>
-              Añadir otro producto
+              <FormattedMessage id="medicine.action.add_another" />
             </Button>
           </Box>
         </Fragment>
@@ -980,7 +981,7 @@ export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
               disabled={activeStep === 0 || isSubmitting}
               onClick={handleBack}
             >
-              Atrás
+              <FormattedMessage id="common.back" />
             </Button>
             <Button
               variant="contained"
@@ -988,11 +989,12 @@ export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
               disabled={!isStepValid() || isSubmitting}
             >
               {isSubmitting
-                ? "Enviando..."
-                : activeStep === steps.length - 1
-                  ? "Enviar al API"
-                  : "Siguiente"}
-            </Button>
+                ? intl.formatMessage({ id: "common.sending" })
+                : activeStep === stepKeys.length - 1
+                  ? intl.formatMessage({ id: "common.send_api" })
+                  : intl.formatMessage({ id: "common.next" })}
+
+		</Button>
           </div>
         </Fragment>
       )}

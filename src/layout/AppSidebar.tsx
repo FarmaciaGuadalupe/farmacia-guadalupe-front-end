@@ -34,7 +34,7 @@ const AppSidebar: React.FC = () => {
     const navItems: NavItem[] = [
         {
             icon: <GridIcon />,
-            name: "Dashboard",
+            name: intl.formatMessage({ id: 'layout.sidebar.dashboard' }),
             path: "/calendar",
             //subItems: [{ name: "Ecommerce", path: "/", pro: false }],
         },
@@ -267,7 +267,7 @@ const AppSidebar: React.FC = () => {
                                                             : "menu-dropdown-badge-inactive"
                                                             } menu-dropdown-badge`}
                                                     >
-                                                        new
+                                                        {intl.formatMessage({ id: 'layout.sidebar.new' })}
                                                     </span>
                                                 )}
                                                 {subItem.pro && (
@@ -277,7 +277,7 @@ const AppSidebar: React.FC = () => {
                                                             : "menu-dropdown-badge-inactive"
                                                             } menu-dropdown-badge`}
                                                     >
-                                                        pro
+                                                        {intl.formatMessage({ id: 'layout.sidebar.pro' })}
                                                     </span>
                                                 )}
                                             </span>
@@ -344,7 +344,7 @@ const AppSidebar: React.FC = () => {
                                     }`}
                             >
                                 {isExpanded || isMobileOpen ? (
-                                    "Menu"
+                                    intl.formatMessage({ id: 'layout.sidebar.menu' })
                                 ) : (
                                     <HorizontaLDots className="size-6" />
                                 )}

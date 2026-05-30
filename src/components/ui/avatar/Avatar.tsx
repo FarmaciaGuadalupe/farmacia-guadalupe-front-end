@@ -1,3 +1,5 @@
+import { useIntl } from "react-intl";
+
 interface AvatarProps {
   src: string; // URL of the avatar image
   alt?: string; // Alt text for the avatar
@@ -31,14 +33,17 @@ const statusColorClasses = {
 
 const Avatar: React.FC<AvatarProps> = ({
   src,
-  alt = "User Avatar",
+  alt,
   size = "medium",
   status = "none",
 }) => {
+  const intl = useIntl();
+  const defaultAlt = intl.formatMessage({ id: "ui.avatar.alt" });
+  const finalAlt = alt || defaultAlt;
   return (
     <div className={`relative  rounded-full ${sizeClasses[size]}`}>
       {/* Avatar Image */}
-      <img src={src} alt={alt} className="object-cover rounded-full" />
+      <img src={src} alt={finalAlt} className="object-cover rounded-full" />
 
       {/* Status Indicator */}
       {status !== "none" && (

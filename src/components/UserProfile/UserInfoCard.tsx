@@ -84,32 +84,12 @@ export default function UserInfoCard() {
                 </div>
               </div>
             ))}
-
-
-
-            {/* <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                <FormattedMessage id='lastnames' />
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {lastnames}
-              </p>
-            </div>
-
-            <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                <FormattedMessage id='user' />
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {user.user?.username}
-              </p>
-            </div> */}
           </div>
         </div>
 
         <button
           // onClick={openModal}
-          className="flex  disable disabled:bg-gray-400 disabled:text-gray-20 w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
+          className="flex disable disabled:bg-gray-400 disabled:text-gray-20 w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
         >
           <svg
             className="fill-current"
@@ -126,7 +106,7 @@ export default function UserInfoCard() {
               fill=""
             />
           </svg>
-          Editar
+          <FormattedMessage id="edit" />
         </button>
       </div>
     </div>

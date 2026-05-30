@@ -91,7 +91,7 @@ const [toggleStatus, { loading }] = useMutation(TOGGLE_BRAND_STATUS_MUTATION, {
           )}
         >
           {loading ? (
-            <span>Processing...</span> // Puedes poner un spinner aquí
+            <span><FormattedMessage id="common.processing" /></span>
           ) : is_active ? (
             <FormattedMessage id="deactivate" />
           ) : (

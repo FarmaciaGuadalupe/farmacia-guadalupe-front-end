@@ -162,7 +162,7 @@ export default function MonthlySalesChart() {
             <input
               ref={datePickerRef}
               className="z-100 h-10 w-45 pl-10 pr-3 py-2 rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-700 outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 cursor-pointer"
-              placeholder="Select date range"
+              placeholder={intl.formatMessage({ id: "sales.select_date_range" })}
             />
           </div>
         </div>
@@ -175,7 +175,9 @@ export default function MonthlySalesChart() {
               <Loading className="h-[210px]" />
             </div>
           ) : error ? (
-            <div className="flex items-center justify-center h-[210px] text-error-500">Error loading sales data</div>
+            <div className="flex items-center justify-center h-[210px] text-error-500">
+              <FormattedMessage id="sales.error.loading_stats" />
+            </div>
           ) : (
             <Chart options={options} series={series} type="bar" height={180} />
           )}

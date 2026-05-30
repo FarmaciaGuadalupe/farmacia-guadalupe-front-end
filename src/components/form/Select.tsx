@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useIntl } from "react-intl";
 
 interface Option {
   value: string;
@@ -16,12 +17,16 @@ interface SelectProps {
 
 const Select: React.FC<SelectProps> = ({
   options,
-  placeholder = "Select an option",
+  placeholder,
   onChange,
   className = "",
   defaultValue = "",
   value,
 }) => {
+  const intl = useIntl();
+  const defaultPlaceholder = intl.formatMessage({ id: "form.select.option" });
+  const finalPlaceholder = placeholder || defaultPlaceholder;
+
   // Use value if provided, otherwise use internal state initialized with defaultValue
   const [internalValue, setInternalValue] = useState<string>(defaultValue);
   const selectedValue = value !== undefined ? value : internalValue;
@@ -50,7 +55,7 @@ const Select: React.FC<SelectProps> = ({
         disabled
         className="text-gray-700 dark:bg-gray-900 dark:text-gray-400"
       >
-        {placeholder}
+        {finalPlaceholder}
       </option>
       {/* Map over options */}
       {options.map((option) => (

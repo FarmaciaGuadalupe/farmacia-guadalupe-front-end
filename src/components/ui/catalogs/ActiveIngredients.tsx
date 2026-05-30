@@ -16,7 +16,7 @@ const AddNewBrandDrawer = ({ onClose }: any) => {
     return <CellWithDrawer
         isOpen={true}
         onClose={onClose}
-        title={intl.formatMessage({ id: 'brand_add' })}
+        title={intl.formatMessage({ id: 'active_ingredient.add' })}
         widthClass="w-150"
         >
             <div>
@@ -29,6 +29,7 @@ const AddNewBrandDrawer = ({ onClose }: any) => {
 export default function ActiveIngredients() {   
     
     const [showDrawer, setShowDrawer] = useState<boolean>(false)
+    const intl = useIntl()
     
     
     return (
@@ -36,7 +37,7 @@ export default function ActiveIngredients() {
             <div className="flex justify-end mb-4"> 
                 <button onClick={() => setShowDrawer(true)} className="px-4 py-2 text-white rounded-xl transition-colors flex items-center gap-2 bg-brand-500">
                     <PlusCircleIcon className="h-5 w-5" />
-                    Add New Brand
+                    {intl.formatMessage({ id: 'active_ingredient.add' })}
                 </button>
             </div>
             

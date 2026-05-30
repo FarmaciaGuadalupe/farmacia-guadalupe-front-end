@@ -1,5 +1,6 @@
 import type React from "react";
 import { useState } from "react";
+import { useIntl } from "react-intl";
 
 interface Option {
   value: string;
@@ -21,6 +22,8 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
   onChange,
   disabled = false,
 }) => {
+  const intl = useIntl();
+  const selectOptionText = intl.formatMessage({ id: "form.multi_select.select_option" });
   const [selectedOptions, setSelectedOptions] =
     useState<string[]>(defaultSelected);
   const [isOpen, setIsOpen] = useState(false);
@@ -94,10 +97,10 @@ const MultiSelect: React.FC<MultiSelectProps> = ({
                   ))
                 ) : (
                   <input
-                    placeholder="Select option"
+                    placeholder={selectOptionText}
                     className="w-full h-full p-1 pr-2 text-sm bg-transparent border-0 outline-hidden appearance-none placeholder:text-gray-800 focus:border-0 focus:outline-hidden focus:ring-0 dark:placeholder:text-white/90"
                     readOnly
-                    value="Select option"
+                    value={selectOptionText}
                   />
                 )}
               </div>

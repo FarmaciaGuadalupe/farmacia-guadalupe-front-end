@@ -1,4 +1,5 @@
 import React from "react";
+import { FormattedMessage } from "react-intl";
 
 interface LoadingProps {
   className?: string;
@@ -20,7 +21,9 @@ const Loading: React.FC<LoadingProps> = ({ className = "", size = "md" }) => {
         className={`${sizeClasses[size]} border-gray-200 border-t-brand-500 rounded-full animate-spin dark:border-gray-800 dark:border-t-brand-400`}
         role="status"
       >
-        <span className="sr-only">Loading...</span>
+        <span className="sr-only">
+          <FormattedMessage id="loading" />
+        </span>
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { useIntl } from "react-intl";
 
 interface AlertProps {
   variant: "success" | "error" | "warning" | "info"; // Alert type
@@ -15,8 +16,11 @@ const Alert: React.FC<AlertProps> = ({
   message,
   showLink = false,
   linkHref = "#",
-  linkText = "Learn more",
+  linkText,
 }) => {
+  const intl = useIntl();
+  const defaultLinkText = intl.formatMessage({ id: "ui.learn_more" });
+  const finalLinkText = linkText || defaultLinkText;
   // Tailwind classes for each variant
   const variantClasses = {
     success: {
@@ -132,7 +136,7 @@ const Alert: React.FC<AlertProps> = ({
               to={linkHref}
               className="inline-block mt-3 text-sm font-medium text-gray-500 underline dark:text-gray-400"
             >
-              {linkText}
+              {finalLinkText}
             </Link>
           )}
         </div>

@@ -4,7 +4,7 @@ import {
     Button,
     Typography,
 } from "@mui/material";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import Label from "../../../form/Label";
 import Input from "../../../form/input/InputField";
 import DatePicker from "../../../form/date-picker";
@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { nicaDate, nowInNica } from "../../../../utils/dateUtils";
 
 export default function AddNewBatch({ productId, onClose }: { productId: number, onClose?: () => void }) {
+    const intl = useIntl();
     // Calcular la fecha por defecto (hoy + 10 meses)
     const defaultDateObj = useMemo(() => {
         return nowInNica().add(10, 'month');
@@ -32,14 +33,14 @@ export default function AddNewBatch({ productId, onClose }: { productId: number,
     const [addBatch, { loading }] = useMutation(ADD_BATCH_MUTATION, {
         onCompleted: (data) => {
             if (data.addBatch.result) {
-                toast.success(data.addBatch.message || "Lote agregado con éxito");
+                toast.success(data.addBatch.message || intl.formatMessage({ id: "batch.create.success" }));
                 onClose?.();
             } else {
-                toast.error(data.addBatch.message || "Error al agregar lote");
+                toast.error(data.addBatch.message || intl.formatMessage({ id: "batch.create.error" }));
             }
         },
         onError: (error) => {
-            toast.error(error.message || "Error al realizar la mutación");
+            toast.error(error.message || intl.formatMessage({ id: "error" }));
         }
     });
 
@@ -60,7 +61,7 @@ export default function AddNewBatch({ productId, onClose }: { productId: number,
             const compareDate = nicaDate(date).startOf('day');
 
             if (compareDate.isBefore(minDate)) {
-                toast.error("La fecha de expiración debe ser de al menos 10 meses a partir de hoy");
+                toast.error(intl.formatMessage({ id: "batch.error.min_shelf_life" }));
                 // Revertir a la fecha por defecto si la seleccionada es inválida
                 setFormData(prev => ({
                     ...prev,
@@ -80,7 +81,7 @@ export default function AddNewBatch({ productId, onClose }: { productId: number,
         e.preventDefault();
         
         if (!formData.batchCode || !formData.expirationDate || formData.quantityUnits <= 0) {
-            toast.error("Por favor completa todos los campos correctamente");
+            toast.error(intl.formatMessage({ id: "error.incompleteParams" }));
             return;
         }
 
@@ -104,7 +105,7 @@ export default function AddNewBatch({ productId, onClose }: { productId: number,
                     fontWeight="bold"
                     className="mb-2 text-gray-700"
                 >
-                    Lote
+                    <FormattedMessage id="medicine.step.batch" />
                 </Typography>
                 <div className="flex flex-row gap-4 justify-center">
                     <div className="w-full">
@@ -116,7 +117,7 @@ export default function AddNewBatch({ productId, onClose }: { productId: number,
                             name="batchCode"
                             value={formData.batchCode}
                             onChange={handleChange}
-                            placeholder="Código de lote"
+                            placeholder={intl.formatMessage({ id: "batch.code_placeholder" })}
                             required
                         />
                     </div>
@@ -126,7 +127,7 @@ export default function AddNewBatch({ productId, onClose }: { productId: number,
                         </Label>
                         <DatePicker
                             id="expiration_date"
-                            placeholder="Seleccionar fecha"
+                            placeholder={intl.formatMessage({ id: "option.select" })}
                             value={formData.expirationDate.split('T')[0]} // Pasar solo YYYY-MM-DD al flatpickr
                             onChange={handleDateChange}
                         />
@@ -141,7 +142,7 @@ export default function AddNewBatch({ productId, onClose }: { productId: number,
                             min="1"
                             value={formData.quantityUnits}
                             onChange={handleChange}
-                            placeholder="Unidades"
+                            placeholder={intl.formatMessage({ id: "units" }, { count: 2 })}
                             required
                         />
                     </div>

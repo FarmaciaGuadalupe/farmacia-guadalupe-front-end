@@ -8,7 +8,10 @@ import UserDropdown from "../components/header/UserDropdown";
 import { CgMenuLeft } from "react-icons/cg";
 import { IoIosArrowBack } from "react-icons/io";
 
+import { useIntl } from "react-intl";
+
 const AppHeader: React.FC = () => {
+  const intl = useIntl();
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
 
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar, isExpanded } = useSidebar();
@@ -49,7 +52,7 @@ const AppHeader: React.FC = () => {
           <button
             className="items-center justify-center w-10 h-10 text-gray-500 border-gray-200 rounded-lg z-100 dark:border-gray-800 lg:flex dark:text-gray-400 lg:h-11 lg:w-11 lg:border"
             onClick={handleToggle}
-            aria-label="Toggle Sidebar"
+            aria-label={intl.formatMessage({ id: "layout.header.toggle_sidebar" })}
           >
             {/* TODO: Mejorar vista mobile */}
             {isMobileOpen ? (

@@ -1,8 +1,11 @@
 import GridShape from "../../components/common/GridShape";
 import { Link } from "react-router";
 import PageMeta from "../../components/common/PageMeta";
+import { useIntl } from "react-intl";
 
 export default function NotFound() {
+  const intl = useIntl();
+
   return (
     <>
       <PageMeta
@@ -13,7 +16,7 @@ export default function NotFound() {
         <GridShape />
         <div className="mx-auto w-full max-w-[242px] text-center sm:max-w-[472px]">
           <h1 className="mb-8 font-bold text-gray-800 text-title-md dark:text-white/90 xl:text-title-2xl">
-            ERROR
+            {intl.formatMessage({ id: "common.error_title" })}
           </h1>
 
           <img src="/images/error/404.svg" alt="404" className="dark:hidden" />
@@ -24,14 +27,14 @@ export default function NotFound() {
           />
 
           <p className="mt-10 mb-6 text-base text-gray-700 dark:text-gray-400 sm:text-lg">
-           ¡No podemos encontrar la página que está buscando!
+            {intl.formatMessage({ id: "common.not_found_message" })}
           </p>
 
           <Link
             to="/"
             className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 py-3.5 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200"
           >
-            Volver a la página de inicio
+            {intl.formatMessage({ id: "common.back_to_home" })}
           </Link>
         </div>
         {/* <!-- Footer --> */}

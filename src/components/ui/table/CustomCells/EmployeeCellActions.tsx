@@ -26,18 +26,21 @@ const EditUserDrawer = ({ row, onClose }: any) => {
 }
 
 const DeactivateUserModal = ({ row, onClose }: any) => {
+    const intl = useIntl();
     return <SimpleModal
         isOpen={true}
         onClose={onClose}
-        title="Confirmar Acción"
+        title={intl.formatMessage({ id: "confirm_action_message" })}
     >
-        // aqui se puede poner cualquier componente dentro, por ejemplo un formulario o un mensaje de confirmación
+        {/* aqui se puede poner cualquier componente dentro, por ejemplo un formulario o un mensaje de confirmación */}
 
-        <p>¿Estás seguro de que deseas guardar los cambios?</p>
+        <p><FormattedMessage id="employee.confirm_save" /></p>
 
         <div className="mt-6 flex justify-end gap-3">
             {/* <button onClick={() => setShowModal(false)} className="px-4 py-2 bg-gray-200 rounded">Cancelar</button> */}
-            <button className="px-4 py-2 bg-blue-600 text-white rounded">Confirmar</button>
+            <button className="px-4 py-2 bg-blue-600 text-white rounded">
+                <FormattedMessage id="save" />
+            </button>
         </div>
     </SimpleModal>
 }

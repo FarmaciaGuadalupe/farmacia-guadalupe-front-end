@@ -2,17 +2,19 @@ import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import ComponentCard from "../../components/common/ComponentCard";
 import Avatar from "../../components/ui/avatar/Avatar";
 import PageMeta from "../../components/common/PageMeta";
+import { useIntl } from "react-intl";
 
 export default function Avatars() {
+  const intl = useIntl();
   return (
     <>
       <PageMeta
         title="React.js Avatars Dashboard | TailAdmin - React.js Admin Dashboard Template"
         description="This is React.js Avatars Dashboard page for TailAdmin - React.js Tailwind CSS Admin Dashboard Template"
       />
-      <PageBreadcrumb pageTitle="Avatars" />
+      <PageBreadcrumb pageTitle={intl.formatMessage({ id: "ui.avatars" })} />
       <div className="space-y-5 sm:space-y-6">
-        <ComponentCard title="Default Avatar">
+        <ComponentCard title={intl.formatMessage({ id: "ui.default_avatar" })}>
           {/* Default Avatar (No Status) */}
           <div className="flex flex-col items-center justify-center gap-5 sm:flex-row">
             <Avatar src="/images/user/user-01.jpg" size="xsmall" />
@@ -23,7 +25,9 @@ export default function Avatars() {
             <Avatar src="/images/user/user-01.jpg" size="xxlarge" />
           </div>
         </ComponentCard>
-        <ComponentCard title="Avatar with online indicator">
+        <ComponentCard
+          title={intl.formatMessage({ id: "ui.online_indicator" })}
+        >
           <div className="flex flex-col items-center justify-center gap-5 sm:flex-row">
             <Avatar
               src="/images/user/user-01.jpg"
@@ -57,7 +61,9 @@ export default function Avatars() {
             />
           </div>
         </ComponentCard>
-        <ComponentCard title="Avatar with Offline indicator">
+        <ComponentCard
+          title={intl.formatMessage({ id: "ui.offline_indicator" })}
+        >
           <div className="flex flex-col items-center justify-center gap-5 sm:flex-row">
             <Avatar
               src="/images/user/user-01.jpg"
@@ -91,7 +97,7 @@ export default function Avatars() {
             />
           </div>
         </ComponentCard>{" "}
-        <ComponentCard title="Avatar with busy indicator">
+        <ComponentCard title={intl.formatMessage({ id: "ui.busy_indicator" })}>
           <div className="flex flex-col items-center justify-center gap-5 sm:flex-row">
             <Avatar
               src="/images/user/user-01.jpg"
