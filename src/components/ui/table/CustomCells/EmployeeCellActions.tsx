@@ -9,6 +9,7 @@ import { EllipsisHorizontalIcon, PencilSquareIcon, MinusCircleIcon, CheckCircleI
 
 import CellWithDrawer from "../CellWithDrawer";
 import SimpleModal from "../../../ui/utils/SimpleModal";
+import EditEmployeeForm from "./EditEmployee";
 
 const TOGGLE_EMPLOYEE_STATUS_MUTATION = gql`
   mutation ToggleEmployeeStatus($employeeId: Int!) {
@@ -26,8 +27,15 @@ const EditUserDrawer = ({ row, onClose }: any) => {
       isOpen={true}
       onClose={onClose}
       title={intl.formatMessage({ id: "edit_user" })}
+      widthClass="w-150"
     >
-      <h1>test</h1>
+      <EditEmployeeForm 
+        row={row} 
+        onClose={onClose} 
+        onSaveSuccess={() => {
+          onClose();
+        }} 
+      />
     </CellWithDrawer>
   );
 };

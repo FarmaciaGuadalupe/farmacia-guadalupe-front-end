@@ -61,6 +61,10 @@ export const GET_EMPLOYEES_QUERY = () => gql`
         lastnames
         user
         email
+        phone
+        hiring_date
+        url_photo
+        employeeRoleId
         roleName: employeeRole {
           name
         }
