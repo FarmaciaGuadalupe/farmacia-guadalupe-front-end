@@ -1,23 +1,66 @@
-import { useIntl } from "react-intl"; // 1. Importar el hook
+import { useState } from "react";
+import { useIntl } from "react-intl";
+import { PlusCircleIcon } from "@heroicons/react/24/outline";
+
+// Local imports
 import PageBreadcrumb from "../components/common/PageBreadCrumb";
-import PageMeta from "../components/common/PageMeta";
+import CellWithDrawer from "../components/ui/table/CellWithDrawer";
+import EmployeeTable from "../components/tables/BasicTables/EmployeeTable";
+import AddEmployeeForm from "../components/ui/table/CustomCells/AddEmployee";
+
+const AddEmployeeDrawer = ({ onClose }: { onClose: () => void }) => {
+    const intl = useIntl();
+
+    return (
+        <CellWithDrawer
+            isOpen={true}
+            onClose={onClose}
+            title={intl.formatMessage({ id: 'employee.add' })}
+            widthClass="w-150"
+        >
+            <AddEmployeeForm 
+                onClose={onClose} 
+                onSaveSuccess={() => {
+                    // Aquí podrías forzar una recarga si fuera necesario, 
+                    // pero el ServerDataTable usualmente maneja su propio estado.
+                    onClose();
+                }} 
+            />
+        </CellWithDrawer>
+    );
+};
 
 export default function Empleados() {
-  // 2. Crear la instancia para acceder a tus traducciones
-  const intl = useIntl();
+    const [showDrawer, setShowDrawer] = useState<boolean>(false);
+    const intl = useIntl();
 
-  return (
-    <div>
-      {/* 3. "Llamar" a la variable del JSON usando su ID */}
-      <PageBreadcrumb 
-        pageTitle={intl.formatMessage({ id: 'employees' })} 
-      />
+    return (
+        <div>
+            <PageBreadcrumb 
+                pageTitle={intl.formatMessage({ id: 'employees' })} 
+            />
 
-      <div className="min-h-screen rounded-2xl border border-gray-200 bg-white px-5 py-7 dark:border-gray-800 dark:bg-white/[0.03] xl:px-10 xl:py-12">
-        <div className="mx-auto w-full max-w-[630px] text-center">
-           {/* Tu contenido */}
+            <div className="flex-1">
+                <div className="flex justify-end mb-4"> 
+                    <button 
+                        onClick={() => setShowDrawer(true)} 
+                        className="px-4 py-2 text-white rounded-xl transition-colors flex items-center gap-2 bg-brand-500 hover:bg-brand-600"
+                    >
+                        <PlusCircleIcon className="h-5 w-5" />
+                        {intl.formatMessage({ id: 'employee.add' })}
+                    </button>
+                </div>
+                
+                <div>
+                    <EmployeeTable />
+                </div>
+
+                {showDrawer && (
+                    <AddEmployeeDrawer 
+                        onClose={() => setShowDrawer(false)}
+                    />
+                )}
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }

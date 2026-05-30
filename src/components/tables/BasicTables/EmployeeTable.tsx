@@ -3,9 +3,8 @@ import { ServerDataTable } from "../../ui/table/ServerDataTable";
 import { useEmployeeColumns } from "../../ui/table/ColumnsDefinitions";
 import { GET_EMPLOYEES_QUERY } from "../../ui/table/QuerysDefinitions";
 
-// 1. Agregamos $order a la;
 
-export default function BrandsTable() {
+export default function EmployeeTable() {
   const query = GET_EMPLOYEES_QUERY();
   const columns = useEmployeeColumns();
 

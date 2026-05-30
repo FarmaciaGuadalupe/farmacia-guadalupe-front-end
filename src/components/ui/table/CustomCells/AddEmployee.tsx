@@ -1,22 +1,24 @@
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@mui/material"; 
 import { FormattedMessage, useIntl } from "react-intl";
+import { useMutation, useQuery } from "@apollo/client/react";
 
+import Label from "../../../form/Label";
+import Input from "../../../form/input/InputField";
+import Select from "../../../form/Select";
+import ComponentCard from "../../../common/ComponentCard";
+import { GET_EMPLOYEE_ROLE } from "../QuerysDefinitions";
 
 const baseUrl = import.meta.env.VITE_BASE_API_URL;
 
-
-
 // --- Definición de Tipos ---
 
-// Las props que este componente espera
 interface AddEmployeeFormProps {
-  onClose: () => void;      // Función para cerrar el drawer (ej: al cancelar)
-  onSaveSuccess: () => void; // Función a llamar cuando se guarde con éxito
+  onClose: () => void;      
+  onSaveSuccess: () => void; 
 }
 
-// El payload que espera la API
 interface CreateEmployeePayload {
   names: string;
   lastnames: string;
@@ -25,9 +27,9 @@ interface CreateEmployeePayload {
   password: string;
   email: string;
   url_photo: string;
+  employee_role_id: string;
 }
 
-// Estado inicial (vacío) para el formulario
 const initialState: CreateEmployeePayload = {
   names: "",
   lastnames: "",
@@ -36,26 +38,29 @@ const initialState: CreateEmployeePayload = {
   password: "",
   email: "",
   url_photo: "",
+  employee_role_id: "",
 };
 
-// --- El Componente ---
 export default function AddEmployeeForm({ onClose, onSaveSuccess }: AddEmployeeFormProps) {
   const intl = useIntl();
 
-  // --- Estados del Formulario ---
-  // Un solo estado para todos los campos del formulario
   const [formData, setFormData] = useState<CreateEmployeePayload>(initialState);
-  // Estado para deshabilitar el botón de guardar mientras se envía
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // Estado para mostrar errores de la API
   const [error, setError] = useState<string | null>(null);
+
+  // --- Fetch Roles ---
+  const { data: rolesData } = useQuery(GET_EMPLOYEE_ROLE());
+  
+  const roleOptions = useMemo(() => {
+    if (!rolesData?.employeeRoles) return [];
+    return rolesData.employeeRoles.map((role: any) => ({
+      value: String(role.employeeRoleId),
+      label: role.name,
+    }));
+  }, [rolesData]);
 
   // --- Handlers ---
 
-  /**
-   * Un solo handler que actualiza el estado 'formData'
-   * para cualquier input con un atributo 'name'.
-   */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -64,189 +69,193 @@ export default function AddEmployeeForm({ onClose, onSaveSuccess }: AddEmployeeF
     }));
   };
 
-  /**
-   * Se ejecuta al enviar el formulario.
-   */
+  const handleSelectChange = (value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      employee_role_id: value,
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // Evita que la página se recargue
+    e.preventDefault(); 
     
     setIsSubmitting(true);
     setError(null);
 
     try {
-      // --- Aquí está la llamada a la API ---
-      // const response = await fetch('http://localhost:5036/api/Employee/createEmployee', {
-      // const response = await fetch('https://localhost:44361/api/Employee/createEmployee', {
-      const response = await fetch( baseUrl + 'api/Employee/createEmployee', {
-        
+      // Convertir employee_role_id a número para la API si es necesario
+      const payload = {
+        ...formData,
+        employee_role_id: parseInt(formData.employee_role_id, 10) || 0,
+      };
 
+      const response = await fetch( baseUrl + 'api/Employee/createEmployee', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'accept': 'text/plain',
         },
-        body: JSON.stringify(formData), // Envía los datos del formulario
+        body: JSON.stringify(payload), 
       });
 
       if (!response.ok) {
-        // Si la API devuelve un error (ej: 400, 500)
         const errorText = await response.text();
         throw new Error(errorText || `Error del servidor: ${response.status}`);
       }
       
-      // ¡Éxito!
       toast.success(intl.formatMessage({ id: 'employee.create.success' }));
-      onSaveSuccess(); // Llama a la función de éxito (que cerrará el drawer y recargará)
+      onSaveSuccess(); 
 
     } catch (err: any) {
-      // Si el 'fetch' falla (ej: red, CORS) o la API dio error
       setError(err.message);
       console.error("Error al crear empleado:", err);
       toast.error(intl.formatMessage({ id: 'employee.create.error' }));
     } finally {
-      // Re-habilita el botón de guardar
       setIsSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col h-full">
-      
-      <div className="flex-1 overflow-auto p-6 space-y-4">
+    <ComponentCard title="">
+      <form onSubmit={handleSubmit} className="space-y-6">
         
-        <div>
-          <label htmlFor="names" className="block text-sm font-medium">
-            <FormattedMessage id='names' />
-          </label>
-          <input
-            type="text"
-            id="names"
-            name="names" // 'name' debe coincidir con la API
-            value={formData.names} // Conecta al estado
-            onChange={handleChange} // Conecta al handler
-            className="w-full p-2 border border-gray-300 rounded-md"
-            required
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <Label htmlFor="names">
+              <FormattedMessage id='names' values={{ count: 2 }}/>
+            </Label>
+            <Input
+              type="text"
+              id="names"
+              name="names"
+              value={formData.names}
+              onChange={handleChange}
+              autoComplete="off"
+              required
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="lastnames">
+              <FormattedMessage id='lastnames' />
+            </Label>
+            <Input
+              type="text"
+              id="lastnames"
+              name="lastnames"
+              value={formData.lastnames}
+              onChange={handleChange}
+              autoComplete="off"
+              required
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <Label htmlFor="email">
+              <FormattedMessage id='email' />
+            </Label>
+            <Input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              autoComplete="new-email"
+              required
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="phone">
+              <FormattedMessage id='phone' />
+            </Label>
+            <Input
+              type="tel"
+              id="phone"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              autoComplete="off"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <Label htmlFor="user">
+              <FormattedMessage id='user' />
+            </Label>
+            <Input
+              type="text"
+              id="user"
+              name="user"
+              value={formData.user}
+              onChange={handleChange}
+              autoComplete="off"
+              required
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="password">
+              <FormattedMessage id='password' />
+            </Label>
+            <Input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              autoComplete="new-password"
+              required
+            />
+          </div>
         </div>
 
         <div>
-          <label htmlFor="lastnames" className="block text-sm font-medium">
-            <FormattedMessage id='lastnames' />
-          </label>
-          <input
-            type="text"
-            id="lastnames"
-            name="lastnames"
-            value={formData.lastnames}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-            required
+          <Label htmlFor="role">
+            <FormattedMessage id='role' />
+          </Label>
+          <Select
+            options={roleOptions}
+            placeholder={intl.formatMessage({ id: 'option.select' })}
+            value={formData.employee_role_id}
+            onChange={handleSelectChange}
           />
         </div>
 
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium">
-            <FormattedMessage id='email' />
-          </label>
-          {/* TODO: Agregar mensajes de error: por ejemplo, email no deja pasar si no es uno valido */}
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="user" className="block text-sm font-medium">
-            <FormattedMessage id='user' />
-          </label>
-          <input
-            type="text"
-            id="user"
-            name="user"
-            value={formData.user}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium">
-            <FormattedMessage id='password' />
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="phone" className="block text-sm font-medium">
-            <FormattedMessage id='phone' />
-          </label>
-          <input
-            type="tel"
-            id="phone"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-          />
-        </div>
-
-        {/* En la foto debe de subirse una imagen, guardarla en un blob y guardar la url */}
-        {/* <div>
-          <label htmlFor="url_photo" className="block text-sm font-medium">
-            URL de Foto (Opcional)
-          </label>
-          <input
-            type="text"
-            id="url_photo"
-            name="url_photo"
-            value={formData.url_photo}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
-          />
-        </div> */}
-
-      </div>
-
-      <div className="p-4 border-t border-gray-200">
-        
-        {/* Muestra de errores */}
         {error && (
-          <div className="text-red-600 text-sm mb-2">
+          <div className="text-red-600 text-sm">
             <strong>Error:</strong> {error}
           </div>
         )}
 
-        <div className="flex justify-end gap-2">
-          {/* Botón de Cancelar (usa 'onClose') */}
-          <Button type="button" onClick={onClose}>
+        <div className="flex justify-end gap-3 pt-2">
+          {/* <Button 
+            type="button" 
+            onClick={onClose}
+            variant="outlined"
+            color="inherit"
+          >
             {intl.formatMessage({ id: 'cancel' })}
-          </Button>
-          {/* Botón de Guardar (usa 'type="submit"') */}
-          <Button
+          </Button> */}
+          <button
             type="submit"
-            disabled={isSubmitting} // Deshabilita mientras se envía
+            // variant="contained"
+            // color="primary"
+            disabled={isSubmitting}
+            // className="bg-brand-500 hover:bg-brand-600 text-white px-6"
+            className="px-4 py-2 text-white rounded-xl transition-colors flex items-center gap-2 bg-brand-500"
           >
             {isSubmitting 
-              ? intl.formatMessage({ id: 'saving' }) // Ej: "Guardando..."
-              : intl.formatMessage({ id: 'save' })   // Ej: "Guardar"
+              ? intl.formatMessage({ id: 'saving' }) 
+              : intl.formatMessage({ id: 'save' })
             }
-          </Button>
+          </button>
         </div>
-      </div>
-    </form>
+      </form>
+    </ComponentCard>
   );
 }

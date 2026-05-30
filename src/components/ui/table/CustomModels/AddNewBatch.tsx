@@ -148,22 +148,23 @@ export default function AddNewBatch({ productId, onClose }: { productId: number,
                     </div>
                 </div>
                 <div className="flex justify-end gap-3 mt-4">
-                    <Button 
+                    {/* <Button 
                         onClick={onClose} 
                         variant="outlined" 
                         color="secondary"
                         disabled={loading}
                     >
                         <FormattedMessage id="cancel" />
-                    </Button>
-                    <Button 
+                    </Button> */}
+                    <button 
                         type="submit" 
-                        variant="contained" 
-                        color="primary"
+                        // variant="contained" 
+                        // color="primary"
                         disabled={loading}
+                        className="px-4 py-2 text-white rounded-xl transition-colors flex items-center gap-2 bg-brand-500"
                     >
                         {loading ? <FormattedMessage id="saving" /> : <FormattedMessage id="save" />}
-                    </Button>
+                    </button>
                 </div>
             </form>
         </Fragment>

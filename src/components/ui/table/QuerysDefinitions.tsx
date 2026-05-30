@@ -213,6 +213,16 @@ export const GET_SUPPLIER_QUERY = () => gql`
   }
 `;
 
+export const GET_EMPLOYEE_ROLE = () => gql `
+query {
+  employeeRoles {
+    employeeRoleId
+    name
+    status
+  }
+}
+`;
+
 export const GET_MEDICINE_QUERY = () => gql`
   query GetMedicineTherapeuticDetails(
     $first: Int

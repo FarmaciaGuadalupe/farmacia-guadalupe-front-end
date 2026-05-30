@@ -57,14 +57,17 @@ export const useEmployeeColumns = () => {
       },
       {
         header: intl.formatMessage({ id: "statuses" }),
-        accessorKey: "statusName.name",
+        accessorKey: "employeeStatusId",
         enableSorting: false,
-        cell: ({ getValue }) => <Badge>{getValue() as string}</Badge>,
+        cell: ({ row }) => {
+          const isActive = row.original.employeeStatusId === 1;
+          return <Status status={isActive} />;
+        },
       },
       {
         header: intl.formatMessage({ id: "actions" }),
         id: "actions",
-        cell: ({ row }) => <EmployeeCellActions row={row.original} />,
+        cell: ({ row }) => <EmployeeCellActions row={row} />,
       },
     ],
     [intl],

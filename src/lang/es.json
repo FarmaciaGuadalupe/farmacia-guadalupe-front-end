@@ -65,6 +65,7 @@
   "common.send_api": "Guardar",
   "common.sending": "Enviando...",
   "configuration": "Configuración",
+  "user.management": "Administración de usuarios",
   "confirm_action_message": "¿Deseas realizar esta acción?",
   "contact_email": "Correo electrónico",
   "contact_name": "Nombre de contacto",
