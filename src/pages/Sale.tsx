@@ -21,7 +21,10 @@ import { TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { toast } from "sonner";
 import PageBreadcrumb from "../components/common/PageBreadCrumb";
 import { useAuth } from "../context/AuthContext";
-import { generateSaleVoucherPDF, SaleSummary } from "../utils/generateSaleVoucher";
+import {
+  generateSaleVoucherPDF,
+  SaleSummary,
+} from "../utils/generateSaleVoucher";
 import { nicaDate, nowInNica } from "../utils/dateUtils";
 
 // --- GRAPHQL DEFINITIONS ---
@@ -143,40 +146,58 @@ interface PaymentItem {
 
 export default function Sale() {
   const { user } = useAuth();
-  
+
   // --- STATE: Header Section ---
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
-  const [receiptType, setReceiptType] = useState<string>("FACTURA");
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    null,
+  );
+  const [saleType, setSaleType] = useState<string>("LIBRE"); // LIBRE or RECETA
   const [showMedicalData, setShowMedicalData] = useState<boolean>(false);
   const [prescriptionNumber, setPrescriptionNumber] = useState<string>("");
   const [doctorName, setDoctorName] = useState<string>("");
-  const [receiptNumber, setReceiptNumber] = useState<string>(crypto.randomUUID());
+  const [receiptNumber, setReceiptNumber] = useState<string>(
+    crypto.randomUUID(),
+  );
 
   // --- STATE: Cart & Search ---
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [selectedMedicineForBatch, setSelectedMedicineForBatch] = useState<Medicine | null>(null);
+  const [selectedMedicineForBatch, setSelectedMedicineForBatch] =
+    useState<Medicine | null>(null);
 
   // --- STATE: Payments ---
   const [payments, setPayments] = useState<PaymentItem[]>([
-    { id: Date.now().toString(), paymentMethodId: "", amount: "", transactionReference: "" },
+    {
+      id: Date.now().toString(),
+      paymentMethodId: "",
+      amount: "",
+      transactionReference: "",
+    },
   ]);
 
   // --- STATE: Voucher ---
-  const [completedSaleData, setCompletedSaleData] = useState<SaleSummary | null>(null);
+  const [completedSaleData, setCompletedSaleData] =
+    useState<SaleSummary | null>(null);
 
   // --- QUERIES & MUTATIONS ---
-  const { data: customersData, refetch: refetchCustomers } = useQuery(GET_CUSTOMERS);
-  const { data: medicinesData, refetch: refetchMedicines } = useQuery(GET_MEDICINES_WITH_BATCHES);
-  const { data: paymentMethodsData, refetch: refetchPaymentMethods } = useQuery(GET_PAYMENT_METHODS);
-  const [createSale, { loading: isSubmitting }] = useMutation(CREATE_SALE_MUTATION);
+  const { data: customersData, refetch: refetchCustomers } =
+    useQuery(GET_CUSTOMERS);
+  const { data: medicinesData, refetch: refetchMedicines } = useQuery(
+    GET_MEDICINES_WITH_BATCHES,
+  );
+  const { data: paymentMethodsData, refetch: refetchPaymentMethods } =
+    useQuery(GET_PAYMENT_METHODS);
+  const [createSale, { loading: isSubmitting }] =
+    useMutation(CREATE_SALE_MUTATION);
 
   // --- DERIVED STATE / CALCULATIONS ---
   const subtotal = useMemo(() => {
     return cart.reduce((acc, item) => {
       if (!item.batch || !item.medicine.product) return acc;
-      const price = item.isFullPresentation ? item.medicine.product.price_full_presentation : item.medicine.product.price_per_unit;
-      return acc + (price * item.quantity);
+      const price = item.isFullPresentation
+        ? item.medicine.product.price_full_presentation
+        : item.medicine.product.price_per_unit;
+      return acc + price * item.quantity;
     }, 0);
   }, [cart]);
 
@@ -191,17 +212,30 @@ export default function Sale() {
 
   // --- HANDLERS: Search & Cart ---
   const handleProductSelect = (medicine: Medicine) => {
-    if (!medicine.product || !medicine.product.batches || medicine.product.batches.length === 0) {
+    if (
+      !medicine.product ||
+      !medicine.product.batches ||
+      medicine.product.batches.length === 0
+    ) {
       toast.error("Este producto no tiene lotes disponibles.");
       return;
     }
-    
+
     // Filter active batches with stock
-    const availableBatches = medicine.product.batches.filter(b => b.is_active && b.current_quantity_units > 0);
+    const availableBatches = medicine.product.batches.filter(
+      (b) => b.is_active && b.current_quantity_units > 0,
+    );
 
     if (availableBatches.length === 0) {
       toast.error("Este producto no tiene lotes activos con stock disponible.");
       return;
+    }
+
+    // Auto-detect if prescription is needed
+    if (medicine.requires_prescription) {
+       setSaleType("RECETA");
+       setShowMedicalData(true);
+       toast.info(`El producto ${medicine.name} requiere receta médica.`);
     }
 
     if (availableBatches.length === 1) {
@@ -229,7 +263,11 @@ export default function Sale() {
     setSelectedMedicineForBatch(null);
   };
 
-  const updateCartItem = (id: string, field: keyof CartItem, value: number | boolean) => {
+  const updateCartItem = (
+    id: string,
+    field: keyof CartItem,
+    value: number | boolean,
+  ) => {
     setCart((prev) =>
       prev.map((item) => {
         if (item.id === id) {
@@ -237,7 +275,9 @@ export default function Sale() {
           if (field === "quantity" && item.batch) {
             const valNum = Number(value);
             if (valNum > item.batch.current_quantity_units) {
-              toast.error(`La cantidad no puede superar el stock del lote (${item.batch.current_quantity_units})`);
+              toast.error(
+                `La cantidad no puede superar el stock del lote (${item.batch.current_quantity_units})`,
+              );
               return { ...item, [field]: item.batch.current_quantity_units };
             }
             if (valNum < 1) return { ...item, [field]: 1 };
@@ -245,7 +285,7 @@ export default function Sale() {
           return { ...item, [field]: value };
         }
         return item;
-      })
+      }),
     );
   };
 
@@ -257,13 +297,22 @@ export default function Sale() {
   const addPaymentRow = () => {
     setPayments((prev) => [
       ...prev,
-      { id: Date.now().toString(), paymentMethodId: "", amount: "", transactionReference: "" },
+      {
+        id: Date.now().toString(),
+        paymentMethodId: "",
+        amount: "",
+        transactionReference: "",
+      },
     ]);
   };
 
-  const updatePaymentRow = (id: string, field: keyof PaymentItem, value: string | number) => {
+  const updatePaymentRow = (
+    id: string,
+    field: keyof PaymentItem,
+    value: string | number,
+  ) => {
     setPayments((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, [field]: value } : p))
+      prev.map((p) => (p.id === id ? { ...p, [field]: value } : p)),
     );
   };
 
@@ -289,41 +338,42 @@ export default function Sale() {
       return;
     }
     if (!receiptNumber) {
-        toast.error("Debe ingresar el número de comprobante.");
-        return;
+      toast.error("Debe ingresar el número de comprobante.");
+      return;
+    }
+    
+    // Medical validation
+    if (saleType === "RECETA" && (!prescriptionNumber.trim() || !doctorName.trim())) {
+      toast.error("Los datos médicos son obligatorios para ventas con receta.");
+      return;
     }
 
-    // Prepare payments. The total amount in the payload should ideally match the grandTotal
-    // if the user paid more in cash, we send the exact amount needed for the bill, 
-    // because change is handled by the cashier.
+    // Prepare payments
     let remainingAmountToCover = grandTotal;
     const finalPayments = payments
-        .filter((p) => p.paymentMethodId !== "" && Number(p.amount) > 0)
-        .map((p) => {
-            let amountToRegister = Number(p.amount);
-            
-            // If this payment makes the total exceed the bill, and it's cash (assuming ID 1 is cash),
-            // we cap the registered amount to what is actually owed to balance the books perfectly.
-            // *This depends on your specific backend accounting rules, adjust if needed.*
-            if (amountToRegister > remainingAmountToCover) {
-                 amountToRegister = remainingAmountToCover;
-            }
-            remainingAmountToCover -= amountToRegister;
+      .filter((p) => p.paymentMethodId !== "" && Number(p.amount) > 0)
+      .map((p) => {
+        let amountToRegister = Number(p.amount);
+        if (amountToRegister > remainingAmountToCover) {
+          amountToRegister = remainingAmountToCover;
+        }
+        remainingAmountToCover -= amountToRegister;
 
-            return {
-              paymentMethodId: Number(p.paymentMethodId),
-              amount: parseFloat(amountToRegister.toFixed(2)),
-              transactionReference: p.transactionReference || null,
-            };
-        });
+        return {
+          paymentMethodId: Number(p.paymentMethodId),
+          amount: parseFloat(amountToRegister.toFixed(2)),
+          transactionReference: p.transactionReference || null,
+        };
+      });
 
     const payload = {
-      employeeId: user?.employeeId || 1, // Fallback if user is null
+      employeeId: user?.employeeId || 1, 
       customerId: selectedCustomer?.customerId || null,
-      receiptType,
+      receiptType: "TICKET", 
       receiptNumber,
-      prescriptionNumber: showMedicalData && prescriptionNumber ? prescriptionNumber : null,
-      doctorName: showMedicalData && doctorName ? doctorName : null,
+      prescriptionNumber:
+        (saleType === "RECETA" || showMedicalData) && prescriptionNumber ? prescriptionNumber : null,
+      doctorName: (saleType === "RECETA" || showMedicalData) && doctorName ? doctorName : null,
       currency: "NIO",
       details: cart.map((item) => ({
         productId: item.medicine.product.product_id,
@@ -336,46 +386,41 @@ export default function Sale() {
     };
 
     try {
-      console.log("🚀 Enviando Payload a API:", payload);
       const { data } = await createSale({ variables: { input: payload } });
-      
+
       if (data?.createSale?.success) {
-        toast.success(data.createSale.message || `Venta procesada con éxito. ID: ${data.createSale.saleId}`);
-        
-        // --- Generate Voucher Data ---
+        toast.success(data.createSale.message || "Venta procesada con éxito.");
+
         const saleSummary: SaleSummary = {
           receiptNumber: data.createSale.receiptNumber || receiptNumber,
-          receiptType,
+          receiptType: "TICKET",
           date: nowInNica().toDate(),
-          customer: selectedCustomer ? `${selectedCustomer.firstName} ${selectedCustomer.lastName}` : "Consumidor Final",
-          items: cart.map(item => {
-            const price = item.batch && item.medicine.product
-              ? (item.isFullPresentation ? item.medicine.product.price_full_presentation : item.medicine.product.price_per_unit)
-              : 0;
+          customer: selectedCustomer
+            ? `${selectedCustomer.firstName} ${selectedCustomer.lastName}`
+            : "Consumidor Final",
+          items: cart.map((item) => {
+            const price = item.isFullPresentation
+                  ? item.medicine.product.price_full_presentation
+                  : item.medicine.product.price_per_unit;
             return {
               name: item.medicine.name,
               quantity: item.quantity,
               price: price,
               total: item.quantity * price,
-              presentation: item.isFullPresentation ? "Caja" : "Unidad"
+              presentation: item.isFullPresentation ? "Caja" : "Unidad",
             };
           }),
           subtotal,
           iva,
           grandTotal,
           totalPaid,
-          changeDue
+          changeDue,
         };
 
         setCompletedSaleData(saleSummary);
-        generateSaleVoucherPDF(saleSummary); // Generate PDF in new window
-        
-        // Refetch queries to update stock and catalogs for the next sale
-        refetchCustomers();
-        refetchMedicines();
-        refetchPaymentMethods();
+        generateSaleVoucherPDF(saleSummary); 
 
-        // Reset form on success
+        // Reset
         setCart([]);
         setPayments([{ id: Date.now().toString(), paymentMethodId: "", amount: "", transactionReference: "" }]);
         setReceiptNumber(crypto.randomUUID());
@@ -383,27 +428,30 @@ export default function Sale() {
         setPrescriptionNumber("");
         setDoctorName("");
         setSearchQuery("");
+        setSaleType("LIBRE");
+        setShowMedicalData(false);
+
+        refetchCustomers();
+        refetchMedicines();
+        refetchPaymentMethods();
       } else {
-        toast.error(data?.createSale?.message || "Error al registrar la venta en el servidor.");
+        toast.error(data?.createSale?.message || "Error al registrar la venta.");
       }
-      
     } catch (err) {
-      console.error("Error al procesar la venta:", err);
-      toast.error(err instanceof Error ? err.message : "Error de red o servidor al intentar procesar la venta.");
+      console.error(err);
+      toast.error("Error al procesar la venta.");
     }
   };
 
-  // --- FILTER MEDICINES FOR SEARCH ---
   const productSearchOptions = useMemo(() => {
     if (!medicinesData?.medicines?.nodes) return [];
     const nodes = medicinesData.medicines.nodes as Medicine[];
-    
     if (searchQuery.length < 2) return nodes;
-
     const lowerQuery = searchQuery.toLowerCase();
-    return nodes.filter(med => 
-      med.name.toLowerCase().includes(lowerQuery) || 
-      (med.product?.barcode && med.product.barcode.toLowerCase().includes(lowerQuery))
+    return nodes.filter(
+      (med) =>
+        med.name.toLowerCase().includes(lowerQuery) ||
+        (med.product?.barcode && med.product.barcode.toLowerCase().includes(lowerQuery)),
     );
   }, [medicinesData, searchQuery]);
 
@@ -412,42 +460,53 @@ export default function Sale() {
       <PageBreadcrumb pageTitle="Punto de Venta" />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* --- LEFT COLUMN: Header & Cart (Takes 2/3 space) --- */}
         <div className="lg:col-span-2 space-y-6">
-          
-          {/* SECTION A: CABECERA DE LA VENTA */}
           <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
-            <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Datos Generales</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Autocomplete
-                options={customersData?.customers?.nodes || []}
-                getOptionLabel={(opt: Customer) => `${opt.firstName} ${opt.lastName}`}
-                value={selectedCustomer}
-                onChange={(_, val) => setSelectedCustomer(val)}
-                renderInput={(params) => <TextField {...params} label="Cliente (Dejar vacío = Consumidor Final)" variant="outlined" size="small" />}
-                className="w-full"
-              />
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
+                Datos de Venta
+              </h2>
               
-              <div className="flex gap-4">
-                <FormControl size="small" fullWidth>
-                  <InputLabel>Tipo</InputLabel>
+              <div className="flex items-center gap-4">
+                <div className="hidden">
+                  <Autocomplete
+                    options={customersData?.customers?.nodes || []}
+                    getOptionLabel={(opt: Customer) => `${opt.firstName} ${opt.lastName}`}
+                    value={selectedCustomer}
+                    onChange={(_, val) => setSelectedCustomer(val)}
+                    renderInput={(params) => <TextField {...params} label="Cliente" variant="outlined" size="small" />}
+                  />
+                </div>
+
+                <FormControl size="small" sx={{ minWidth: 200 }}>
+                  <InputLabel>Tipo de Venta</InputLabel>
                   <Select
-                    value={receiptType}
-                    label="Tipo"
-                    onChange={(e) => setReceiptType(e.target.value)}
+                    value={saleType}
+                    label="Tipo de Venta"
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setSaleType(val);
+                      if (val === "RECETA") setShowMedicalData(true);
+                      else setShowMedicalData(false);
+                    }}
                   >
-                    <MenuItem value="FACTURA">Factura</MenuItem>
-                    <MenuItem value="TICKET">Ticket</MenuItem>
+                    <MenuItem value="LIBRE">Venta Libre</MenuItem>
+                    <MenuItem value="RECETA">Venta con Receta</MenuItem>
                   </Select>
                 </FormControl>
               </div>
             </div>
 
-            {/* Medical Data Toggle */}
-            <div className="mt-4">
+            <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
               <FormControlLabel
-                control={<Switch checked={showMedicalData} onChange={(e) => setShowMedicalData(e.target.checked)} />}
-                label="Incluir Datos Médicos (Receta)"
+                control={
+                  <Switch
+                    checked={showMedicalData}
+                    onChange={(e) => setShowMedicalData(e.target.checked)}
+                    disabled={saleType === "RECETA"}
+                  />
+                }
+                label="Incluir Datos Médicos"
               />
               {showMedicalData && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
@@ -455,42 +514,54 @@ export default function Sale() {
                     label="Número de Receta"
                     variant="outlined"
                     size="small"
+                    required={saleType === "RECETA"}
                     value={prescriptionNumber}
                     onChange={(e) => setPrescriptionNumber(e.target.value)}
+                    error={saleType === "RECETA" && !prescriptionNumber.trim()}
                   />
                   <TextField
                     label="Nombre del Médico"
                     variant="outlined"
                     size="small"
+                    required={saleType === "RECETA"}
                     value={doctorName}
                     onChange={(e) => setDoctorName(e.target.value)}
+                    error={saleType === "RECETA" && !doctorName.trim()}
                   />
                 </div>
               )}
             </div>
           </div>
 
-          {/* SECTION B: BUSCADOR Y CARRITO */}
           <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
-            <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Productos</h2>
-            
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+              Productos
+            </h2>
+
             <Autocomplete
               options={productSearchOptions}
-              getOptionLabel={(opt: Medicine) => `${opt.product?.barcode || 'N/A'} - ${opt.name}`}
+              getOptionLabel={(opt: Medicine | string) => {
+                if (typeof opt === 'string') return opt;
+                return `${opt.product?.barcode || "N/A"} - ${opt.name}`;
+              }}
               inputValue={searchQuery}
               onInputChange={(_, newInputValue) => setSearchQuery(newInputValue)}
               onChange={(_, val) => {
-                if (val) handleProductSelect(val as Medicine);
+                if (val && typeof val !== 'string') handleProductSelect(val);
               }}
               renderInput={(params) => (
-                <TextField {...params} label="Buscar por código de barras o nombre..." variant="outlined" autoFocus />
+                <TextField
+                  {...params}
+                  label="Buscar por código de barras o nombre..."
+                  variant="outlined"
+                  autoFocus
+                />
               )}
               className="mb-6"
-              freeSolo // Allow typing even if no match is found immediately
+              freeSolo
               clearOnBlur
             />
 
-            {/* Carrito Table (Tailwind approach for custom layout) */}
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
                 <thead className="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
@@ -513,9 +584,9 @@ export default function Sale() {
                     </tr>
                   ) : (
                     cart.map((item) => {
-                      const price = item.batch && item.medicine.product
-                        ? (item.isFullPresentation ? item.medicine.product.price_full_presentation : item.medicine.product.price_per_unit) 
-                        : 0;
+                      const price = item.isFullPresentation
+                            ? item.medicine.product.price_full_presentation
+                            : item.medicine.product.price_per_unit;
                       const lineTotal = price * item.quantity;
 
                       return (
@@ -523,13 +594,16 @@ export default function Sale() {
                           <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">
                             {item.medicine.name}
                             {item.medicine.requires_prescription && (
-                                <span className="ml-2 inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">Rx</span>
+                              <span className="ml-2 inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
+                                Rx
+                              </span>
                             )}
                           </td>
                           <td className="px-4 py-3">
                             {item.batch ? (
                               <span className="text-xs">
-                                {item.batch.batch_code}<br/>
+                                {item.batch.batch_code}
+                                <br />
                                 <span className="text-gray-400">{item.batch.expiration_date}</span>
                               </span>
                             ) : "Sin Lote"}
@@ -553,15 +627,11 @@ export default function Sale() {
                               size="small"
                               inputProps={{ min: 1, max: item.batch?.current_quantity_units || 1 }}
                               value={item.quantity}
-                              onChange={(e) => updateCartItem(item.id, "quantity", e.target.value)}
+                              onChange={(e) => updateCartItem(item.id, "quantity", Number(e.target.value))}
                             />
                           </td>
-                          <td className="px-4 py-3 text-right font-mono">
-                            C$ {price.toFixed(2)}
-                          </td>
-                          <td className="px-4 py-3 text-right font-mono font-semibold text-blue-600 dark:text-blue-400">
-                            C$ {lineTotal.toFixed(2)}
-                          </td>
+                          <td className="px-4 py-3 text-right font-mono">C$ {price.toFixed(2)}</td>
+                          <td className="px-4 py-3 text-right font-mono font-semibold text-blue-600 dark:text-blue-400">C$ {lineTotal.toFixed(2)}</td>
                           <td className="px-4 py-3 text-center">
                             <IconButton color="error" onClick={() => removeCartItem(item.id)}>
                               <TrashIcon className="h-5 w-5" />
@@ -577,12 +647,9 @@ export default function Sale() {
           </div>
         </div>
 
-        {/* --- RIGHT COLUMN: Totals & Payments (Takes 1/3 space) --- */}
         <div className="space-y-6">
-          {/* SECTION C: TOTALES Y PAGOS */}
           <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-white/[0.03]">
             <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Resumen</h2>
-            
             <div className="space-y-3 mb-6 border-b border-gray-200 pb-6 dark:border-gray-700">
               <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
                 <span>Subtotal Bruto</span>
@@ -599,15 +666,11 @@ export default function Sale() {
             </div>
 
             <h3 className="text-md font-medium text-gray-800 dark:text-white mb-3">Métodos de Pago</h3>
-            
             <div className="space-y-4">
               {payments.map((payment) => (
                 <div key={payment.id} className="relative p-4 border border-gray-100 rounded-lg bg-gray-50 dark:bg-gray-800/50 dark:border-gray-700">
                   {payments.length > 1 && (
-                    <button 
-                      onClick={() => removePaymentRow(payment.id)}
-                      className="absolute -top-2 -right-2 bg-red-100 text-red-600 rounded-full p-1 hover:bg-red-200 transition-colors"
-                    >
+                    <button onClick={() => removePaymentRow(payment.id)} className="absolute -top-2 -right-2 bg-red-100 text-red-600 rounded-full p-1 hover:bg-red-200 transition-colors">
                       <TrashIcon className="h-4 w-4" />
                     </button>
                   )}
@@ -620,10 +683,10 @@ export default function Sale() {
                         onChange={(e) => updatePaymentRow(payment.id, "paymentMethodId", e.target.value)}
                       >
                         {paymentMethodsData?.paymentMethods?.nodes
-                            ?.filter((pm: PaymentMethod) => pm.isActive)
-                            .map((pm: PaymentMethod) => (
-                          <MenuItem key={pm.paymentMethodId} value={pm.paymentMethodId}>{pm.name}</MenuItem>
-                        ))}
+                          ?.filter((pm: PaymentMethod) => pm.isActive)
+                          .map((pm: PaymentMethod) => (
+                            <MenuItem key={pm.paymentMethodId} value={pm.paymentMethodId}>{pm.name}</MenuItem>
+                          ))}
                       </Select>
                     </FormControl>
                     <TextField
@@ -635,87 +698,59 @@ export default function Sale() {
                       onChange={(e) => updatePaymentRow(payment.id, "amount", e.target.value)}
                     />
                   </div>
-                  {/* Show reference input only for non-cash methods (assuming id 1 is cash) */}
                   {payment.paymentMethodId !== 1 && payment.paymentMethodId !== "" && (
-                     <TextField
-                       label="Referencia / Voucher"
-                       size="small"
-                       fullWidth
-                       value={payment.transactionReference}
-                       onChange={(e) => updatePaymentRow(payment.id, "transactionReference", e.target.value)}
-                     />
+                    <TextField
+                      label="Referencia / Voucher"
+                      size="small"
+                      fullWidth
+                      value={payment.transactionReference}
+                      onChange={(e) => updatePaymentRow(payment.id, "transactionReference", e.target.value)}
+                    />
                   )}
                 </div>
               ))}
-              
-              <Button
-                variant="outlined"
-                color="primary"
-                fullWidth
-                startIcon={<PlusIcon className="h-4 w-4" />}
-                onClick={addPaymentRow}
-              >
-                Añadir otro pago
-              </Button>
+              <Button variant="outlined" color="primary" fullWidth startIcon={<PlusIcon className="h-4 w-4" />} onClick={addPaymentRow}>Añadir otro pago</Button>
             </div>
 
-            <div className={`mt-6 p-4 rounded-lg ${changeDue >= 0 ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-300' : 'bg-rose-50 text-rose-800 dark:bg-rose-900/20 dark:text-rose-300'}`}>
+            <div className={`mt-6 p-4 rounded-lg ${changeDue >= 0 ? "bg-emerald-50 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-300" : "bg-rose-50 text-rose-800 dark:bg-rose-900/20 dark:text-rose-300"}`}>
               <div className="flex justify-between font-medium">
-                <span>{changeDue >= 0 ? 'Cambio a Devolver' : 'Monto Faltante'}</span>
+                <span>{changeDue >= 0 ? "Cambio a Devolver" : "Monto Faltante"}</span>
                 <span className="font-mono">C$ {Math.abs(changeDue).toFixed(2)}</span>
               </div>
             </div>
 
-            <Button
-              variant="contained"
-              color="primary"
-              size="large"
-              fullWidth
-              className="mt-6 !py-3 !text-lg !font-bold"
-              onClick={handleProcessSale}
-              disabled={isSubmitting || cart.length === 0 || totalPaid < grandTotal}
-            >
+            <Button variant="contained" color="primary" size="large" fullWidth className="mt-6 !py-3 !text-lg !font-bold" onClick={handleProcessSale} disabled={isSubmitting || cart.length === 0 || totalPaid < grandTotal}>
               {isSubmitting ? "Procesando..." : "Procesar Venta"}
             </Button>
           </div>
         </div>
       </div>
 
-      {/* --- MODAL: Seleccionar Lote --- */}
       <Dialog open={!!selectedMedicineForBatch} onClose={() => setSelectedMedicineForBatch(null)} maxWidth="sm" fullWidth>
         <DialogTitle>Seleccionar Lote - {selectedMedicineForBatch?.name}</DialogTitle>
         <DialogContent dividers>
           <div className="space-y-3">
             {selectedMedicineForBatch?.product?.batches
-              ?.filter(b => b.is_active && b.current_quantity_units > 0)
+              ?.filter((b) => b.is_active && b.current_quantity_units > 0)
               .map((batch) => (
-              <div 
-                key={batch.batch_id} 
-                className="flex justify-between items-center p-3 border rounded hover:bg-gray-50 cursor-pointer"
-                onClick={() => addBatchToCart(selectedMedicineForBatch, batch)}
-              >
-                <div>
-                  <div className="font-medium text-gray-900">Lote: {batch.batch_code}</div>
-                  <div className="text-sm text-gray-500">Vence: {batch.expiration_date}</div>
+                <div key={batch.batch_id} className="flex justify-between items-center p-3 border rounded hover:bg-gray-50 cursor-pointer" onClick={() => addBatchToCart(selectedMedicineForBatch, batch)}>
+                  <div>
+                    <div className="font-medium text-gray-900">Lote: {batch.batch_code}</div>
+                    <div className="text-sm text-gray-500">Vence: {batch.expiration_date}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-medium text-emerald-600">Stock: {batch.current_quantity_units}</div>
+                    <div className="text-sm text-gray-500">Precio: C$ {selectedMedicineForBatch.product.price_full_presentation}</div>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <div className="font-medium text-emerald-600">Stock: {batch.current_quantity_units}</div>
-                  <div className="text-sm text-gray-500">Precio: C$ {selectedMedicineForBatch.product.price_full_presentation}</div>
-                </div>
-              </div>
-            ))}
+              ))}
           </div>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setSelectedMedicineForBatch(null)}>Cancelar</Button>
-        </DialogActions>
+        <DialogActions><Button onClick={() => setSelectedMedicineForBatch(null)}>Cancelar</Button></DialogActions>
       </Dialog>
 
-      {/* --- MODAL: Voucher de Venta --- */}
       <Dialog open={!!completedSaleData} onClose={() => setCompletedSaleData(null)} maxWidth="sm" fullWidth>
-        <DialogTitle className="text-center font-bold text-xl">
-          Farmacia Guadalupe
-        </DialogTitle>
+        <DialogTitle className="text-center font-bold text-xl">Farmacia Guadalupe</DialogTitle>
         <DialogContent dividers>
           {completedSaleData && (
             <div className="space-y-4 text-sm text-gray-800 dark:text-gray-200">
@@ -724,10 +759,7 @@ export default function Sale() {
                 <p>Nro: {completedSaleData.receiptNumber}</p>
                 <p>Fecha: {nicaDate(completedSaleData.date).format("DD/MM/YYYY hh:mm A")}</p>
               </div>
-              <div className="mb-4">
-                <strong>Cliente:</strong> {completedSaleData.customer}
-              </div>
-              
+              <div className="mb-4"><strong>Cliente:</strong> {completedSaleData.customer}</div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm border-collapse">
                   <thead>
@@ -748,41 +780,24 @@ export default function Sale() {
                   </tbody>
                 </table>
               </div>
-
               <div className="space-y-1 text-right mt-6 border-t border-gray-300 dark:border-gray-700 pt-4">
                 <p>Subtotal: <span className="font-mono">C$ {completedSaleData.subtotal.toFixed(2)}</span></p>
                 <p>IVA (15%): <span className="font-mono">C$ {completedSaleData.iva.toFixed(2)}</span></p>
-                <p className="font-bold text-lg mt-2">
-                  Total: <span className="font-mono">C$ {completedSaleData.grandTotal.toFixed(2)}</span>
-                </p>
-                
+                <p className="font-bold text-lg mt-2">Total: <span className="font-mono">C$ {completedSaleData.grandTotal.toFixed(2)}</span></p>
                 <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Pagado: <span className="font-mono">C$ {completedSaleData.totalPaid.toFixed(2)}</span>
-                  </p>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Cambio: <span className="font-mono">C$ {Math.abs(completedSaleData.changeDue).toFixed(2)}</span>
-                  </p>
+                  <p className="text-gray-600 dark:text-gray-400">Pagado: <span className="font-mono">C$ {completedSaleData.totalPaid.toFixed(2)}</span></p>
+                  <p className="text-gray-600 dark:text-gray-400">Cambio: <span className="font-mono">C$ {Math.abs(completedSaleData.changeDue).toFixed(2)}</span></p>
                 </div>
               </div>
-              <div className="text-center mt-6 italic text-gray-500">
-                ¡Gracias por su compra!
-              </div>
+              <div className="text-center mt-6 italic text-gray-500">¡Gracias por su compra!</div>
             </div>
           )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setCompletedSaleData(null)}>Cerrar</Button>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            onClick={() => completedSaleData && generateSaleVoucherPDF(completedSaleData, true)}
-          >
-            Imprimir / Ver PDF
-          </Button>
+          <Button variant="contained" color="primary" onClick={() => completedSaleData && generateSaleVoucherPDF(completedSaleData, true)}>Imprimir / Ver PDF</Button>
         </DialogActions>
       </Dialog>
-
     </div>
   );
 }
