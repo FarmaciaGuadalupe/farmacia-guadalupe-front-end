@@ -1,6 +1,5 @@
 import { toast } from "sonner";
 import { useState, useMemo } from "react";
-import { Button } from "@mui/material";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useQuery, useApolloClient } from "@apollo/client/react";
 
@@ -270,25 +269,22 @@ export default function EditEmployeeForm({
 				)}
 
 				<div className="flex justify-end gap-3 pt-2">
-					<Button
+					<button
 						type="button"
 						onClick={onClose}
-						variant="outlined"
-						color="inherit"
+						className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/[0.03] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						{intl.formatMessage({ id: "cancel" })}
-					</Button>
-					<Button
+					</button>
+					<button
 						type="submit"
-						variant="contained"
-						color="primary"
 						disabled={isSubmitting}
-						className="bg-brand-500 hover:bg-brand-600 text-white px-6"
+						className="px-4 py-2 text-white rounded-xl transition-colors flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-300 disabled:cursor-not-allowed"
 					>
 						{isSubmitting
 							? intl.formatMessage({ id: "saving" })
 							: intl.formatMessage({ id: "save" })}
-					</Button>
+					</button>
 				</div>
 			</form>
 		</ComponentCard>

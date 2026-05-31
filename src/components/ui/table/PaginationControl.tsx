@@ -2,7 +2,6 @@
 
 import { Table as TanStackTable } from "@tanstack/react-table";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import { Button } from "@mui/material"; // Importa tu componente de Botón
 import { FormattedMessage } from "react-intl";
 
 interface PaginationControlProps<T> {
@@ -138,15 +137,13 @@ export default function PaginationControl<T>({
 			{/* --- Controles de Paginación Numérica --- */}
 			<div className="flex items-center gap-2">
 				{/* Botón Anterior */}
-				<Button
-					//   variant="outline"
-					//   size="sm"
+				<button
 					onClick={() => table.previousPage()}
 					disabled={!table.getCanPreviousPage()}
-					className="disabled:opacity-50 disabled:cursor-not-allowed"
+					className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/[0.03] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
 				>
 					<ChevronLeftIcon className="w-5 h-5" />
-				</Button>
+				</button>
 
 				{/* Números de Página */}
 				<div className="flex items-center gap-1">
@@ -154,15 +151,13 @@ export default function PaginationControl<T>({
 				</div>
 
 				{/* Botón Siguiente */}
-				<Button
-					//   variant="outline"
-					//   size="sm"
+				<button
 					onClick={() => table.nextPage()}
 					disabled={!table.getCanNextPage()}
-					className="disabled:opacity-50 disabled:cursor-not-allowed"
+					className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/[0.03] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
 				>
 					<ChevronRightIcon className="w-5 h-5" />
-				</Button>
+				</button>
 			</div>
 		</div>
 	);

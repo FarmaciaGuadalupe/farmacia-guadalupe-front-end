@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Fragment, useState, useMemo } from "react";
-import { Button, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { FormattedMessage, useIntl } from "react-intl";
 import Label from "../../../form/Label";
 import Input from "../../../form/input/InputField";
@@ -121,7 +121,7 @@ export default function AddNewBatch({
 				<Typography
 					variant="subtitle1"
 					fontWeight="bold"
-					className="mb-2 text-gray-700"
+					className="mb-2 text-gray-700 dark:text-gray-300"
 				>
 					<FormattedMessage id="medicine.step.batch" />
 				</Typography>
@@ -182,20 +182,18 @@ export default function AddNewBatch({
 					</div>
 				</div>
 				<div className="flex justify-end gap-3 mt-4">
-					{/* <Button 
-                        onClick={onClose} 
-                        variant="outlined" 
-                        color="secondary"
-                        disabled={loading}
-                    >
-                        <FormattedMessage id="cancel" />
-                    </Button> */}
+					<button
+						type="button"
+						onClick={onClose}
+						disabled={loading}
+						className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/[0.03] transition-colors flex items-center gap-2"
+					>
+						<FormattedMessage id="cancel" />
+					</button>
 					<button
 						type="submit"
-						// variant="contained"
-						// color="primary"
 						disabled={loading}
-						className="px-4 py-2 text-white rounded-xl transition-colors flex items-center gap-2 bg-brand-500"
+						className="px-4 py-2 text-white rounded-xl transition-colors flex items-center gap-2 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-300"
 					>
 						{loading ? (
 							<FormattedMessage id="saving" />

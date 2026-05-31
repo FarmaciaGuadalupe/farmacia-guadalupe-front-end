@@ -1,6 +1,5 @@
 // src/components/ui/table/CursorPaginationControl.tsx
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
-import Button from "../button/Button";
 import { FormattedMessage } from "react-intl";
 
 interface CursorPaginationProps {
@@ -54,21 +53,21 @@ export default function CursorPaginationControl({
 
 			{/* --- SECTOR DERECHO: Botones Anterior / Siguiente --- */}
 			<div className="flex items-center gap-2">
-				<Button
+				<button
 					onClick={onPrevious}
 					disabled={!hasPreviousPage || loading}
-					className="disabled:opacity-50 px-3 py-1.5 flex items-center gap-1"
+					className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/[0.03] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
 				>
 					<ChevronLeftIcon className="w-4 h-4" />
 					<span className="hidden sm:inline">
 						<FormattedMessage id="prev" defaultMessage="Anterior" />
 					</span>
-				</Button>
+				</button>
 
-				<Button
+				<button
 					onClick={onNext}
 					disabled={!hasNextPage || loading}
-					className="disabled:opacity-50 px-3 py-1.5 flex items-center gap-1"
+					className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/[0.03] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
 				>
 					<span className="hidden sm:inline">
 						<FormattedMessage
@@ -77,7 +76,7 @@ export default function CursorPaginationControl({
 						/>
 					</span>
 					<ChevronRightIcon className="w-4 h-4" />
-				</Button>
+				</button>
 			</div>
 		</div>
 	);

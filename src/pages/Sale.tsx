@@ -5,11 +5,6 @@ import { useIntl, FormattedMessage } from "react-intl";
 import {
 	Autocomplete,
 	TextField,
-	Button,
-	Dialog,
-	DialogTitle,
-	DialogContent,
-	DialogActions,
 	Select,
 	MenuItem,
 	FormControlLabel,
@@ -18,7 +13,7 @@ import {
 	InputLabel,
 	FormControl,
 } from "@mui/material";
-import { TrashIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { TrashIcon } from "@heroicons/react/24/outline";
 import { toast } from "sonner";
 import PageBreadcrumb from "../components/common/PageBreadCrumb";
 import { useAuth } from "../context/AuthContext";
@@ -27,6 +22,7 @@ import {
 	SaleSummary,
 } from "../utils/generateSaleVoucher";
 import { nicaDate, nowInNica } from "../utils/dateUtils";
+import SimpleModal from "../components/ui/utils/SimpleModal";
 
 // --- GRAPHQL DEFINITIONS ---
 const GET_CUSTOMERS = gql`
@@ -809,12 +805,14 @@ export default function Sale() {
 														<TextField
 															type="number"
 															size="small"
-															inputProps={{
-																min: 1,
-																max:
-																	item.batch
-																		?.current_quantity_units ||
-																	1,
+															slotProps={{
+																input: {
+																	min: 1,
+																	max:
+																		item.batch
+																			?.current_quantity_units ||
+																		1,
+																},
 															}}
 															value={
 																item.quantity
@@ -925,7 +923,7 @@ export default function Sale() {
 													updatePaymentRow(
 														payment.id,
 														"paymentMethodId",
-														e.target.value,
+														e.target.value as number,
 													)
 												}
 											>
@@ -989,15 +987,12 @@ export default function Sale() {
 										)}
 								</div>
 							))}
-							<Button
-								variant="outlined"
-								color="primary"
-								fullWidth
-								startIcon={<PlusIcon className="h-4 w-4" />}
+							<button
 								onClick={addPaymentRow}
+								className="w-full items-center justify-center px-4 py-2 rounded-xl transition-colors flex items-center gap-2 border border-solid border-gray-300 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/[0.03] text-gray-700"
 							>
 								<FormattedMessage id="sale.add_payment" />
-							</Button>
+							</button>
 						</div>
 
 						<div
@@ -1017,12 +1012,8 @@ export default function Sale() {
 							</div>
 						</div>
 
-						<Button
-							variant="contained"
-							color="primary"
-							size="large"
-							fullWidth
-							className="mt-6 !py-3 !text-lg !font-bold"
+						<button
+							className="w-full mt-6 px-4 py-3 text-white rounded-xl transition-colors flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-300 text-lg font-bold"
 							onClick={handleProcessSale}
 							disabled={
 								isSubmitting ||
@@ -1035,243 +1026,231 @@ export default function Sale() {
 								: intl.formatMessage({
 										id: "sale.process_sale",
 									})}
-						</Button>
+						</button>
 					</div>
 				</div>
 			</div>
 
-			<Dialog
-				open={!!selectedMedicineForBatch}
+			{/* Modal para seleccionar lote */}
+			<SimpleModal
+				isOpen={!!selectedMedicineForBatch}
 				onClose={() => setSelectedMedicineForBatch(null)}
-				maxWidth="sm"
-				fullWidth
-			>
-				<DialogTitle>
-					<FormattedMessage
-						id="sale.select_batch_title"
-						values={{ name: selectedMedicineForBatch?.name }}
-					/>
-				</DialogTitle>
-				<DialogContent dividers>
-					<div className="space-y-3">
-						{selectedMedicineForBatch?.product?.batches
-							?.filter(
-								(b) =>
-									b.is_active && b.current_quantity_units > 0,
-							)
-							.map((batch) => (
-								<div
-									key={batch.batch_id}
-									className="flex justify-between items-center p-3 border rounded hover:bg-gray-50 cursor-pointer"
-									onClick={() =>
-										addBatchToCart(
-											selectedMedicineForBatch,
-											batch,
-										)
-									}
-								>
-									<div>
-										<div className="font-medium text-gray-900">
-											<FormattedMessage
-												id="sale.batch_label"
-												values={{
-													batch_code:
-														batch.batch_code,
-												}}
-											/>
-										</div>
-										<div className="text-sm text-gray-500">
-											<FormattedMessage
-												id="sale.exp_label"
-												values={{
-													expiration_date:
-														batch.expiration_date,
-												}}
-											/>
-										</div>
-									</div>
-									<div className="text-right">
-										<div className="font-medium text-emerald-600">
-											<FormattedMessage
-												id="sale.stock_label"
-												values={{
-													current_quantity_units:
-														batch.current_quantity_units,
-												}}
-											/>
-										</div>
-										<div className="text-sm text-gray-500">
-											<FormattedMessage
-												id="sale.price_label"
-												values={{
-													price: selectedMedicineForBatch
-														.product
-														.price_full_presentation,
-												}}
-											/>
-										</div>
-									</div>
-								</div>
-							))}
-					</div>
-				</DialogContent>
-				<DialogActions>
-					<Button onClick={() => setSelectedMedicineForBatch(null)}>
+				title={intl.formatMessage(
+					{ id: "sale.select_batch_title" },
+					{ name: selectedMedicineForBatch?.name },
+				)}
+				footer={
+					<button
+						onClick={() => setSelectedMedicineForBatch(null)}
+						className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/[0.03] transition-colors flex items-center gap-2"
+					>
 						<FormattedMessage id="cancel" />
-					</Button>
-				</DialogActions>
-			</Dialog>
-
-			<Dialog
-				open={!!completedSaleData}
-				onClose={() => setCompletedSaleData(null)}
-				maxWidth="sm"
-				fullWidth
+					</button>
+				}
 			>
-				<DialogTitle className="text-center font-bold text-xl">
-					<FormattedMessage id="sale.pharmacy_name" />
-				</DialogTitle>
-				<DialogContent dividers>
-					{completedSaleData && (
-						<div className="space-y-4 text-sm text-gray-800 dark:text-gray-200">
-							<div className="text-center mb-6">
-								<p className="font-semibold text-lg uppercase">
-									{completedSaleData.receiptType}
-								</p>
-								<p>
-									<FormattedMessage
-										id="sale.receipt_number"
-										values={{
-											receiptNumber:
-												completedSaleData.receiptNumber,
-										}}
-									/>
-								</p>
-								<p>
-									<FormattedMessage
-										id="sale.date_label"
-										values={{
-											date: nicaDate(
-												completedSaleData.date,
-											).format("DD/MM/YYYY hh:mm A"),
-										}}
-									/>
-								</p>
-							</div>
-							<div className="mb-4">
-								<strong>
-									<FormattedMessage id="sale.customer" />:
-								</strong>{" "}
-								{completedSaleData.customer}
-							</div>
-							<div className="overflow-x-auto">
-								<table className="w-full text-left text-sm border-collapse">
-									<thead>
-										<tr className="border-b border-gray-300 dark:border-gray-700">
-											<th className="py-2">
-												<FormattedMessage id="sale.table.quantity_short" />
-											</th>
-											<th className="py-2">
-												<FormattedMessage id="description" />
-											</th>
-											<th className="py-2 text-right">
-												<FormattedMessage id="sale.table.total" />
-											</th>
-										</tr>
-									</thead>
-									<tbody>
-										{completedSaleData.items.map(
-											(item, idx) => (
-												<tr
-													key={idx}
-													className="border-b border-gray-100 dark:border-gray-800"
-												>
-													<td className="py-2">
-														{item.quantity}
-													</td>
-													<td className="py-2">
-														{item.name}{" "}
-														<span className="text-xs text-gray-500">
-															({item.presentation}
-															)
-														</span>
-													</td>
-													<td className="py-2 text-right font-mono">
-														C${" "}
-														{item.total.toFixed(2)}
-													</td>
-												</tr>
-											),
-										)}
-									</tbody>
-								</table>
-							</div>
-							<div className="space-y-1 text-right mt-6 border-t border-gray-300 dark:border-gray-700 pt-4">
-								<p>
-									<FormattedMessage id="sale.subtotal" />{" "}
-									<span className="font-mono">
-										C${" "}
-										{completedSaleData.subtotal.toFixed(2)}
-									</span>
-								</p>
-								<p>
-									<FormattedMessage id="sale.iva_label" />{" "}
-									<span className="font-mono">
-										C$ {completedSaleData.iva.toFixed(2)}
-									</span>
-								</p>
-								<p className="font-bold text-lg mt-2">
-									<FormattedMessage id="sale.total_label" />{" "}
-									<span className="font-mono">
-										C${" "}
-										{completedSaleData.grandTotal.toFixed(
-											2,
-										)}
-									</span>
-								</p>
-								<div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-									<p className="text-gray-600 dark:text-gray-400">
-										<FormattedMessage id="sale.paid_label" />{" "}
-										<span className="font-mono">
-											C${" "}
-											{completedSaleData.totalPaid.toFixed(
-												2,
-											)}
-										</span>
-									</p>
-									<p className="text-gray-600 dark:text-gray-400">
-										<FormattedMessage id="sale.change_label" />{" "}
-										<span className="font-mono">
-											C${" "}
-											{Math.abs(
-												completedSaleData.changeDue,
-											).toFixed(2)}
-										</span>
-									</p>
+				<div className="space-y-3">
+					{selectedMedicineForBatch?.product?.batches
+						?.filter(
+							(b) => b.is_active && b.current_quantity_units > 0,
+						)
+						.map((batch) => (
+							<div
+								key={batch.batch_id}
+								className="flex justify-between items-center p-3 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-white/[0.03] cursor-pointer"
+								onClick={() =>
+									addBatchToCart(
+										selectedMedicineForBatch,
+										batch,
+									)
+								}
+							>
+								<div>
+									<div className="font-medium text-gray-900 dark:text-white">
+										<FormattedMessage
+											id="sale.batch_label"
+											values={{
+												batch_code: batch.batch_code,
+											}}
+										/>
+									</div>
+									<div className="text-sm text-gray-500 dark:text-gray-400">
+										<FormattedMessage
+											id="sale.exp_label"
+											values={{
+												expiration_date:
+													batch.expiration_date,
+											}}
+										/>
+									</div>
+								</div>
+								<div className="text-right">
+									<div className="font-medium text-emerald-600 dark:text-emerald-400">
+										<FormattedMessage
+											id="sale.stock_label"
+											values={{
+												current_quantity_units:
+													batch.current_quantity_units,
+											}}
+										/>
+									</div>
+									<div className="text-sm text-gray-500 dark:text-gray-400">
+										<FormattedMessage
+											id="sale.price_label"
+											values={{
+												price: selectedMedicineForBatch
+													.product
+													.price_full_presentation,
+											}}
+										/>
+									</div>
 								</div>
 							</div>
-							<div className="text-center mt-6 italic text-gray-500">
-								<FormattedMessage id="sale.thanks_message" />
+						))}
+				</div>
+			</SimpleModal>
+
+			{/* Modal de Comprobante / Voucher */}
+			<SimpleModal
+				isOpen={!!completedSaleData}
+				onClose={() => setCompletedSaleData(null)}
+				title={intl.formatMessage({ id: "sale.pharmacy_name" })}
+				footer={
+					<div className="flex gap-3">
+						<button
+							onClick={() => setCompletedSaleData(null)}
+							className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/[0.03] transition-colors flex items-center gap-2"
+						>
+							<FormattedMessage id="sale.close" />
+						</button>
+						<button
+							onClick={() =>
+								completedSaleData &&
+								generateSaleVoucherPDF(completedSaleData, true)
+							}
+							className="px-4 py-2 text-white rounded-xl transition-colors flex items-center gap-2 bg-brand-500 hover:bg-brand-600"
+						>
+							<FormattedMessage id="sale.print_pdf" />
+						</button>
+					</div>
+				}
+			>
+				{completedSaleData && (
+					<div className="space-y-4 text-sm text-gray-800 dark:text-gray-200">
+						<div className="text-center mb-6">
+							<p className="font-semibold text-lg uppercase">
+								{completedSaleData.receiptType}
+							</p>
+							<p>
+								<FormattedMessage
+									id="sale.receipt_number"
+									values={{
+										receiptNumber:
+											completedSaleData.receiptNumber,
+									}}
+								/>
+							</p>
+							<p>
+								<FormattedMessage
+									id="sale.date_label"
+									values={{
+										date: nicaDate(
+											completedSaleData.date,
+										).format("DD/MM/YYYY hh:mm A"),
+									}}
+								/>
+							</p>
+						</div>
+						<div className="mb-4">
+							<strong>
+								<FormattedMessage id="sale.customer" />:
+							</strong>{" "}
+							{completedSaleData.customer}
+						</div>
+						<div className="overflow-x-auto">
+							<table className="w-full text-left text-sm border-collapse">
+								<thead>
+									<tr className="border-b border-gray-300 dark:border-gray-700">
+										<th className="py-2">
+											<FormattedMessage id="sale.table.quantity_short" />
+										</th>
+										<th className="py-2">
+											<FormattedMessage id="description" />
+										</th>
+										<th className="py-2 text-right">
+											<FormattedMessage id="sale.table.total" />
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									{completedSaleData.items.map(
+										(item, idx) => (
+											<tr
+												key={idx}
+												className="border-b border-gray-100 dark:border-gray-800"
+											>
+												<td className="py-2">
+													{item.quantity}
+												</td>
+												<td className="py-2">
+													{item.name}{" "}
+													<span className="text-xs text-gray-500">
+														({item.presentation})
+													</span>
+												</td>
+												<td className="py-2 text-right font-mono">
+													C$ {item.total.toFixed(2)}
+												</td>
+											</tr>
+										),
+									)}
+								</tbody>
+							</table>
+						</div>
+						<div className="space-y-1 text-right mt-6 border-t border-gray-300 dark:border-gray-700 pt-4">
+							<p>
+								<FormattedMessage id="sale.subtotal" />{" "}
+								<span className="font-mono">
+									C$ {completedSaleData.subtotal.toFixed(2)}
+								</span>
+							</p>
+							<p>
+								<FormattedMessage id="sale.iva_label" />{" "}
+								<span className="font-mono">
+									C$ {completedSaleData.iva.toFixed(2)}
+								</span>
+							</p>
+							<p className="font-bold text-lg mt-2">
+								<FormattedMessage id="sale.total_label" />{" "}
+								<span className="font-mono">
+									C${" "}
+									{completedSaleData.grandTotal.toFixed(2)}
+								</span>
+							</p>
+							<div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+								<p className="text-gray-600 dark:text-gray-400">
+									<FormattedMessage id="sale.paid_label" />{" "}
+									<span className="font-mono">
+										C${" "}
+										{completedSaleData.totalPaid.toFixed(2)}
+									</span>
+								</p>
+								<p className="text-gray-600 dark:text-gray-400">
+									<FormattedMessage id="sale.change_label" />{" "}
+									<span className="font-mono">
+										C${" "}
+										{Math.abs(
+											completedSaleData.changeDue,
+										).toFixed(2)}
+									</span>
+								</p>
 							</div>
 						</div>
-					)}
-				</DialogContent>
-				<DialogActions>
-					<Button onClick={() => setCompletedSaleData(null)}>
-						<FormattedMessage id="sale.close" />
-					</Button>
-					<Button
-						variant="contained"
-						color="primary"
-						onClick={() =>
-							completedSaleData &&
-							generateSaleVoucherPDF(completedSaleData, true)
-						}
-					>
-						<FormattedMessage id="sale.print_pdf" />
-					</Button>
-				</DialogActions>
-			</Dialog>
+						<div className="text-center mt-6 italic text-gray-500">
+							<FormattedMessage id="sale.thanks_message" />
+						</div>
+					</div>
+				)}
+			</SimpleModal>
 		</div>
 	);
 }

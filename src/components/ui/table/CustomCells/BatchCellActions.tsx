@@ -1,5 +1,4 @@
 import clsx from "clsx";
-import { Button } from "@mui/material";
 import { useState, Fragment } from "react";
 import { FormattedMessage } from "react-intl";
 import {
@@ -88,8 +87,8 @@ export const BatchCellActions = ({ row }: any) => {
 		<Fragment>
 			<div className="flex justify-center overflow-visible z-[110]">
 				<Menu as="div" className="relative inline-block text-left">
-					<MenuButton as={Button} className="size-7 rounded-full">
-						<EllipsisHorizontalIcon className="size-4.5" />
+					<MenuButton className="flex items-center justify-center size-8 rounded-full transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400">
+						<EllipsisHorizontalIcon className="size-5" />
 					</MenuButton>
 					<Transition
 						as={MenuItems}

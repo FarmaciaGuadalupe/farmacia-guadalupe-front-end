@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import { gql } from "@apollo/client";
-import { Button } from "@mui/material";
 import { useState, Fragment } from "react";
 import { useMutation } from "@apollo/client/react";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -141,9 +140,6 @@ export const BrandCellActions = ({ row }: any) => {
 	const { original } = row;
 	const { is_active } = original;
 	const [activeItem, setActiveItem] = useState<any>(null);
-	console.log("Row in BrandCellActions:", row);
-	console.log("Original in BrandCellActions:", original);
-	console.log("is_active in BrandCellActions:", is_active);
 
 	const items = [
 		{
@@ -174,7 +170,9 @@ export const BrandCellActions = ({ row }: any) => {
 		<Fragment>
 			<div className="flex justify-center overflow-visible z-[110]">
 				<Menu as="div" className="relative inline-block text-left">
-					<MenuButton as={Button} className="size-7 rounded-full">
+					<MenuButton
+						className="size-7 rounded-full text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/[0.03] transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+					>
 						<EllipsisHorizontalIcon className="size-4.5" />
 					</MenuButton>
 					<Transition

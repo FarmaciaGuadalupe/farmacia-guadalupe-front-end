@@ -3,7 +3,6 @@ import { useLazyQuery } from "@apollo/client/react";
 import { useIntl } from "react-intl";
 import { toast } from "sonner";
 
-import Button from "../button/Button";
 import { DownloadIcon } from "../../../icons";
 import { exportToExcel, ExcelColumnConfig } from "../../../utils/excelUtils";
 import { GET_ALL_SALES } from "../table/QuerysDefinitions";
@@ -108,15 +107,14 @@ const SalesExportButton: React.FC = () => {
 	};
 
 	return (
-		<Button
-			variant="outline"
-			size="sm"
-			startIcon={<DownloadIcon />}
+		<button
 			onClick={handleExport}
 			disabled={loading}
+			className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/[0.03] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
 		>
+			<DownloadIcon />
 			{loading ? "Preparando..." : "Exportar Excel"}
-		</Button>
+		</button>
 	);
 };
 

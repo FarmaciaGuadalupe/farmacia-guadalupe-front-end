@@ -256,8 +256,8 @@ export default function AddEmployeeForm({
 					<button
 						type="submit"
 						disabled={isSubmitting}
-						className="px-4 py-2 text-white rounded-xl transition-colors flex items-center gap-2 bg-brand-500"
-					>
+						className="px-4 py-2 text-white rounded-xl transition-colors flex items-center gap-2 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-300"
+				>
 						{isSubmitting
 							? intl.formatMessage({ id: "saving" })
 							: intl.formatMessage({ id: "save" })}

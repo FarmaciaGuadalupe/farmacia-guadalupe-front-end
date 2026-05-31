@@ -4,13 +4,13 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { gql } from "@apollo/client";
 import { useMutation } from "@apollo/client/react";
 import { useQuery } from "@apollo/client/react"; // Cambiamos fetch por useQuery
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon, TrashIcon } from "@heroicons/react/24/outline";
+
 import {
 	Box,
 	Stepper,
 	Step,
 	StepLabel,
-	Button,
 	Typography,
 	TextField,
 } from "@mui/material";
@@ -439,21 +439,17 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
 											<div className="w-full pb-1">
 												{formData.ingredients.length >
 													1 && (
-													<Button
-														color="error"
-														variant="outlined"
+													<button
+														type="button"
 														onClick={() =>
 															removeIngredient(
 																index,
 															)
 														}
-														sx={{
-															minWidth: "40px",
-															padding: "6px",
-														}}
+														className="p-3 text-red-600 border border-red-300 rounded-full bg-red-50 transition-colors flex items-center justify-center disabled:opacity-50"
 													>
-														X
-													</Button>
+														<TrashIcon className="size-4" />
+													</button>
 												)}
 											</div>
 										</div>
@@ -461,14 +457,13 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
 								)}
 
 								{/* Botón para agregar una nueva fila */}
-								<Button
-									variant="text"
-									color="primary"
+								<button
+									type="button"
 									onClick={addIngredient}
-									sx={{ mt: 1 }}
+									className="mt-1 px-4 py-2 text-brand-500 bg-white border border-brand-500 rounded-xl hover:bg-brand-50 transition-colors flex items-center justify-center gap-2"
 								>
 									<FormattedMessage id="medicine.action.add_ingredient" />
-								</Button>
+								</button>
 							</div>
 						</div>
 					</div>
@@ -1094,9 +1089,13 @@ export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
 							pt: 2,
 						}}
 					>
-						<Button variant="contained" onClick={handleReset}>
+						<button
+							type="button"
+							onClick={handleReset}
+							className="px-4 py-2 text-white rounded-xl transition-colors flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-300 disabled:cursor-not-allowed"
+						>
 							<FormattedMessage id="medicine.action.add_another" />
-						</Button>
+						</button>
 					</Box>
 				</Fragment>
 			) : (
@@ -1104,17 +1103,20 @@ export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
 					{getStepContent(activeStep)}
 
 					<div className="flex flex-row gap-2 items-end justify-end mt-5   ">
-						<Button
+						<button
+							type="button"
 							color="inherit"
 							disabled={activeStep === 0 || isSubmitting}
 							onClick={handleBack}
+							className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/[0.03] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
 						>
 							<FormattedMessage id="common.back" />
-						</Button>
-						<Button
-							variant="contained"
+						</button>
+						<button
+							type="button"
 							onClick={handleNext}
 							disabled={!isStepValid() || isSubmitting}
+							className="px-4 py-2 text-white rounded-xl transition-colors flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-300 disabled:cursor-not-allowed"
 						>
 							{isSubmitting
 								? intl.formatMessage({ id: "common.sending" })
@@ -1123,7 +1125,7 @@ export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
 											id: "common.send_api",
 										})
 									: intl.formatMessage({ id: "common.next" })}
-						</Button>
+						</button>
 					</div>
 				</Fragment>
 			)}

@@ -5,7 +5,6 @@ import jsPDF from "jspdf";
 import EcommerceMetrics from "../../components/ecommerce/EcommerceMetrics";
 import MonthlySalesChart from "../../components/ecommerce/MonthlySalesChart";
 import PageMeta from "../../components/common/PageMeta";
-import Button from "../../components/ui/button/Button";
 import { DownloadIcon } from "../../icons";
 import { useAuth } from "../../context/AuthContext";
 
@@ -87,15 +86,14 @@ export default function Home() {
 			{/* Botón para disparar la exportación a PDF */}
 			{user?.roleId !== 2 && (
 				<div className="flex justify-end mb-4">
-					<Button
-						variant="outline"
-						size="md"
-						startIcon={<DownloadIcon />}
+					<button
+						className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/[0.03] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
 						onClick={handleExportPDF}
 						disabled={isExporting}
 					>
+						<DownloadIcon className="w-5 h-5" />
 						{isExporting ? "Generando PDF..." : "Exportar a PDF"}
-					</Button>
+					</button>
 				</div>
 			)}
 
@@ -107,3 +105,4 @@ export default function Home() {
 		</div>
 	);
 }
+

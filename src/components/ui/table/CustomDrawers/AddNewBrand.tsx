@@ -139,7 +139,8 @@ export default function AddNewBrand() {
 				<div className="flex flex-row justify-end">
 					<button
 						onClick={handleSubmit}
-						className="px-4 py-2 text-white rounded-xl transition-colors flex items-center gap-2 bg-brand-500"
+						disabled={loading}
+						className="px-4 py-2 text-white rounded-xl transition-colors flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-300 disabled:cursor-not-allowed"
 					>
 						<FormattedMessage id="save" />
 					</button>

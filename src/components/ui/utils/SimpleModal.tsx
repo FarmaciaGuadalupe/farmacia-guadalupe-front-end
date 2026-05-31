@@ -15,6 +15,7 @@ interface SimpleModalProps {
 	onClose: () => void; // Función para cerrar
 	title: string; // Título del header
 	children: ReactNode; // Contenido del modal
+	footer?: ReactNode; // (Opcional) Footer del modal
 	custom?: string;
 	widthClass?: string; // (Opcional) Ancho del modal
 	disableOutsideClick?: boolean; // (Opcional) Evita cerrar al hacer click afuera
@@ -29,6 +30,7 @@ export default function SimpleModal({
 	onClose,
 	title,
 	children,
+	footer,
 	custom = "",
 	widthClass = "w-full max-w-md", // Por defecto un ancho mediano y responsivo
 	disableOutsideClick = false, // Por defecto permite cerrar al hacer click afuera
@@ -97,6 +99,13 @@ export default function SimpleModal({
 								<div className="p-6 text-gray-600 dark:text-gray-300">
 									{children}
 								</div>
+
+								{/* --- Footer del Modal --- */}
+								{footer && (
+									<div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+										{footer}
+									</div>
+								)}
 							</DialogPanel>
 						</TransitionChild>
 					</div>

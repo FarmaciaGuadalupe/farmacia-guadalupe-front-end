@@ -1,5 +1,4 @@
 import React from "react";
-import Button from "../ui/button/Button";
 import { DownloadIcon } from "../../icons";
 import { exportSalesToExcel, SaleNode } from "../../utils/excelUtils";
 
@@ -25,15 +24,14 @@ const ExportSalesButton: React.FC<ExportSalesButtonProps> = ({
 	};
 
 	return (
-		<Button
-			variant="outline"
-			size="md"
-			startIcon={<DownloadIcon />}
+		<button
 			onClick={handleExport}
 			disabled={loading || !sales || sales.length === 0}
+			className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/[0.03] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
 		>
+			<DownloadIcon />
 			Exportar a Excel
-		</Button>
+		</button>
 	);
 };
 

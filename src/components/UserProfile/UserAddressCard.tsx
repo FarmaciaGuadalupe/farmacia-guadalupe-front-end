@@ -1,6 +1,5 @@
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
-import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import { FormattedMessage } from "react-intl";
@@ -133,16 +132,20 @@ export default function UserAddressCard() {
 							</div>
 						</div>
 						<div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-							<Button
-								size="sm"
-								variant="outline"
+							<button
+								type="button"
 								onClick={closeModal}
+								className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/[0.03] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
 							>
 								<FormattedMessage id="cancel" />
-							</Button>
-							<Button size="sm" onClick={handleSave}>
+							</button>
+							<button
+								type="button"
+								onClick={handleSave}
+								className="px-4 py-2 text-white rounded-xl transition-colors flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-300 disabled:cursor-not-allowed"
+							>
 								<FormattedMessage id="user.profile.saveChanges" />
-							</Button>
+							</button>
 						</div>
 					</form>
 				</div>
