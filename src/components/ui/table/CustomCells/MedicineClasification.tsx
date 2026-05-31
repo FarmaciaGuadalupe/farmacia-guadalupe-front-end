@@ -13,46 +13,77 @@ import {
   SpeakerWaveIcon,
 } from "@heroicons/react/24/outline";
 
-import { TbPill, TbVaccine, TbLungs, TbDroplet, TbBandage } from "react-icons/tb";
+import {
+  TbPill,
+  TbVaccine,
+  TbLungs,
+  TbDroplet,
+  TbBandage,
+} from "react-icons/tb";
 import { MdOutlineMedicalServices } from "react-icons/md";
 
-
 const ROUTE_FAMILY_ICONS = {
-  Enteral: TbPill,        // Pastillas, cápsulas, vía digestiva
-  Parenteral: TbVaccine,    // Todo lo inyectable (jeringa)
-  Respiratoria: TbLungs,    // Inhaladores, nebulizadores
-  LocalGotas: TbDroplet,       // Oftálmica, ótica (gotas)
-  Topica: TbBandage,        // Piel, parches
-  Otra: MdOutlineMedicalServices // Genérico para otras vías
+  Enteral: TbPill, // Pastillas, cápsulas, vía digestiva
+  Parenteral: TbVaccine, // Todo lo inyectable (jeringa)
+  Respiratoria: TbLungs, // Inhaladores, nebulizadores
+  LocalGotas: TbDroplet, // Oftálmica, ótica (gotas)
+  Topica: TbBandage, // Piel, parches
+  Otra: MdOutlineMedicalServices, // Genérico para otras vías
 };
 
 const getRouteIcon = (routeName: string) => {
   const name = routeName?.toLowerCase() || "";
 
   // Agrupación Parenteral (Inyectables)
-  if (name.includes("intra") || name.includes("subcutánea") || name.includes("epidural") || name.includes("peridural") || name.includes("retrobulbar") || name.includes("peribulbar")) {
+  if (
+    name.includes("intra") ||
+    name.includes("subcutánea") ||
+    name.includes("epidural") ||
+    name.includes("peridural") ||
+    name.includes("retrobulbar") ||
+    name.includes("peribulbar")
+  ) {
     return ROUTE_FAMILY_ICONS.Parenteral;
   }
   // Agrupación Enteral (Digestiva)
-  if (name.includes("oral") || name.includes("sublingual") || name.includes("bucal") || name.includes("gástrica") || name.includes("yeyunostomía") || name.includes("rectal")) {
+  if (
+    name.includes("oral") ||
+    name.includes("sublingual") ||
+    name.includes("bucal") ||
+    name.includes("gástrica") ||
+    name.includes("yeyunostomía") ||
+    name.includes("rectal")
+  ) {
     return ROUTE_FAMILY_ICONS.Enteral;
   }
   // Agrupación Respiratoria
-  if (name.includes("inhal") || name.includes("endotraqueal") || name.includes("nasal")) {
+  if (
+    name.includes("inhal") ||
+    name.includes("endotraqueal") ||
+    name.includes("nasal")
+  ) {
     return ROUTE_FAMILY_ICONS.Respiratoria;
   }
   // Agrupación Gotas/Líquidos locales
-  if (name.includes("oftálmica") || name.includes("ótica") || name.includes("conjuntival")) {
+  if (
+    name.includes("oftálmica") ||
+    name.includes("ótica") ||
+    name.includes("conjuntival")
+  ) {
     return ROUTE_FAMILY_ICONS.LocalGotas;
   }
   // Agrupación Tópica/Superficial
-  if (name.includes("tópica") || name.includes("transdérmica") || name.includes("vaginal") || name.includes("uretral")) {
+  if (
+    name.includes("tópica") ||
+    name.includes("transdérmica") ||
+    name.includes("vaginal") ||
+    name.includes("uretral")
+  ) {
     return ROUTE_FAMILY_ICONS.Topica;
   }
 
   return ROUTE_FAMILY_ICONS.Otra;
 };
-
 
 // Esto esta sujeto a cambio
 const ADMIN_ROUTE_GROUPS: Record<string, { icon: any }> = {
@@ -74,17 +105,20 @@ const ADMIN_ROUTE_GROUPS: Record<string, { icon: any }> = {
   Ótica: { icon: SpeakerWaveIcon },
 };
 
-const SPECIFIC_CATEGORY_COLORS: Record<string, 'primary' | 'success' | 'error' | 'warning' | 'info'> = {
-  "Cardiovasculares": "error", // Red for cardiovascular
-  "Analgésicos": "info",
-  "Antibióticos": "primary",
-  "Antipiréticos": "info",
-  "Antihistamínicos": "warning",
-  "Gastrointestinales": "warning",
-  "Dermatológicos": "light",
+const SPECIFIC_CATEGORY_COLORS: Record<
+  string,
+  "primary" | "success" | "error" | "warning" | "info"
+> = {
+  Cardiovasculares: "error", // Red for cardiovascular
+  Analgésicos: "info",
+  Antibióticos: "primary",
+  Antipiréticos: "info",
+  Antihistamínicos: "warning",
+  Gastrointestinales: "warning",
+  Dermatológicos: "light",
   "Suministros médicos": "default",
-  "Antidiabéticos": "success",
-  "Respiratorios": "info",
+  Antidiabéticos: "success",
+  Respiratorios: "info",
   "Neurológicos y Psiquiátricos": "warning",
   "Oftálmicos y Otológicos": "light",
   "Vitaminas y Suplementos": "success",
@@ -95,7 +129,13 @@ const SPECIFIC_CATEGORY_COLORS: Record<string, 'primary' | 'success' | 'error' |
   "Ortopedia y Rehabilitación": "default",
 };
 
-const colors: ('primary' | 'success' | 'error' | 'warning' | 'info')[] = ['primary', 'success', 'error', 'warning', 'info'];
+const colors: ("primary" | "success" | "error" | "warning" | "info")[] = [
+  "primary",
+  "success",
+  "error",
+  "warning",
+  "info",
+];
 
 const stringToHash = (str: string): number => {
   let hash = 0;
@@ -108,9 +148,18 @@ const stringToHash = (str: string): number => {
   return Math.abs(hash);
 };
 
-const getCategoryColor = (categoryName: string): 'primary' | 'success' | 'error' | 'warning' | 'info' | 'light' | 'default' => {
+const getCategoryColor = (
+  categoryName: string,
+):
+  | "primary"
+  | "success"
+  | "error"
+  | "warning"
+  | "info"
+  | "light"
+  | "default" => {
   if (!categoryName) {
-    return 'default';
+    return "default";
   }
   if (SPECIFIC_CATEGORY_COLORS[categoryName]) {
     return SPECIFIC_CATEGORY_COLORS[categoryName];
@@ -126,8 +175,11 @@ const MedicineClasification = memo(({ row }: any) => {
     row.original || {};
 
   const categoryColor = getCategoryColor(category?.name);
-  const administrationRoute = ADMIN_ROUTE_GROUPS[administration_route?.name] || null;
-  const RouteIconComponent = administration_route?.name ? getRouteIcon(administration_route.name) : null;
+  const administrationRoute =
+    ADMIN_ROUTE_GROUPS[administration_route?.name] || null;
+  const RouteIconComponent = administration_route?.name
+    ? getRouteIcon(administration_route.name)
+    : null;
 
   return (
     <div className="flex flex-col gap-1 text-sm leading-tight">
@@ -140,11 +192,14 @@ const MedicineClasification = memo(({ row }: any) => {
           </span>
         )}
         {RouteIconComponent && (
-           <RouteIconComponent 
-                className="size-4.5 text-gray-500 cursor-default" 
-                data-tooltip-id="global-tooltip"
-                data-tooltip-content={intl.formatMessage({id: "administration_route"}, {qoute: administration_route.name})}
-            />
+          <RouteIconComponent
+            className="size-4.5 text-gray-500 cursor-default"
+            data-tooltip-id="global-tooltip"
+            data-tooltip-content={intl.formatMessage(
+              { id: "administration_route" },
+              { qoute: administration_route.name },
+            )}
+          />
         )}
       </div>
 
