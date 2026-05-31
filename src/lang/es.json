@@ -145,6 +145,7 @@
 	"paymentMean": "Medio de pago",
 	"phone": "Teléfono",
 	"presentations": "{count, plural, one {Presentación} other {Presentaciones}}",
+	"prices": "Precios",
 	"price_full_presentation": "Precio venta (Caja)",
 	"price_per_unit": "Precio venta (Unidad)",
 	"products": "{count, plural, one {Producto} other {Productos}}",

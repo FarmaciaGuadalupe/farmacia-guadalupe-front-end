@@ -19,6 +19,7 @@ import TransactionDate from "./CustomCells/TransactionDate";
 import TransactionPay from "./CustomCells/TransactionPay";
 import TransactionMedicine from "./CustomCells/TransactionMedicine";
 import TransactionEmployee from "./CustomCells/TransactionEmployee";
+import { FaBox, FaBoxOpen } from "react-icons/fa6";
 
 export const useEmployeeColumns = () => {
 	const intl = useIntl();
@@ -358,6 +359,33 @@ export const useMedicineColumns = () => {
 				header: intl.formatMessage({ id: "stock" }),
 				id: "product",
 				cell: ({ row }) => <Stock row={row} />,
+			},
+			{
+				header: intl.formatMessage({ id: "prices" }),
+				id: "prices",
+				cell: ({ row }) => {
+					const unitPrice = row.original.product?.price_per_unit || 0;
+					const fullPrice = row.original.product?.price_full_presentation || 0;
+
+					if (unitPrice > 0) {
+						return (
+							<div className="flex items-center gap-2">
+								<span>C$ {unitPrice.toFixed(2)}</span>
+								{fullPrice > 0 && (
+									<div
+										className="cursor-help text-orange-500 p-2 rounded-full bg-orange-100"
+										data-tooltip-id="global-tooltip"
+										data-tooltip-content={`${intl.formatMessage({ id: "price_full_presentation" })}: C$ ${fullPrice.toFixed(2)}`}
+									>
+										<FaBox className="size-3" />
+									</div>
+								)}
+							</div>
+						);
+					}
+
+					return <span>C$ {fullPrice.toFixed(2)}</span>;
+				},
 			},
 			{
 				header: intl.formatMessage({ id: "description" }),

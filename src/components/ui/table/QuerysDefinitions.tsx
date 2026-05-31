@@ -1,4 +1,5 @@
 import { gql } from "@apollo/client";
+
 export const GET_ALL_SALES = () => gql`
 	query GetSalesWithDetails(
 		$first: Int
@@ -272,6 +273,10 @@ export const GET_MEDICINE_QUERY = () => gql`
 					product_id
 					stock_units
 					min_stock_units
+					price_per_unit
+					price_full_presentation
+					cost_price
+					currency
 				}
 			}
 			pageInfo {
