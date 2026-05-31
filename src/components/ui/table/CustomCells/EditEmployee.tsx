@@ -11,14 +11,13 @@ import { GET_EMPLOYEE_ROLE } from "../QuerysDefinitions";
 
 const baseUrl = import.meta.env.VITE_BASE_API_URL;
 
-// --- Definición de Tipos ---
-
-interface AddEmployeeFormProps {
+interface EditEmployeeFormProps {
+	row: any;
 	onClose: () => void;
 	onSaveSuccess: () => void;
 }
 
-interface CreateEmployeePayload {
+interface UpdateEmployeePayload {
 	names: string;
 	lastnames: string;
 	phone: string;
@@ -26,29 +25,33 @@ interface CreateEmployeePayload {
 	password: string;
 	email: string;
 	url_photo: string;
-	employee_role_id: string;
+	hiring_date: string;
+	employeeRoleId: number;
+	employeeStatusId: number;
 }
 
-const initialState: CreateEmployeePayload = {
-	names: "",
-	lastnames: "",
-	phone: "",
-	user: "",
-	password: "",
-	email: "",
-	url_photo: "",
-	employee_role_id: "",
-};
-
-export default function AddEmployeeForm({
+export default function EditEmployeeForm({
+	row,
 	onClose,
 	onSaveSuccess,
-}: AddEmployeeFormProps) {
+}: EditEmployeeFormProps) {
 	const intl = useIntl();
 	const client = useApolloClient();
+	const employeeData = row.original;
 
-	const [formData, setFormData] =
-		useState<CreateEmployeePayload>(initialState);
+	const [formData, setFormData] = useState<UpdateEmployeePayload>({
+		names: employeeData.names || "",
+		lastnames: employeeData.lastnames || "",
+		phone: employeeData.phone || "",
+		user: employeeData.user || "",
+		password: "",
+		email: employeeData.email || "",
+		url_photo: employeeData.url_photo || "",
+		hiring_date: employeeData.hiring_date || new Date().toISOString(),
+		employeeRoleId: parseInt(employeeData.employeeRoleId) || 0,
+		employeeStatusId: parseInt(employeeData.employeeStatusId) || 0,
+	});
+
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
@@ -73,10 +76,10 @@ export default function AddEmployeeForm({
 		}));
 	};
 
-	const handleSelectChange = (value: string) => {
+	const handleSelectChange = (field: string, value: string) => {
 		setFormData((prev) => ({
 			...prev,
-			employee_role_id: value,
+			[field]: parseInt(value, 10) || 0,
 		}));
 	};
 
@@ -87,21 +90,15 @@ export default function AddEmployeeForm({
 		setError(null);
 
 		try {
-			// Convertir employee_role_id a número para la API si es necesario
-			const payload = {
-				...formData,
-				employee_role_id: parseInt(formData.employee_role_id, 10) || 0,
-			};
-
 			const response = await fetch(
-				baseUrl + "api/Employee/createEmployee",
+				`${baseUrl}api/Employee/updateEmployee/${employeeData.employeeId}`,
 				{
-					method: "POST",
+					method: "PUT",
 					headers: {
 						"Content-Type": "application/json",
 						accept: "text/plain",
 					},
-					body: JSON.stringify(payload),
+					body: JSON.stringify(formData),
 				},
 			);
 
@@ -113,10 +110,10 @@ export default function AddEmployeeForm({
 			}
 
 			toast.success(
-				intl.formatMessage({ id: "employee.create.success" }),
+				intl.formatMessage({ id: "employee.update.success" }),
 			);
 
-			// Forzamos el refetch de la tabla de empleados antes de llamar a onSaveSuccess
+			// Forzamos el refetch de la tabla de empleados
 			await client.refetchQueries({
 				include: ["GetEmployees"],
 			});
@@ -124,8 +121,8 @@ export default function AddEmployeeForm({
 			onSaveSuccess();
 		} catch (err: any) {
 			setError(err.message);
-			console.error("Error al crear empleado:", err);
-			toast.error(intl.formatMessage({ id: "employee.create.error" }));
+			console.error("Error al actualizar empleado:", err);
+			toast.error(intl.formatMessage({ id: "employee.update.error" }));
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -139,7 +136,7 @@ export default function AddEmployeeForm({
 						<Label htmlFor="names">
 							<FormattedMessage
 								id="names"
-								values={{ count: 2 }}
+								values={{ count: 1 }}
 							/>
 						</Label>
 						<Input
@@ -180,7 +177,7 @@ export default function AddEmployeeForm({
 							name="email"
 							value={formData.email}
 							onChange={handleChange}
-							autoComplete="new-email"
+							autoComplete="off"
 							required
 						/>
 					</div>
@@ -226,24 +223,43 @@ export default function AddEmployeeForm({
 							name="password"
 							value={formData.password}
 							onChange={handleChange}
-							autoComplete="new-password"
-							required
+							autoComplete="off"
+							placeholder="••••••••"
 						/>
 					</div>
 				</div>
 
-				<div>
-					<Label htmlFor="role">
-						<FormattedMessage id="role" />
-					</Label>
-					<Select
-						options={roleOptions}
-						placeholder={intl.formatMessage({
-							id: "option.select",
-						})}
-						value={formData.employee_role_id}
-						onChange={handleSelectChange}
-					/>
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+					<div>
+						<Label htmlFor="employeeRoleId">
+							<FormattedMessage id="role" />
+						</Label>
+						<Select
+							options={roleOptions}
+							placeholder={intl.formatMessage({
+								id: "option.select",
+							})}
+							value={String(formData.employeeRoleId)}
+							onChange={(val) =>
+								handleSelectChange("employeeRoleId", val)
+							}
+						/>
+					</div>
+
+					<div>
+						<Label htmlFor="hiring_date">
+							<FormattedMessage id="hiring_date" />
+						</Label>
+						<Input
+							type="date"
+							id="hiring_date"
+							name="hiring_date"
+							value={formData.hiring_date.split("T")[0]}
+							onChange={handleChange}
+							autoComplete="off"
+							required
+						/>
+					</div>
 				</div>
 
 				{error && (
@@ -254,10 +270,17 @@ export default function AddEmployeeForm({
 
 				<div className="flex justify-end gap-3 pt-2">
 					<button
+						type="button"
+						onClick={onClose}
+						className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/[0.03] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+					>
+						{intl.formatMessage({ id: "cancel" })}
+					</button>
+					<button
 						type="submit"
 						disabled={isSubmitting}
-						className="px-4 py-2 text-white rounded-xl transition-colors flex items-center gap-2 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-300"
-				>
+						className="px-4 py-2 text-white rounded-xl transition-colors flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-300 disabled:cursor-not-allowed"
+					>
 						{isSubmitting
 							? intl.formatMessage({ id: "saving" })
 							: intl.formatMessage({ id: "save" })}
