@@ -1,4 +1,4 @@
-import { Toaster } from 'sonner';
+import { Toaster } from "sonner";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { ApolloProvider } from "@apollo/client/react";
@@ -15,27 +15,25 @@ import { AppWrapper } from "./components/common/PageMeta.tsx";
 
 const baseUrl = import.meta.env.VITE_BASE_API_URL;
 
-
 const client = new ApolloClient({
-  // link: new HttpLink({ uri: "http://localhost:5036/graphql/" }), 
-  // link: new HttpLink({ uri: "https://localhost:44361/graphql/" }), 
-  link: new HttpLink({ uri: baseUrl + "graphql/" }), 
+	// link: new HttpLink({ uri: "http://localhost:5036/graphql/" }),
+	// link: new HttpLink({ uri: "https://localhost:44361/graphql/" }),
+	link: new HttpLink({ uri: baseUrl + "graphql/" }),
 
-  
-  cache: new InMemoryCache(),
+	cache: new InMemoryCache(),
 });
 
 createRoot(document.getElementById("root")!).render(
-  <ApolloProvider client={client}>
-    <StrictMode>
-      <ThemeProvider>
-        <AppWrapper>
-          <AuthProvider>
-            <Toaster position="top-right" richColors />
-            <App />
-          </AuthProvider>
-        </AppWrapper>
-      </ThemeProvider>
-    </StrictMode>
-  </ApolloProvider>,
+	<ApolloProvider client={client}>
+		<StrictMode>
+			<ThemeProvider>
+				<AppWrapper>
+					<AuthProvider>
+						<Toaster position="top-right" richColors />
+						<App />
+					</AuthProvider>
+				</AppWrapper>
+			</ThemeProvider>
+		</StrictMode>
+	</ApolloProvider>,
 );

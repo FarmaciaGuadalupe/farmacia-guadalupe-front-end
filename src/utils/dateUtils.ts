@@ -22,14 +22,14 @@ dayjs.tz.setDefault(NICARAGUA_TZ);
  * @returns dayjs object in America/Managua timezone
  */
 export const nicaDate = (date?: dayjs.ConfigType) => {
-  return dayjs(date).tz(NICARAGUA_TZ);
+	return dayjs(date).tz(NICARAGUA_TZ);
 };
 
 /**
  * Returns the current date/time in Nicaragua.
  */
 export const nowInNica = () => {
-  return dayjs().tz(NICARAGUA_TZ);
+	return dayjs().tz(NICARAGUA_TZ);
 };
 
 /**
@@ -37,9 +37,12 @@ export const nowInNica = () => {
  * @param date - Date to format
  * @param formatStr - Format string (default: DD/MM/YYYY hh:mm A)
  */
-export const formatNicaDate = (date: dayjs.ConfigType, formatStr: string = "DD/MM/YYYY hh:mm A") => {
-  if (!date) return "N/A";
-  return dayjs(date).tz(NICARAGUA_TZ).format(formatStr);
+export const formatNicaDate = (
+	date: dayjs.ConfigType,
+	formatStr: string = "DD/MM/YYYY hh:mm A",
+) => {
+	if (!date) return "N/A";
+	return dayjs(date).tz(NICARAGUA_TZ).format(formatStr);
 };
 
 export default dayjs;

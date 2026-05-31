@@ -10,17 +10,17 @@
  * @returns Una función debounced que envuelve y retrasa la ejecución de `func`.
  */
 export const debounce = (func: Function, delay: number) => {
-  let timeoutId: ReturnType<typeof setTimeout> | null;
+	let timeoutId: ReturnType<typeof setTimeout> | null;
 
-  return function(this: any, ...args: any[]) {
-    // Si ya existe un temporizador, lo cancela.
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-    // Establece un nuevo temporizador.
-    timeoutId = setTimeout(() => {
-      func.apply(this, args);
-      timeoutId = null; // Opcional: Reinicia el ID
-    }, delay);
-  };
+	return function (this: any, ...args: any[]) {
+		// Si ya existe un temporizador, lo cancela.
+		if (timeoutId) {
+			clearTimeout(timeoutId);
+		}
+		// Establece un nuevo temporizador.
+		timeoutId = setTimeout(() => {
+			func.apply(this, args);
+			timeoutId = null; // Opcional: Reinicia el ID
+		}, delay);
+	};
 };
