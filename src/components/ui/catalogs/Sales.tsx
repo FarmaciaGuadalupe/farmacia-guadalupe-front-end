@@ -7,22 +7,27 @@ import { useIntl } from "react-intl";
 import SaleTable from "../../tables/BasicTables/SaleTable";
 import PageBreadcrumb from "../../common/PageBreadCrumb";
 import SalesExportButton from "./SalesExportButton";
+import { useAuth } from "../../../context/AuthContext";
 
+export default function Sales() {
+	const intl = useIntl();
+	const { user } = useAuth();
 
-export default function Sales() {   
-    
-    const intl = useIntl();     
-    
-    return (
-        <div className="flex-1">
-            <div className="flex items-center justify-between mb-4"> 
-                <PageBreadcrumb pageTitle={intl.formatMessage({ id: "transactions" }, { count: 2 })} />
-                <div className="mb-6">
-                    <SalesExportButton />
-                </div>
-            </div>
-            
-            <SaleTable />
-        </div>
-    );
+	return (
+		<div className="flex-1">
+			<div className="flex items-center justify-between mb-4">
+				<PageBreadcrumb
+					pageTitle={intl.formatMessage(
+						{ id: "transactions" },
+						{ count: 2 },
+					)}
+				/>
+				<div className="mb-6">
+					{user?.roleId !== 2 && <SalesExportButton />}
+				</div>
+			</div>
+
+			<SaleTable />
+		</div>
+	);
 }

@@ -58,20 +58,20 @@ git clone https://github.com/TailAdmin/free-react-tailwind-admin-dashboard.git
 
 1. Install dependencies:
 
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
+    ```bash
+    npm install
+    # or
+    yarn install
+    ```
 
-   > Use the `--legacy-peer-deps` flag, if you face issues while installing.
+    > Use the `--legacy-peer-deps` flag, if you face issues while installing.
 
 2. Start the development server:
-   ```bash
-   npm run dev
-   # or
-   yarn dev
-   ```
+    ```bash
+    npm run dev
+    # or
+    yarn dev
+    ```
 
 ## Components
 
