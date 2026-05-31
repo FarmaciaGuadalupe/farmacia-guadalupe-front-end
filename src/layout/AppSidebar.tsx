@@ -1,18 +1,17 @@
 import { useIntl } from "react-intl";
 import { Link, useLocation } from "react-router";
 import { AiOutlineMedicineBox } from "react-icons/ai";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { FolderOpenIcon, ShoppingCartIcon, ReceiptPercentIcon } from "@heroicons/react/24/outline";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
+import { FolderOpenIcon, ShoppingCartIcon, ReceiptPercentIcon, UserGroupIcon, ChartBarIcon, ClipboardDocumentListIcon } from "@heroicons/react/24/outline";
 
 
 import {
     ChevronDownIcon,
     GridIcon,
     HorizontaLDots,
-    ListIcon,
-    TableIcon
 } from "../icons";
 import { useSidebar } from "../context/SidebarContext";
+import { useAuth } from "../context/AuthContext";
 
 
 
@@ -20,6 +19,7 @@ type NavItem = {
     name: string;
     icon: React.ReactNode;
     path?: string;
+    roles?: number[];
     subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
 
@@ -28,62 +28,66 @@ type NavItem = {
 
 const AppSidebar: React.FC = () => {
     const { isExpanded, isMobileOpen } = useSidebar();
+    const { user } = useAuth();
     const location = useLocation();
     const intl = useIntl();
 
-    const navItems: NavItem[] = [
-        {
-            icon: <GridIcon />,
-            name: intl.formatMessage({ id: 'layout.sidebar.dashboard' }),
-            path: "/calendar",
-            //subItems: [{ name: "Ecommerce", path: "/", pro: false }],
-        },
-        {
-            icon: <ShoppingCartIcon />,
-            name: intl.formatMessage({ id: 'sales' }, { count: 2 }),
-            path: "/sales",
-        },
-        {
-            icon: <ReceiptPercentIcon />,
-            name: intl.formatMessage({ id: 'transactions' }, { count: 2 }),
-            path: "/transactions",
-        },
-        {
-            icon: <AiOutlineMedicineBox />,
-            name: intl.formatMessage({ id: 'products' }, { count: 2 }),
-            path: "/products"
-        },
-        {
-            icon: <FolderOpenIcon />,
-            name: intl.formatMessage({ id: 'catalogs' }, { count: 2 }),
-            path: "/catalogs",
-        },
-        /**{
-            icon: <UserCircleIcon />,
-            name: "User Profile",
-            path: "/profile",
-        },**/
-        // {
-        //     name: "Forms",
-        //     icon: <ListIcon />,
-        //     subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
-        // },
-        // {
-        //     name: "Tables",
-        //     icon: <TableIcon />,
-        //     subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
-        // },
-/**        {
-            name: "Pages",
-            icon: <PageIcon />,
-            subItems: [
-                { name: "Blank Page", path: "/blank", pro: false },
-                { name: "404 Error", path: "/error-404", pro: false },
-            ],
-        },*/
-    ];
+    const navItems: NavItem[] = useMemo(() => {
+        const items: NavItem[] = [
+            {
+                icon: <GridIcon />,
+                name: intl.formatMessage({ id: 'layout.sidebar.dashboard' }),
+                path: "/calendar",
+                roles: [1, 2]
+            },
+            {
+                icon: <ShoppingCartIcon />,
+                name: intl.formatMessage({ id: 'sales' }, { count: 2 }),
+                path: "/sales",
+                roles: [1, 2]
+            },
+            {
+                icon: <ReceiptPercentIcon />,
+                name: intl.formatMessage({ id: 'transactions' }, { count: 2 }),
+                path: "/transactions",
+                roles: [1, 2]
+            },
+            {
+                icon: <AiOutlineMedicineBox />,
+                name: intl.formatMessage({ id: 'products' }, { count: 2 }),
+                path: "/products",
+                roles: [1, 2]
+            },
+            // {
+            //     icon: <ClipboardDocumentListIcon className="size-6" />,
+            //     name: intl.formatMessage({ id: 'inventory' }),
+            //     path: "/inventario",
+            //     roles: [1]
+            // },
+            // {
+            //     icon: <UserGroupIcon className="size-6" />,
+            //     name: intl.formatMessage({ id: 'employees' }),
+            //     path: "/empleados",
+            //     roles: [1]
+            // },
+            // {
+            //     icon: <ChartBarIcon className="size-6" />,
+            //     name: intl.formatMessage({ id: 'reports' }),
+            //     path: "/reportes",
+            //     roles: [1]
+            // },
+            {
+                icon: <FolderOpenIcon />,
+                name: intl.formatMessage({ id: 'catalogs' }, { count: 2 }),
+                path: "/catalogs",
+                roles: [1]
+            },
+        ];
 
-   const othersItems: NavItem[] = [
+        return items.filter(item => !item.roles || (user && item.roles.includes(user.roleId)));
+    }, [intl, user]);
+
+   const othersItems: NavItem[] = [];
        /**  {
             icon: <PieChartIcon />,
             name: "Charts",
@@ -112,7 +116,6 @@ const AppSidebar: React.FC = () => {
                 { name: "Sign Up", path: "/signup", pro: false },
             ],
         },**/
-    ];
 
     const [openSubmenu, setOpenSubmenu] = useState<{
         type: "main" | "others";

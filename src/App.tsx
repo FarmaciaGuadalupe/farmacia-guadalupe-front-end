@@ -52,43 +52,36 @@ export default function App() {
 
             {/* Agrupa todas las rutas protegidas aquí dentro */}
             <Route element={<ProtectedRoute />}>
-              {/* PAGINAS PRINCIPALES */}
+              {/* PAGINAS PRINCIPALES ACCESIBLES POR TODOS LOS ROLES AUTENTICADOS (DENTRO DE ESTE GRUPO) */}
               <Route path="/home" element={<Home />}/>
-              <Route path="/inventario" element={<Inventario />} />
-              <Route path="/ventas" element={<Ventas />} />
-              <Route path="/empleados" element={<Empleados />} />
-              <Route path="/reportes" element={<Reportes />} />
-
-
-
-              {/* Others Page */}
-              <Route path="/profile" element={<UserProfiles />} />
               <Route path="/calendar" element={<Home />} />
-              <Route path="/blank" element={<Blank />} />
+              <Route path="/profile" element={<UserProfiles />} />
               <Route path="/sales" element={<Sale />} />
-
-              {/* Forms */}
-              {/* <Route path="/form-elements" element={<FormElements />} /> */}
-
-              {/* Tables */}
-              <Route path="/basic-tables" element={<BasicTables />} />
-              <Route path="/employee-tables" element={<BasicTables />} />
-              <Route path="/catalogs" element={<Catalogs />} />
-              <Route path="/products" element={<Products />} />
               <Route path="/transactions" element={<Sales />} />
+              <Route path="/products" element={<Products />} />
 
+              {/* RUTAS SOLO PARA ROL 1 (ADMIN) */}
+              <Route element={<ProtectedRoute allowedRoles={[1]} />}>
+                <Route path="/inventario" element={<Inventario />} />
+                <Route path="/ventas" element={<Ventas />} />
+                <Route path="/empleados" element={<Empleados />} />
+                <Route path="/reportes" element={<Reportes />} />
+                <Route path="/catalogs" element={<Catalogs />} />
+                
+                {/* Tables & UI Elements (Asumiendo que son admin o para desarrollo) */}
+                <Route path="/basic-tables" element={<BasicTables />} />
+                <Route path="/employee-tables" element={<BasicTables />} />
+                <Route path="/alerts" element={<Alerts />} />
+                <Route path="/avatars" element={<Avatars />} />
+                <Route path="/badge" element={<Badges />} />
+                <Route path="/buttons" element={<Buttons />} />
+                <Route path="/images" element={<Images />} />
+                <Route path="/videos" element={<Videos />} />
+                <Route path="/line-chart" element={<LineChart />} />
+                <Route path="/bar-chart" element={<BarChart />} />
+              </Route>
 
-              {/* Ui Elements */}
-              <Route path="/alerts" element={<Alerts />} />
-              <Route path="/avatars" element={<Avatars />} />
-              <Route path="/badge" element={<Badges />} />
-              <Route path="/buttons" element={<Buttons />} />
-              <Route path="/images" element={<Images />} />
-              <Route path="/videos" element={<Videos />} />
-
-              {/* Charts */}
-              <Route path="/line-chart" element={<LineChart />} />
-              <Route path="/bar-chart" element={<BarChart />} />
+              <Route path="/blank" element={<Blank />} />
             </Route>
             {/* Fin del grupo de rutas protegidas */}
 

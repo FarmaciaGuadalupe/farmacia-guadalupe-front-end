@@ -7,9 +7,8 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from "@headlessui/react";
 import { EllipsisHorizontalIcon, PencilSquareIcon, MinusCircleIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 
-import CellWithDrawer from "../CellWithDrawer";
+import EditEmployeeDrawer from "../CustomDrawers/EditEmployeeDrawer";
 import SimpleModal from "../../../ui/utils/SimpleModal";
-import EditEmployeeForm from "./EditEmployee";
 
 const TOGGLE_EMPLOYEE_STATUS_MUTATION = gql`
   mutation ToggleEmployeeStatus($employeeId: Int!) {
@@ -18,27 +17,6 @@ const TOGGLE_EMPLOYEE_STATUS_MUTATION = gql`
     }
   }
 `;
-
-const EditUserDrawer = ({ row, onClose }: any) => {
-  const intl = useIntl();
-
-  return (
-    <CellWithDrawer
-      isOpen={true}
-      onClose={onClose}
-      title={intl.formatMessage({ id: "edit_user" })}
-      widthClass="w-150"
-    >
-      <EditEmployeeForm 
-        row={row} 
-        onClose={onClose} 
-        onSaveSuccess={() => {
-          onClose();
-        }} 
-      />
-    </CellWithDrawer>
-  );
-};
 
 const ToggleActivatedModal = ({ row, onClose }: any) => {
   const intl = useIntl();
@@ -137,12 +115,12 @@ export const EmployeeCellActions = ({ row }: any) => {
           </span>
         </Fragment>
       ),
-      drawer: EditUserDrawer,
+      type: 'drawer',
     },
     {
       showWhen: true,
       label: <SetStatusLevel isActive={isActive} />,
-      drawer: ToggleActivatedModal,
+      type: 'modal',
     },
   ];
 
@@ -185,8 +163,20 @@ export const EmployeeCellActions = ({ row }: any) => {
           </Transition>
         </Menu>
       </div>
-      {activeItem && (
-        <activeItem.drawer row={row} onClose={() => setActiveItem(null)} />
+      
+      {activeItem?.type === 'drawer' && (
+        <EditEmployeeDrawer 
+          isOpen={true} 
+          onClose={() => setActiveItem(null)} 
+          row={row} 
+        />
+      )}
+
+      {activeItem?.type === 'modal' && (
+        <ToggleActivatedModal 
+          row={row} 
+          onClose={() => setActiveItem(null)} 
+        />
       )}
     </Fragment>
   );

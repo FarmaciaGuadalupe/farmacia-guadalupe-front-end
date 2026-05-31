@@ -1,32 +1,29 @@
-// import { useModal } from "../../hooks/useModal";
-// import { Modal } from "../ui/modal";
-// import Button from "../ui/button/Button";
-// import Input from "../form/input/InputField";
-// import Label from "../form/Label";
-
 import { FormattedMessage, useIntl } from "react-intl";
 import { Avatar } from "@mui/material";
-
+import { useState } from "react";
+import { useQuery } from "@apollo/client/react";
 
 import { useAuth } from "../../context/AuthContext";
 import { stringAvatar } from "../../utils/AvatarUtils";
 import Badge from "../../components/ui/badge/Badge";
+import EditEmployeeDrawer from "../ui/table/CustomDrawers/EditEmployeeDrawer";
+import { GET_EMPLOYEE_BY_ID } from "../ui/table/QuerysDefinitions";
 
 
 export default function UserInfoCard() {
-  // const { isOpen, openModal, closeModal } = useModal();
-  // const handleSave = () => {
-  //   // Handle save logic here
-  //   console.log("Saving changes...");
-  //   closeModal();
-  // };
-
   const intl = useIntl();
-  const user = useAuth();
+  const { user } = useAuth();
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const names = user.user?.names ?? '';
-  const lastnames = user.user?.lastnames ?? '';
+  const { data, loading, refetch } = useQuery(GET_EMPLOYEE_BY_ID(), {
+    variables: { employeeId: user?.employeeId },
+    skip: !user?.employeeId
+  });
 
+  const employeeData = data?.employee;
+
+  const names = employeeData?.names ?? user?.names ?? '';
+  const lastnames = employeeData?.lastnames ?? user?.lastnames ?? '';
   const fullName = `${names} ${lastnames}`.trim();
 
   const userData = [
@@ -40,9 +37,21 @@ export default function UserInfoCard() {
     },
     {
       label: intl.formatMessage({ id: 'user' }),
-      value: user.user?.username ?? ''
+      value: employeeData?.user ?? user?.username ?? ''
+    },
+    {
+        label: intl.formatMessage({ id: 'email' }),
+        value: employeeData?.email ?? ''
+    },
+    {
+        label: intl.formatMessage({ id: 'phone' }),
+        value: employeeData?.phone ?? ''
     }
   ]
+
+  const handleEditClick = () => {
+    setIsDrawerOpen(true);
+  };
 
   return (
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
@@ -62,7 +71,7 @@ export default function UserInfoCard() {
                   {fullName}
                 </span>
                 <Badge variant="light" color="primary">
-                  {user.user?.roleName}
+                  {employeeData?.employeeRole?.name ?? user?.roleName}
                 </Badge>
               </div>
             </div>
@@ -88,8 +97,9 @@ export default function UserInfoCard() {
         </div>
 
         <button
-          // onClick={openModal}
-          className="flex disable disabled:bg-gray-400 disabled:text-gray-20 w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
+          onClick={handleEditClick}
+          disabled={loading || !employeeData}
+          className="flex disabled:bg-gray-400 disabled:text-gray-200 w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
         >
           <svg
             className="fill-current"
@@ -109,6 +119,18 @@ export default function UserInfoCard() {
           <FormattedMessage id="edit" />
         </button>
       </div>
+
+      {employeeData && (
+        <EditEmployeeDrawer
+          isOpen={isDrawerOpen}
+          onClose={() => setIsDrawerOpen(false)}
+          row={{ original: employeeData }}
+          onSaveSuccess={() => {
+            setIsDrawerOpen(false);
+            refetch();
+          }}
+        />
+      )}
     </div>
   );
 }

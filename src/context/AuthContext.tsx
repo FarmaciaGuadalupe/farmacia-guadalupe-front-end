@@ -10,6 +10,7 @@ interface UserData {
   lastnames: string;
   username: string;
   roleName: string;
+  roleId: number;
 }
 
 // Define la forma de la respuesta completa de la API

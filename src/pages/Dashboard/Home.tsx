@@ -7,10 +7,12 @@ import MonthlySalesChart from "../../components/ecommerce/MonthlySalesChart";
 import PageMeta from "../../components/common/PageMeta";
 import Button from "../../components/ui/button/Button";
 import { DownloadIcon } from "../../icons";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Home() {
   const printRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const { user } = useAuth();
 
   const handleExportPDF = async () => {
     if (!printRef.current) return;
@@ -83,17 +85,19 @@ export default function Home() {
       /> 
       
       {/* Botón para disparar la exportación a PDF */}
-      <div className="flex justify-end mb-4">
-        <Button 
-          variant="outline" 
-          size="md"
-          startIcon={<DownloadIcon />}
-          onClick={handleExportPDF} 
-          disabled={isExporting}
-        >
-          {isExporting ? "Generando PDF..." : "Exportar a PDF"}
-        </Button>
-      </div>
+      {user?.roleId !== 2 && (
+        <div className="flex justify-end mb-4">
+          <Button 
+            variant="outline" 
+            size="md"
+            startIcon={<DownloadIcon />}
+            onClick={handleExportPDF} 
+            disabled={isExporting}
+          >
+            {isExporting ? "Generando PDF..." : "Exportar a PDF"}
+          </Button>
+        </div>
+      )}
 
       {/* Contenedor referenciado que será convertido en PDF sin fondo extra */}
       <div ref={printRef} className="space-y-4">

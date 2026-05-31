@@ -439,3 +439,23 @@ export const GET_DASHBOARD_SALE_SUMMARY = gql`
     }
   }
 `;
+
+export const GET_EMPLOYEE_BY_ID = () => gql`
+  query GetEmployeeById($employeeId: Int!) {
+    employee(employeeId: $employeeId) {
+      employeeId
+      names
+      lastnames
+      user
+      email
+      phone
+      hiring_date
+      url_photo
+      employeeRoleId
+      employeeStatusId
+      employeeRole {
+        name
+      }
+    }
+  }
+`;
