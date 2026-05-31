@@ -44,12 +44,12 @@ export const BatchCellActions = ({ row }: any) => {
     const items = [
         {
             showWhen: true,
-            label: <><InboxStackIcon className='size-4.5 stroke-1' /><span><FormattedMessage id='batches' /></span></>,
+            label: <><InboxStackIcon className='size-4.5 stroke-1' /><span><FormattedMessage id='batch' values={{count: 2}} /></span></>,
             drawer: showAllBatches,
         },
         {
             showWhen: true,
-            label: <><PlusCircleIcon className='size-4.5 stroke-1' /><span><FormattedMessage id='add_batch' /></span></>,
+            label: <><PlusCircleIcon className='size-4.5 stroke-1' /><span><FormattedMessage id='batch.add' /></span></>,
             drawer: AddBatchModal,    
         }
     ]

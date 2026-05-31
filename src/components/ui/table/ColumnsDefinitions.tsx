@@ -406,7 +406,7 @@ export const useSaleColumns = () => {
         cell: ({ row }) => <TransactionEmployee row={row} />,
       },
       {
-        header: intl.formatMessage({ id: "products" }, {count: 2}),
+        header: intl.formatMessage({ id: "products" }, { count: 2 }),
         id: "saleDetails",
         cell: ({ row }) => <TransactionMedicine row={row} />,
       },
