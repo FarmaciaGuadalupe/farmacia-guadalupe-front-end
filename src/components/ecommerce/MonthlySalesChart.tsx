@@ -38,7 +38,31 @@ export default function MonthlySalesChart() {
 		fetchPolicy: "network-only",
 	});
 
-	const chartLabels = data?.salesStats?.map((stat: any) => stat.label) || [];
+	const formatChartLabel = (label: string) => {
+		const date = nicaDate(label);
+		if (!date.isValid()) return label;
+
+		let formatted = "";
+		switch (chartType) {
+			case "DAILY":
+				formatted = date.format("DD MMMM");
+				break;
+			case "MONTHLY":
+				formatted = date.format("MMMM");
+				break;
+			case "YEARLY":
+				formatted = date.format("YYYY");
+				break;
+			default:
+				formatted = label;
+		}
+
+		// Capitalize first letter (e.g., "mayo" -> "Mayo")
+		return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+	};
+
+	const chartLabels =
+		data?.salesStats?.map((stat: any) => formatChartLabel(stat.label)) || [];
 	const chartValues = data?.salesStats?.map((stat: any) => stat.value) || [];
 
 	const options: ApexOptions = {
