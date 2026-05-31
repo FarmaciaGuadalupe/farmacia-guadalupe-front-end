@@ -12,7 +12,47 @@ import {
   EyeIcon,
   SpeakerWaveIcon,
 } from "@heroicons/react/24/outline";
-import { Icon } from "@mui/material";
+
+import { TbPill, TbVaccine, TbLungs, TbDroplet, TbBandage } from "react-icons/tb";
+import { MdOutlineMedicalServices } from "react-icons/md";
+
+
+const ROUTE_FAMILY_ICONS = {
+  Enteral: TbPill,        // Pastillas, cápsulas, vía digestiva
+  Parenteral: TbVaccine,    // Todo lo inyectable (jeringa)
+  Respiratoria: TbLungs,    // Inhaladores, nebulizadores
+  LocalGotas: TbDroplet,       // Oftálmica, ótica (gotas)
+  Topica: TbBandage,        // Piel, parches
+  Otra: MdOutlineMedicalServices // Genérico para otras vías
+};
+
+const getRouteIcon = (routeName: string) => {
+  const name = routeName?.toLowerCase() || "";
+
+  // Agrupación Parenteral (Inyectables)
+  if (name.includes("intra") || name.includes("subcutánea") || name.includes("epidural") || name.includes("peridural") || name.includes("retrobulbar") || name.includes("peribulbar")) {
+    return ROUTE_FAMILY_ICONS.Parenteral;
+  }
+  // Agrupación Enteral (Digestiva)
+  if (name.includes("oral") || name.includes("sublingual") || name.includes("bucal") || name.includes("gástrica") || name.includes("yeyunostomía") || name.includes("rectal")) {
+    return ROUTE_FAMILY_ICONS.Enteral;
+  }
+  // Agrupación Respiratoria
+  if (name.includes("inhal") || name.includes("endotraqueal") || name.includes("nasal")) {
+    return ROUTE_FAMILY_ICONS.Respiratoria;
+  }
+  // Agrupación Gotas/Líquidos locales
+  if (name.includes("oftálmica") || name.includes("ótica") || name.includes("conjuntival")) {
+    return ROUTE_FAMILY_ICONS.LocalGotas;
+  }
+  // Agrupación Tópica/Superficial
+  if (name.includes("tópica") || name.includes("transdérmica") || name.includes("vaginal") || name.includes("uretral")) {
+    return ROUTE_FAMILY_ICONS.Topica;
+  }
+
+  return ROUTE_FAMILY_ICONS.Otra;
+};
+
 
 // Esto esta sujeto a cambio
 const ADMIN_ROUTE_GROUPS: Record<string, { icon: any }> = {
@@ -34,33 +74,49 @@ const ADMIN_ROUTE_GROUPS: Record<string, { icon: any }> = {
   Ótica: { icon: SpeakerWaveIcon },
 };
 
-// NOTA: Posiblemente cambie al poner colores definidos por el usuario
-// Si se agregan mas categorias se deben de agregar aqui tambien
-const CATEGORY_GROUPS: Record<string, { color: string }> = {
-  // 1. Manejo del Dolor e Inflamación (Rojo/Error)
-  Antiinflamatorios: { color: "error" },
-  Anestésicos: { color: "error" },
+const SPECIFIC_CATEGORY_COLORS: Record<string, 'primary' | 'success' | 'error' | 'warning' | 'info'> = {
+  "Cardiovasculares": "error", // Red for cardiovascular
+  "Analgésicos": "info",
+  "Antibióticos": "primary",
+  "Antipiréticos": "info",
+  "Antihistamínicos": "warning",
+  "Gastrointestinales": "warning",
+  "Dermatológicos": "light",
+  "Suministros médicos": "default",
+  "Antidiabéticos": "success",
+  "Respiratorios": "info",
+  "Neurológicos y Psiquiátricos": "warning",
+  "Oftálmicos y Otológicos": "light",
+  "Vitaminas y Suplementos": "success",
+  "Salud Femenina": "primary",
+  "Cuidado Infantil": "primary",
+  "Cuidado Personal": "light",
+  "Equipos Médicos": "default",
+  "Ortopedia y Rehabilitación": "default",
+};
 
-  // 2. Infecciones y Defensas (Azul/Info o Primary)
-  Analgésicos: { color: "info" },
-  Antivirales: { color: "info" },
-  Antifúngicos: { color: "info" },
-  Vacunas: { color: "info" },
+const colors: ('primary' | 'success' | 'error' | 'warning' | 'info')[] = ['primary', 'success', 'error', 'warning', 'info'];
 
-  // 3. Enfermedades Crónicas (Verde/Success)
-  Antidiabéticos: { color: "success" },
-  Cardiología: { color: "success" },
-  Antihipertensivos: { color: "success" },
-  Gastrointestinales: { color: "success" },
+const stringToHash = (str: string): number => {
+  let hash = 0;
+  if (str.length === 0) return hash;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return Math.abs(hash);
+};
 
-  // 4. Sistema Nervioso y Salud Mental (Púrpura/Warning o Custom)
-  Ansiolíticos: { color: "warning" },
-  Antidepresivos: { color: "warning" },
-  Anticonvulsivos: { color: "warning" },
-  Antihistamínicos: { color: "warning" },
-
-  // 5. Gastrointestinal y Otros (Gris/Default)
-  Vitaminas: { color: "default" },
+const getCategoryColor = (categoryName: string): 'primary' | 'success' | 'error' | 'warning' | 'info' | 'light' | 'default' => {
+  if (!categoryName) {
+    return 'default';
+  }
+  if (SPECIFIC_CATEGORY_COLORS[categoryName]) {
+    return SPECIFIC_CATEGORY_COLORS[categoryName];
+  }
+  const hash = stringToHash(categoryName);
+  return colors[hash % colors.length];
 };
 
 const MedicineClasification = memo(({ row }: any) => {
@@ -69,23 +125,24 @@ const MedicineClasification = memo(({ row }: any) => {
   const { category, brand, manufacturer, administration_route } =
     row.original || {};
 
-  const badgeConfig = CATEGORY_GROUPS[category?.name] || { color: "default" };
+  const categoryColor = getCategoryColor(category?.name);
   const administrationRoute = ADMIN_ROUTE_GROUPS[administration_route?.name] || null;
+  const RouteIconComponent = administration_route?.name ? getRouteIcon(administration_route.name) : null;
 
   return (
     <div className="flex flex-col gap-1 text-sm leading-tight">
       <div className="flex flex-wrap items-center gap-1 text-xs text-gray-500">
         {category?.name && (
           <span className="font-medium text-gray-900 dark:text-gray-100">
-            <Badge variant={"solid"} color={badgeConfig.color as any}>
+            <Badge variant={"solid"} color={categoryColor as any}>
               {category.name}
             </Badge>
           </span>
         )}
-        {!!administrationRoute && (
-           <administrationRoute.icon 
-                className="size-4.5 cursor-default" 
-                data-tooltip-id="global-tooltip" // <--- Debe coincidir con el ID en App.tsx
+        {RouteIconComponent && (
+           <RouteIconComponent 
+                className="size-4.5 text-gray-500 cursor-default" 
+                data-tooltip-id="global-tooltip"
                 data-tooltip-content={intl.formatMessage({id: "administration_route"}, {qoute: administration_route.name})}
             />
         )}
