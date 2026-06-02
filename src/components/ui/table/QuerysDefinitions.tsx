@@ -277,6 +277,7 @@ export const GET_MEDICINE_QUERY = () => gql`
 				}
 
 				product {
+					barcode
 					product_id
 					stock_units
 					min_stock_units
@@ -284,6 +285,11 @@ export const GET_MEDICINE_QUERY = () => gql`
 					price_full_presentation
 					cost_price
 					currency
+					supplier_id
+					presentation_id
+					unit_of_measure_id
+					units_per_presentation
+					is_fractionable
 				}
 			}
 			pageInfo {

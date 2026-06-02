@@ -592,8 +592,16 @@ export const useMedicineColumns = () => {
 			},
 			{
 				header: intl.formatMessage({ id: "description" }),
-				accessorKey: "description",
+				// accessorKey: "description",
 				id: "description",
+				cell: ({ row }) => {
+					const description = row.original.description
+					return (
+						<div className="max-w-70">
+							{description}
+						</div>
+					);
+				}
 			},
 			{
 				header: intl.formatMessage({ id: "actions" }),
