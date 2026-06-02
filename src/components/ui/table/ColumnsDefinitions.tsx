@@ -1,10 +1,9 @@
 import { useMemo } from "react";
 import { Avatar } from "@mui/material";
 import { ColumnDef } from "@tanstack/react-table";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useIntl } from "react-intl";
 
 import Stock from "./CustomCells/Stock";
-import Badge from "../../ui/badge/Badge";
 import Status from "./CustomCells/Status";
 import MedicineName from "./CustomCells/MedicineName";
 import { BatchStock } from "./CustomCells/BatchStock";

@@ -243,8 +243,11 @@ export const GET_MEDICINE_QUERY = () => gql`
 
 				# Relación con Ingredientes Activos (Todos los que tenga el ID)
 				medicine_active_ingredients {
+					active_ingredient_id
+					dose_unit_id
 					dose_value
 					dose_unit {
+						name
 						abbreviation
 					}
 					active_ingredient {
@@ -254,18 +257,22 @@ export const GET_MEDICINE_QUERY = () => gql`
 
 				# Datos de clasificación
 				brand {
+					id_brand
 					name
 				}
 
 				manufacturer {
+					manufacturer_id
 					name
 				}
 
 				category {
+					category_id
 					name
 				}
 
 				administration_route {
+					administration_route_id
 					name
 				}
 
@@ -283,6 +290,15 @@ export const GET_MEDICINE_QUERY = () => gql`
 				hasNextPage
 				endCursor
 			}
+		}
+	}
+`;
+
+export const UPDATE_MEDICINE_MUTATION = gql`
+	mutation UpdateMedicine($input: UpdateMedicineInput!) {
+		updateMedicine(input: $input) {
+			result
+			message
 		}
 	}
 `;

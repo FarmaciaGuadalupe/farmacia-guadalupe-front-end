@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { useState, Fragment } from "react";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import {
 	Menu,
 	MenuButton,
@@ -12,11 +12,13 @@ import {
 	EllipsisHorizontalIcon,
 	InboxStackIcon,
 	PlusCircleIcon,
+	PencilSquareIcon
 } from "@heroicons/react/24/outline";
 
 import SimpleModal from "../../../ui/utils/SimpleModal";
 import BatchTable from "../../../tables/BasicTables/BatchTable";
 import AddNewBatch from "../CustomModels/AddNewBatch";
+import EditMedicine from "../CustomDrawers/EditMedicine";
 
 const showAllBatches = ({ row, onClose }: any) => {
 	const { product, name } = row.original ?? [];
@@ -48,10 +50,37 @@ const AddBatchModal = ({ row, onClose }: any) => {
 	);
 };
 
+const EditMedicineModal = ({ row, onClose}: any) => {
+	const intl = useIntl();
+	return (
+		<SimpleModal
+			isOpen={true}
+			onClose={onClose}
+			title={intl.formatMessage({ id: "medicine.edit" })}
+			widthClass="w-[50%] h-[75%]"
+			custom="h-200"
+		>
+			<EditMedicine row={row} onClose={onClose} />
+		</SimpleModal>
+	); 
+}
+
 export const BatchCellActions = ({ row }: any) => {
 	const [activeItem, setActiveItem] = useState<any>(null);
 
 	const items = [
+		{
+			showWhen: true,
+			label: (
+				<>
+					<PencilSquareIcon className="size-4.5 stroke-1" />
+					<span>
+						<FormattedMessage id="edit" values={{ count: 1 }} />
+					</span>
+				</>
+			),
+			drawer: EditMedicineModal,
+		},
 		{
 			showWhen: true,
 			label: (
