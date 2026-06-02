@@ -23,8 +23,8 @@ export default function SaleTable() {
 
 		return {
 			saleDate: {
-				gte: dayjs.utc(dateRange.start).startOf("day").toISOString(),
-				lte: dayjs.utc(dateRange.end).endOf("day").toISOString(),
+				gte: dateRange.start,
+				lte: dateRange.end,
 			},
 		};
 	}, [dateRange]);
@@ -32,8 +32,8 @@ export default function SaleTable() {
 	const handleDateChange = (selectedDates: Date[]) => {
 		if (selectedDates.length === 2) {
 			setDateRange({
-				start: dayjs.utc(selectedDates[0]).format("YYYY-MM-DD"),
-				end: dayjs.utc(selectedDates[1]).format("YYYY-MM-DD"),
+				start: dayjs(selectedDates[0]).startOf("day").toISOString(),
+				end: dayjs(selectedDates[1]).endOf("day").toISOString(),
 			});
 		} else if (selectedDates.length === 0) {
 			setDateRange({ start: "", end: "" });
@@ -69,7 +69,7 @@ export default function SaleTable() {
 							placeholder={intl.formatMessage({
 								id: "sales.select_date_range",
 							})}
-							value={isFiltered ? `${dateRange.start} to ${dateRange.end}` : ""}
+							value={isFiltered ? [dateRange.start, dateRange.end] : ""}
 							onChange={handleDateChange}
 						/>
 					</div>
