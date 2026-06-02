@@ -40,6 +40,14 @@ const salesColumnsConfig: ExcelColumnConfig<any>[] = [
 		key: "currency",
 	},
 	{
+		header: "Médico",
+		key: "doctorName",
+	},
+	{
+		header: "Número de Receta",
+		key: "prescriptionNumber",
+	},
+	{
 		header: "Productos",
 		formatter: (sale) =>
 			sale.saleDetails
