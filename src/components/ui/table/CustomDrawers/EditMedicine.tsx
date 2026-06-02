@@ -26,7 +26,6 @@ import {
 	GET_ACTIVE_INGREDIENTS_LIST_QUERY,
 	GET_DOSE_UNITS_LIST_QUERY,
 	GET_UNIT_OF_MEASURE_LIST_QUERY,
-	GET_MEDICINE_QUERY,
 	UPDATE_MEDICINE_MUTATION,
 } from "../QuerysDefinitions";
 
@@ -443,7 +442,8 @@ export default function EditMedicine({
 	const [updateMedicine, { loading: isSubmitting }] = useMutation(
 		UPDATE_MEDICINE_MUTATION,
 		{
-			refetchQueries: [{ query: GET_MEDICINE_QUERY() }],
+			refetchQueries: ["GetMedicineTherapeuticDetails"],
+			awaitRefetchQueries: true,
 		},
 	);
 

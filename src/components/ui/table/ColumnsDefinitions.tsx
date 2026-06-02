@@ -18,6 +18,7 @@ import TransactionDate from "./CustomCells/TransactionDate";
 import TransactionPay from "./CustomCells/TransactionPay";
 import TransactionMedicine from "./CustomCells/TransactionMedicine";
 import TransactionEmployee from "./CustomCells/TransactionEmployee";
+import { BatchTableActions } from "./CustomCells/BatchTableActions";
 import { FaBox, FaBoxOpen } from "react-icons/fa6";
 
 import {
@@ -620,6 +621,18 @@ export const useBatchColumns = () => {
 	const columns = useMemo<ColumnDef<any>[]>(
 		() => [
 			{
+				header: intl.formatMessage({ id: "status" }),
+				id: "is_active",
+				cell: ({ row }) => {
+					const isActive = row.original.is_active;
+					return (
+						<div className="flex items-center justify-center">
+							<Status status={isActive} />
+						</div>
+					);
+				},
+			},
+			{
 				header: intl.formatMessage({ id: "code" }),
 				accessorKey: "batch_code",
 				id: "batch_code",
@@ -643,6 +656,11 @@ export const useBatchColumns = () => {
 						initial={row.original.initial_quantity_units ?? 0}
 					/>
 				),
+			},
+			{
+				header: intl.formatMessage({ id: "actions" }),
+				id: "actions",
+				cell: ({ row }) => <BatchTableActions row={row} />,
 			},
 		],
 		[intl],

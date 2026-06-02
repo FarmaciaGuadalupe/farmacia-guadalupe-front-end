@@ -4,10 +4,9 @@ export const GET_ALL_SALES = () => gql`
 	query GetSalesWithDetails(
 		$first: Int
 		$after: String
-		$order: [SaleSortInput!]
 		$where: SaleFilterInput
 	) {
-		sales(first: $first, after: $after, order: $order, where: $where) {
+		sales(first: $first, after: $after, order: [{ saleDate: DESC }], where: $where) {
 			# Información de la paginación
 			pageInfo {
 				hasNextPage
@@ -303,6 +302,15 @@ export const GET_MEDICINE_QUERY = () => gql`
 export const UPDATE_MEDICINE_MUTATION = gql`
 	mutation UpdateMedicine($input: UpdateMedicineInput!) {
 		updateMedicine(input: $input) {
+			result
+			message
+		}
+	}
+`;
+
+export const UPDATE_BATCH_MUTATION = gql`
+	mutation UpdateBatch($input: UpdateBatchInput!) {
+		updateBatch(input: $input) {
 			result
 			message
 		}

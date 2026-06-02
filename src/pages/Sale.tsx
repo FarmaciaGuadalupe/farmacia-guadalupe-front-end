@@ -39,7 +39,7 @@ const GET_CUSTOMERS = gql`
 
 const GET_MEDICINES_WITH_BATCHES = gql`
 	query GetMedicinesWithBatches {
-		medicines {
+		medicines (first: 100) {
 			nodes {
 				medicine_id
 				name
@@ -58,7 +58,10 @@ const GET_MEDICINES_WITH_BATCHES = gql`
 						current_quantity_units
 						is_active
 					}
-				}
+					presentation{
+						name
+					}
+				}	
 			}
 		}
 	}
@@ -110,6 +113,9 @@ interface ProductInfo {
 	stock_units: number;
 	is_fractionable: boolean;
 	batches: Batch[];
+	presentation?: {
+		name: string;
+	};
 }
 
 interface Medicine {
@@ -261,7 +267,7 @@ export default function Sale() {
 				medicine,
 				batch,
 				quantity: 1,
-				isFullPresentation: true, // Default to full
+				isFullPresentation: false, // Default to full
 				promotionId: null,
 			},
 		]);
@@ -444,7 +450,7 @@ export default function Sale() {
 							price: price,
 							total: item.quantity * price,
 							presentation: item.isFullPresentation
-								? intl.formatMessage({
+								? item.medicine.product.presentation?.name || intl.formatMessage({
 										id: "sale.presentation.box",
 									})
 								: intl.formatMessage({
@@ -787,7 +793,7 @@ export default function Sale() {
 															label={
 																<span className="text-xs">
 																	{item.isFullPresentation
-																		? intl.formatMessage(
+																		? item.medicine.product.presentation?.name || intl.formatMessage(
 																				{
 																					id: "sale.presentation.box",
 																				},
