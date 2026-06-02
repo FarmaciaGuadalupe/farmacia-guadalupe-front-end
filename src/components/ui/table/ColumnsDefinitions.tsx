@@ -28,7 +28,75 @@ import {
 	EnvelopeIcon,
 	GlobeAltIcon,
 	MapPinIcon,
+	Squares2X2Icon,
+	BeakerIcon,
+	TruckIcon,
 } from "@heroicons/react/24/outline";
+
+import {
+	TbPill,
+	TbVaccine,
+	TbLungs,
+	TbDroplet,
+	TbBandage,
+} from "react-icons/tb";
+import { MdOutlineMedicalServices } from "react-icons/md";
+
+const ROUTE_FAMILY_ICONS = {
+	Enteral: TbPill,
+	Parenteral: TbVaccine,
+	Respiratoria: TbLungs,
+	LocalGotas: TbDroplet,
+	Topica: TbBandage,
+	Otra: MdOutlineMedicalServices,
+};
+
+const getRouteIcon = (routeName: string) => {
+	const name = routeName?.toLowerCase() || "";
+	if (
+		name.includes("intra") ||
+		name.includes("subcutánea") ||
+		name.includes("epidural") ||
+		name.includes("peridural") ||
+		name.includes("retrobulbar") ||
+		name.includes("peribulbar")
+	) {
+		return ROUTE_FAMILY_ICONS.Parenteral;
+	}
+	if (
+		name.includes("oral") ||
+		name.includes("sublingual") ||
+		name.includes("bucal") ||
+		name.includes("gástrica") ||
+		name.includes("yeyunostomía") ||
+		name.includes("rectal")
+	) {
+		return ROUTE_FAMILY_ICONS.Enteral;
+	}
+	if (
+		name.includes("inhal") ||
+		name.includes("endotraqueal") ||
+		name.includes("nasal")
+	) {
+		return ROUTE_FAMILY_ICONS.Respiratoria;
+	}
+	if (
+		name.includes("oftálmica") ||
+		name.includes("ótica") ||
+		name.includes("conjuntival")
+	) {
+		return ROUTE_FAMILY_ICONS.LocalGotas;
+	}
+	if (
+		name.includes("tópica") ||
+		name.includes("transdérmica") ||
+		name.includes("vaginal") ||
+		name.includes("uretral")
+	) {
+		return ROUTE_FAMILY_ICONS.Topica;
+	}
+	return ROUTE_FAMILY_ICONS.Otra;
+};
 
 export const useEmployeeColumns = () => {
 	const intl = useIntl();
@@ -49,7 +117,7 @@ export const useEmployeeColumns = () => {
 								size: 30,
 							})}
 						/>
-						<span>
+						<span className="text-sm font-medium">
 							{row.original.names} {row.original.lastnames}
 						</span>
 					</div>
@@ -59,16 +127,25 @@ export const useEmployeeColumns = () => {
 				header: intl.formatMessage({ id: "email" }),
 				accessorKey: "email",
 				id: "email",
+				cell: ({ getValue }) => (
+					<span className="text-sm">{getValue() as string}</span>
+				),
 			},
 			{
 				header: intl.formatMessage({ id: "user" }),
 				accessorKey: "user",
 				id: "user",
+				cell: ({ getValue }) => (
+					<span className="text-sm font-medium">{getValue() as string}</span>
+				),
 			},
 			{
 				header: intl.formatMessage({ id: "role" }),
 				accessorKey: "roleName.name",
 				enableSorting: true,
+				cell: ({ getValue }) => (
+					<span className="text-sm">{getValue() as string}</span>
+				),
 			},
 			{
 				header: intl.formatMessage({ id: "statuses" }),
@@ -96,53 +173,62 @@ export const useBrandColumns = () => {
 	const columns = useMemo<ColumnDef<any>[]>(
 		() => [
 			{
-				header: intl.formatMessage({ id: "name" }),
-				accessorKey: "name",
-				id: "name",
-			},
-			{
-				header: intl.formatMessage({ id: "logo" }),
-				accessorKey: "logo_url",
-				id: "logo_url",
-				cell: ({ getValue }) => (
-					<img
-						src={getValue() as string}
-						alt="Logo"
-						className="w-10 h-10 object-contain"
-					/>
+				header: intl.formatMessage({ id: "brands" }, { count: 1 }),
+				id: "brand_info",
+				cell: ({ row }) => (
+					<div className="flex items-center gap-4">
+						{row.original.logo_url ? (
+							<div className="w-10 h-10 flex-shrink-0 bg-gray-50 dark:bg-dark-800 rounded-lg p-1 border border-gray-100 dark:border-dark-700">
+								<img
+									src={row.original.logo_url}
+									alt={row.original.name}
+									className="w-full h-full object-contain"
+								/>
+							</div>
+						) : (
+							<div className="w-10 h-10 flex-shrink-0 bg-gray-100 dark:bg-dark-700 rounded-lg flex items-center justify-center border border-gray-200 dark:border-dark-600">
+								<span className="text-sm font-bold text-gray-400">
+									{row.original.name.charAt(0).toUpperCase()}
+								</span>
+							</div>
+						)}
+						<span className="text-base font-semibold text-gray-800 dark:text-gray-100">
+							{row.original.name}
+						</span>
+					</div>
 				),
 			},
 			{
-				header: intl.formatMessage({ id: "contact_phone" }),
-				accessorKey: "contact_phone",
-				id: "contact_phone",
-			},
-			{
-				header: intl.formatMessage({ id: "contact_email" }),
-				accessorKey: "contact_email",
-				id: "contact_email",
+				header: intl.formatMessage({ id: "contact" }),
+				id: "contact_info",
+				cell: ({ row }) => (
+					<div className="flex flex-col gap-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+						{row.original.contact_phone && (
+							<div className="flex items-center gap-2">
+								<PhoneIcon className="size-3.5 text-gray-400" />
+								{row.original.contact_phone}
+							</div>
+						)}
+						{row.original.contact_email && (
+							<div className="flex items-center gap-2">
+								<EnvelopeIcon className="size-3.5 text-gray-400" />
+								<span
+									className="truncate max-w-[180px]"
+									data-tooltip-id="global-tooltip"
+									data-tooltip-content={row.original.contact_email}
+								>
+									{row.original.contact_email}
+								</span>
+							</div>
+						)}
+					</div>
+				),
 			},
 			{
 				header: intl.formatMessage({ id: "statuses" }),
 				accessorKey: "is_active",
 				cell: ({ getValue }) => (
-					<Badge color={getValue() ? "success" : "error"}>
-						{getValue() ? (
-							<FormattedMessage
-								id="active"
-								values={{
-									gender: "female",
-								}}
-							/>
-						) : (
-							<FormattedMessage
-								id="inactive"
-								values={{
-									gender: "female",
-								}}
-							/>
-						)}
-					</Badge>
+					<Status status={getValue() ? true : false} />
 				),
 			},
 			{
@@ -151,7 +237,7 @@ export const useBrandColumns = () => {
 			},
 		],
 		[intl],
-	); // intl es la dependencia
+	);
 
 	return columns;
 };
@@ -162,13 +248,25 @@ export const useCategoryColumns = () => {
 		() => [
 			{
 				header: intl.formatMessage({ id: "name" }),
-				accessorKey: "name",
 				id: "name",
+				cell: ({ row }) => (
+					<div className="flex items-center gap-3">
+						<Squares2X2Icon className="size-5 text-gray-400 flex-shrink-0" />
+						<span className="text-base font-semibold text-gray-800 dark:text-gray-100">
+							{row.original.name}
+						</span>
+					</div>
+				),
 			},
 			{
 				header: intl.formatMessage({ id: "description" }),
 				accessorKey: "description",
 				id: "description",
+				cell: ({ getValue }) => (
+					<span className="text-sm text-gray-600 dark:text-gray-400 font-medium line-clamp-2 max-w-[400px]">
+						{getValue() as string}
+					</span>
+				),
 			},
 			{
 				header: intl.formatMessage({ id: "status" }),
@@ -194,13 +292,25 @@ export const useActiveIngredientsColumns = () => {
 		() => [
 			{
 				header: intl.formatMessage({ id: "name" }),
-				accessorKey: "name",
 				id: "name",
+				cell: ({ row }) => (
+					<div className="flex items-center gap-3">
+						<BeakerIcon className="size-5 text-gray-400 flex-shrink-0" />
+						<span className="text-base font-semibold text-gray-800 dark:text-gray-100">
+							{row.original.name}
+						</span>
+					</div>
+				),
 			},
 			{
 				header: intl.formatMessage({ id: "description" }),
 				accessorKey: "description",
 				id: "description",
+				cell: ({ getValue }) => (
+					<span className="text-sm text-gray-600 dark:text-gray-400 font-medium line-clamp-2 max-w-[400px]">
+						{getValue() as string}
+					</span>
+				),
 			},
 			{
 				header: intl.formatMessage({ id: "status" }),
@@ -226,13 +336,28 @@ export const useAdministrationRoutesColumns = () => {
 		() => [
 			{
 				header: intl.formatMessage({ id: "name" }),
-				accessorKey: "name",
 				id: "name",
+				cell: ({ row }) => {
+					const IconComponent = getRouteIcon(row.original.name);
+					return (
+						<div className="flex items-center gap-3">
+							<IconComponent className="size-5 text-gray-400 flex-shrink-0" />
+							<span className="text-base font-semibold text-gray-800 dark:text-gray-100">
+								{row.original.name}
+							</span>
+						</div>
+					);
+				},
 			},
 			{
 				header: intl.formatMessage({ id: "description" }),
 				accessorKey: "description",
 				id: "description",
+				cell: ({ getValue }) => (
+					<span className="text-sm text-gray-600 dark:text-gray-400 font-medium line-clamp-2 max-w-[400px]">
+						{getValue() as string}
+					</span>
+				),
 			},
 			{
 				header: intl.formatMessage({ id: "status" }),
@@ -258,13 +383,25 @@ export const useSupplierTypesColumns = () => {
 		() => [
 			{
 				header: intl.formatMessage({ id: "name" }),
-				accessorKey: "type_name",
-				id: "type_name",
+				id: "name",
+				cell: ({ row }) => (
+					<div className="flex items-center gap-3">
+						<TruckIcon className="size-5 text-gray-400 flex-shrink-0" />
+						<span className="text-base font-semibold text-gray-800 dark:text-gray-100">
+							{row.original.type_name}
+						</span>
+					</div>
+				),
 			},
 			{
 				header: intl.formatMessage({ id: "description" }),
 				accessorKey: "description",
 				id: "description",
+				cell: ({ getValue }) => (
+					<span className="text-sm text-gray-600 dark:text-gray-400 font-medium line-clamp-2 max-w-[400px]">
+						{getValue() as string}
+					</span>
+				),
 			},
 			{
 				id: "actions",
