@@ -338,7 +338,7 @@ const AppSidebar: React.FC = () => {
 					!isExpanded ? "lg:justify-center" : "justify-start"
 				}`}
 			>
-				<Link to="/">
+				<div>
 					{isExpanded || isMobileOpen ? (
 						<>
 							<img
@@ -364,7 +364,7 @@ const AppSidebar: React.FC = () => {
 							height={32}
 						/>
 					)}
-				</Link>
+				</div>
 			</div>
 			<div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
 				<nav className="mb-6">
