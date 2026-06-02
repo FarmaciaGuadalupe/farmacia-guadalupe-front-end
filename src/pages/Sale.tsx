@@ -61,6 +61,9 @@ const GET_MEDICINES_WITH_BATCHES = gql`
 					presentation{
 						name
 					}
+					unit_of_measure {
+						name
+					}
 				}	
 			}
 		}
@@ -104,7 +107,6 @@ interface Batch {
 	current_quantity_units: number;
 	is_active: boolean;
 }
-
 interface ProductInfo {
 	product_id: number;
 	barcode: string;
@@ -114,6 +116,9 @@ interface ProductInfo {
 	is_fractionable: boolean;
 	batches: Batch[];
 	presentation?: {
+		name: string;
+	};
+	unit_of_measure?: {
 		name: string;
 	};
 }
@@ -453,7 +458,7 @@ export default function Sale() {
 								? item.medicine.product.presentation?.name || intl.formatMessage({
 										id: "sale.presentation.box",
 									})
-								: intl.formatMessage({
+								: item.medicine.product.unit_of_measure?.name || intl.formatMessage({
 										id: "sale.presentation.unit",
 									}),
 						};
@@ -798,7 +803,7 @@ export default function Sale() {
 																					id: "sale.presentation.box",
 																				},
 																			)
-																		: intl.formatMessage(
+																		: item.medicine.product.unit_of_measure?.name || intl.formatMessage(
 																				{
 																					id: "sale.presentation.unit",
 																				},
