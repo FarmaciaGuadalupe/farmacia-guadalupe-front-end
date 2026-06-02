@@ -275,10 +275,10 @@ export const useCategoryColumns = () => {
 					<Status status={getValue() ? true : false} />
 				),
 			},
-			{
-				id: "actions",
-				cell: ({ row }) => <BrandCellActions row={row} />,
-			},
+			// {
+			// 	id: "actions",
+			// 	cell: ({ row }) => <BrandCellActions row={row} />,
+			// },
 		],
 		[intl],
 	);
@@ -319,10 +319,10 @@ export const useActiveIngredientsColumns = () => {
 					<Status status={getValue() ? true : false} />
 				),
 			},
-			{
-				id: "actions",
-				cell: ({ row }) => <BrandCellActions row={row} />,
-			},
+			// {
+			// 	id: "actions",
+			// 	cell: ({ row }) => <BrandCellActions row={row} />,
+			// },
 		],
 		[intl],
 	);
@@ -366,10 +366,10 @@ export const useAdministrationRoutesColumns = () => {
 					<Status status={getValue() ? true : false} />
 				),
 			},
-			{
-				id: "actions",
-				cell: ({ row }) => <BrandCellActions row={row} />,
-			},
+			// {
+			// 	id: "actions",
+			// 	cell: ({ row }) => <BrandCellActions row={row} />,
+			// },
 		],
 		[intl],
 	);
@@ -403,10 +403,10 @@ export const useSupplierTypesColumns = () => {
 					</span>
 				),
 			},
-			{
-				id: "actions",
-				cell: ({ row }) => <BrandCellActions row={row} />,
-			},
+			// {
+			// 	id: "actions",
+			// 	cell: ({ row }) => <BrandCellActions row={row} />,
+			// },
 		],
 		[intl],
 	);
@@ -523,10 +523,10 @@ export const useSupplierColumns = () => {
 					<Status status={getValue() ? true : false} />
 				),
 			},
-			{
-				id: "actions",
-				cell: ({ row }) => <BrandCellActions row={row} />,
-			},
+			// {
+			// 	id: "actions",
+			// 	cell: ({ row }) => <BrandCellActions row={row} />,
+			// },
 		],
 		[intl],
 	);
@@ -573,7 +573,7 @@ export const useMedicineColumns = () => {
 
 					if (unitPrice > 0) {
 						return (
-							<div className="flex items-center gap-2">
+							<div className="flex items-center gap-2 w-30">
 								<span>C$ {unitPrice.toFixed(2)}</span>
 								{fullPrice > 0 && (
 									<div
