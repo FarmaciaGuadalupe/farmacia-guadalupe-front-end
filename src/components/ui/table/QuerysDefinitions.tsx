@@ -18,6 +18,8 @@ export const GET_ALL_SALES = () => gql`
 				saleDate
 				netTotal
 				currency
+				doctorName
+				prescriptionNumber
 
 				# Empleado
 				employee {

@@ -173,6 +173,7 @@
     "sale.customer": "Cliente",
     "sale.data": "Datos de Venta",
     "sale.date_label": "Fecha: {date}",
+    "sale.doctor": "Médico",
     "sale.doctor_name": "Nombre del Médico",
     "sale.error.cart_empty": "El carrito está vacío.",
     "sale.error.insufficient_payment": "El monto pagado es menor al total de la venta.",
