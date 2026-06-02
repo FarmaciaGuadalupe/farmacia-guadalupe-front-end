@@ -18,6 +18,8 @@ export const GET_ALL_SALES = () => gql`
 				saleDate
 				netTotal
 				currency
+				doctorName
+				prescriptionNumber
 
 				# Empleado
 				employee {
@@ -232,8 +234,9 @@ export const GET_MEDICINE_QUERY = () => gql`
 		$first: Int
 		$after: String
 		$order: [MedicineSortInput!]
+		$where: MedicineFilterInput
 	) {
-		medicines(first: $first, after: $after, order: $order) {
+		medicines(first: $first, after: $after, order: $order, where: $where) {
 			nodes {
 				medicine_id
 				name

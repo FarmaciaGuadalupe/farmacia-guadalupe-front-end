@@ -4,7 +4,9 @@ import {
 	BanknotesIcon,
 	CurrencyDollarIcon,
 	CalendarIcon,
+	DocumentArrowDownIcon
 } from "@heroicons/react/24/outline";
+import { GrTransaction } from "react-icons/gr";
 
 const TransactionPay = ({ row }: any) => {
 	const payments = row.original.salePayments || [];
@@ -23,7 +25,7 @@ const TransactionPay = ({ row }: any) => {
 				);
 			case 3:
 				return (
-					<CalendarIcon className={`${className} text-purple-600`} />
+					<DocumentArrowDownIcon className={`${className} text-purple-600`} />
 				);
 			default:
 				return (

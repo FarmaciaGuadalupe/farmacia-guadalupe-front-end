@@ -30,7 +30,7 @@ export default function SupplierTypes() {
 
 	return (
 		<div className="flex-1">
-			<div className="flex justify-end mb-4">
+			{/* <div className="flex justify-end mb-4">
 				<button
 					onClick={() => setShowDrawer(true)}
 					className="px-4 py-2 text-white rounded-xl transition-colors flex items-center gap-2 bg-brand-500"
@@ -38,7 +38,7 @@ export default function SupplierTypes() {
 					<PlusCircleIcon className="h-5 w-5" />
 					{intl.formatMessage({ id: "supplier_types.add" })}
 				</button>
-			</div>
+			</div> */}
 
 			<SupplierTypeTable />
 

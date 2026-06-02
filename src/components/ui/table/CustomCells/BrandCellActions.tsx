@@ -143,7 +143,7 @@ export const BrandCellActions = ({ row }: any) => {
 
 	const items = [
 		{
-			showWhen: true,
+			showWhen: false,
 			label: (
 				<Fragment>
 					<PencilSquareIcon className="size-4.5 stroke-1" />

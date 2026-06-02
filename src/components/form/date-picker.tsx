@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.css";
+import { Spanish } from "flatpickr/dist/l10n/es.js";
 import Label from "./Label";
 import { CalenderIcon } from "../../icons";
 import Hook = flatpickr.Options.Hook;
@@ -11,7 +12,7 @@ type PropsType = {
 	mode?: "single" | "multiple" | "range" | "time";
 	onChange?: Hook | Hook[];
 	defaultDate?: DateOption;
-	value?: string | Date;
+	value?: string | Date | Date[];
 	label?: string;
 	placeholder?: string;
 };
@@ -32,8 +33,12 @@ export default function DatePicker({
 		if (inputRef.current) {
 			fp.current = flatpickr(inputRef.current, {
 				mode: mode || "single",
+				locale: {
+					...Spanish,
+					rangeSeparator: " al ",
+				},
 				monthSelectorType: "static",
-				dateFormat: "Y-m-d",
+				dateFormat: "d/m/Y",
 				defaultDate: value || defaultDate,
 				onChange,
 				// Ensure the picker is appended to body to avoid overflow issues in drawers/modals
