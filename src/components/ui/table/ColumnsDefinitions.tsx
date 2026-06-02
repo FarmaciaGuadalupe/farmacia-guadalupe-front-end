@@ -21,6 +21,15 @@ import TransactionMedicine from "./CustomCells/TransactionMedicine";
 import TransactionEmployee from "./CustomCells/TransactionEmployee";
 import { FaBox, FaBoxOpen } from "react-icons/fa6";
 
+import {
+	IdentificationIcon,
+	UserIcon,
+	PhoneIcon,
+	EnvelopeIcon,
+	GlobeAltIcon,
+	MapPinIcon,
+} from "@heroicons/react/24/outline";
+
 export const useEmployeeColumns = () => {
 	const intl = useIntl();
 
@@ -273,44 +282,102 @@ export const useSupplierColumns = () => {
 	const columns = useMemo<ColumnDef<any>[]>(
 		() => [
 			{
-				header: intl.formatMessage({ id: "name" }),
-				accessorKey: "company_name",
-				id: "company_name",
+				header: intl.formatMessage({ id: "supplier" }),
+				id: "supplier_info",
+				cell: ({ row }) => (
+					<div className="flex flex-col">
+						<span className="text-base font-semibold text-gray-800 dark:text-gray-100">
+							{row.original.company_name}
+						</span>
+						<div className="flex items-center gap-2 mt-1">
+							{row.original.tax_id && (
+								<span className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1 font-medium">
+									<IdentificationIcon className="size-3.5" />
+									{row.original.tax_id}
+								</span>
+							)}
+							{row.original.type?.type_name && (
+								<span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[11px] font-bold bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 ring-1 ring-inset ring-blue-700/10">
+									{row.original.type.type_name}
+								</span>
+							)}
+						</div>
+					</div>
+				),
 			},
 			{
-				header: intl.formatMessage({ id: "RUC" }),
-				accessorKey: "tax_id",
-				id: "tax_id",
+				header: intl.formatMessage({ id: "contact" }),
+				id: "contact_info",
+				cell: ({ row }) => (
+					<div className="flex flex-col gap-1">
+						{row.original.contact_name && (
+							<div className="flex items-center gap-2 text-base text-gray-800 dark:text-gray-200 font-semibold">
+								<UserIcon className="size-4 text-gray-500" />
+								{row.original.contact_name}
+							</div>
+						)}
+						<div className="flex flex-col text-sm text-gray-700 dark:text-gray-300 font-medium">
+							{row.original.phone && (
+								<div className="flex items-center gap-2">
+									<PhoneIcon className="size-3.5 text-gray-500" />
+									{row.original.phone}
+								</div>
+							)}
+							{row.original.email && (
+								<div className="flex items-center gap-2 mt-0.5">
+									<EnvelopeIcon className="size-3.5 text-gray-500" />
+									<span
+										className="truncate max-w-[150px]"
+										data-tooltip-id="global-tooltip"
+										data-tooltip-content={row.original.email}
+									>
+										{row.original.email}
+									</span>
+								</div>
+							)}
+						</div>
+					</div>
+				),
 			},
 			{
-				header: intl.formatMessage({ id: "contact_name" }),
-				accessorKey: "contact_name",
-				id: "contact_name",
-			},
-			{
-				header: intl.formatMessage({ id: "phone" }),
-				accessorKey: "phone",
-				id: "phone",
-			},
-			{
-				header: intl.formatMessage({ id: "address" }),
-				accessorKey: "address",
-				id: "address",
-			},
-			{
-				header: intl.formatMessage({ id: "email" }),
-				accessorKey: "email",
-				id: "email",
-			},
-			{
-				header: intl.formatMessage({ id: "website" }),
-				accessorKey: "website",
-				id: "website",
-			},
-			{
-				header: intl.formatMessage({ id: "website" }),
-				accessorKey: "type.type_name",
-				id: "type.type_name",
+				header: intl.formatMessage({ id: "details" }),
+				id: "location_info",
+				cell: ({ row }) => (
+					<div className="flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300 font-medium">
+						{row.original.address && (
+							<div className="flex items-start gap-2">
+								<MapPinIcon className="size-4 mt-0.5 text-gray-500 shrink-0" />
+								<span
+									className="line-clamp-2 max-w-[200px]"
+									data-tooltip-id="global-tooltip"
+									data-tooltip-content={row.original.address}
+								>
+									{row.original.address}
+								</span>
+							</div>
+						)}
+						{row.original.website && (
+							<div className="flex items-center gap-2">
+								<GlobeAltIcon className="size-4 text-gray-500 shrink-0" />
+								<a
+									href={
+										row.original.website.startsWith("http")
+											? row.original.website
+											: `https://${row.original.website}`
+									}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="text-blue-700 dark:text-blue-400 hover:underline font-semibold truncate max-w-[150px]"
+								>
+									{row.original.website.replace(
+										/^https?:\/\//,
+										"",
+									)}
+								</a>
+							</div>
+						)}
+					</div>
+				),
 			},
 			{
 				header: intl.formatMessage({ id: "status" }),
