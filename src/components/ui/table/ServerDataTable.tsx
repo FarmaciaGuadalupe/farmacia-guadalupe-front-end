@@ -1,5 +1,5 @@
 // src/components/ui/table/ServerDataTable.tsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
 	useReactTable,
 	getCoreRowModel,
@@ -55,6 +55,11 @@ export function ServerDataTable<TData>({
 		hasPreviousPage,
 		resetPagination,
 	} = useGraphQLPagination(initialPageSize);
+
+	// Reset pagination when filter changes
+	useEffect(() => {
+		resetPagination();
+	}, [filter, resetPagination]);
 
 	// 3. Formatear variables para GraphQL
 	const order =
