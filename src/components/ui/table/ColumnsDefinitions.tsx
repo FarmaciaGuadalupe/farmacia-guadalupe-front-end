@@ -19,7 +19,7 @@ import TransactionPay from "./CustomCells/TransactionPay";
 import TransactionMedicine from "./CustomCells/TransactionMedicine";
 import TransactionEmployee from "./CustomCells/TransactionEmployee";
 import { BatchTableActions } from "./CustomCells/BatchTableActions";
-import { FaBox, FaBoxOpen } from "react-icons/fa6";
+import { FaBox } from "react-icons/fa6";
 
 import {
 	IdentificationIcon,
@@ -41,6 +41,9 @@ import {
 	TbBandage,
 } from "react-icons/tb";
 import { MdOutlineMedicalServices } from "react-icons/md";
+
+import { FaUserDoctor } from "react-icons/fa6";
+import { RiReceiptLine } from "react-icons/ri";
 
 const ROUTE_FAMILY_ICONS = {
 	Enteral: TbPill,
@@ -136,7 +139,9 @@ export const useEmployeeColumns = () => {
 				accessorKey: "user",
 				id: "user",
 				cell: ({ getValue }) => (
-					<span className="text-sm font-medium">{getValue() as string}</span>
+					<span className="text-sm font-medium">
+						{getValue() as string}
+					</span>
 				),
 			},
 			{
@@ -215,7 +220,9 @@ export const useBrandColumns = () => {
 								<span
 									className="truncate max-w-[180px]"
 									data-tooltip-id="global-tooltip"
-									data-tooltip-content={row.original.contact_email}
+									data-tooltip-content={
+										row.original.contact_email
+									}
 								>
 									{row.original.contact_email}
 								</span>
@@ -275,10 +282,10 @@ export const useCategoryColumns = () => {
 					<Status status={getValue() ? true : false} />
 				),
 			},
-			{
-				id: "actions",
-				cell: ({ row }) => <BrandCellActions row={row} />,
-			},
+			// {
+			// 	id: "actions",
+			// 	cell: ({ row }) => <BrandCellActions row={row} />,
+			// },
 		],
 		[intl],
 	);
@@ -319,10 +326,10 @@ export const useActiveIngredientsColumns = () => {
 					<Status status={getValue() ? true : false} />
 				),
 			},
-			{
-				id: "actions",
-				cell: ({ row }) => <BrandCellActions row={row} />,
-			},
+			// {
+			// 	id: "actions",
+			// 	cell: ({ row }) => <BrandCellActions row={row} />,
+			// },
 		],
 		[intl],
 	);
@@ -366,10 +373,10 @@ export const useAdministrationRoutesColumns = () => {
 					<Status status={getValue() ? true : false} />
 				),
 			},
-			{
-				id: "actions",
-				cell: ({ row }) => <BrandCellActions row={row} />,
-			},
+			// {
+			// 	id: "actions",
+			// 	cell: ({ row }) => <BrandCellActions row={row} />,
+			// },
 		],
 		[intl],
 	);
@@ -403,10 +410,10 @@ export const useSupplierTypesColumns = () => {
 					</span>
 				),
 			},
-			{
-				id: "actions",
-				cell: ({ row }) => <BrandCellActions row={row} />,
-			},
+			// {
+			// 	id: "actions",
+			// 	cell: ({ row }) => <BrandCellActions row={row} />,
+			// },
 		],
 		[intl],
 	);
@@ -466,7 +473,9 @@ export const useSupplierColumns = () => {
 									<span
 										className="truncate max-w-[150px]"
 										data-tooltip-id="global-tooltip"
-										data-tooltip-content={row.original.email}
+										data-tooltip-content={
+											row.original.email
+										}
 									>
 										{row.original.email}
 									</span>
@@ -523,10 +532,10 @@ export const useSupplierColumns = () => {
 					<Status status={getValue() ? true : false} />
 				),
 			},
-			{
-				id: "actions",
-				cell: ({ row }) => <BrandCellActions row={row} />,
-			},
+			// {
+			// 	id: "actions",
+			// 	cell: ({ row }) => <BrandCellActions row={row} />,
+			// },
 		],
 		[intl],
 	);
@@ -569,11 +578,12 @@ export const useMedicineColumns = () => {
 				id: "prices",
 				cell: ({ row }) => {
 					const unitPrice = row.original.product?.price_per_unit || 0;
-					const fullPrice = row.original.product?.price_full_presentation || 0;
+					const fullPrice =
+						row.original.product?.price_full_presentation || 0;
 
 					if (unitPrice > 0) {
 						return (
-							<div className="flex items-center gap-2">
+							<div className="flex items-center gap-2 w-30">
 								<span>C$ {unitPrice.toFixed(2)}</span>
 								{fullPrice > 0 && (
 									<div
@@ -596,13 +606,9 @@ export const useMedicineColumns = () => {
 				// accessorKey: "description",
 				id: "description",
 				cell: ({ row }) => {
-					const description = row.original.description
-					return (
-						<div className="max-w-70">
-							{description}
-						</div>
-					);
-				}
+					const description = row.original.description;
+					return <div className="max-w-70">{description}</div>;
+				},
 			},
 			{
 				header: intl.formatMessage({ id: "actions" }),
@@ -682,6 +688,57 @@ export const useSaleColumns = () => {
 				header: intl.formatMessage({ id: "sales.assintant" }),
 				id: "employee",
 				cell: ({ row }) => <TransactionEmployee row={row} />,
+			},
+			{
+				header: intl.formatMessage({ id: "sale.doctor" }),
+				id: "doctorInfo",
+				cell: ({ row }) => {
+					const { doctorName, prescriptionNumber } = row.original;
+
+					if (!doctorName && !prescriptionNumber) {
+						return <span className="text-gray-400">-</span>;
+					}
+
+					return (
+						<div className="flex flex-col gap-1.5 justify-center">
+							{doctorName && (
+								<div
+									className="flex items-center gap-2"
+									data-tooltip-id="global-tooltip"
+									data-tooltip-content={intl.formatMessage({
+										id: "sale.doctor",
+									})}
+								>
+									{/* Contenedor para el icono: imita el estilo de la columna "Dependiente" */}
+									<div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-500">
+										<FaUserDoctor className="size-3.5" />
+									</div>
+									<span className="text-sm font-semibold text-gray-900 capitalize">
+										{doctorName.toLowerCase()}
+									</span>
+								</div>
+							)}
+
+							{prescriptionNumber && (
+								<div
+									className="flex items-center gap-2"
+									data-tooltip-id="global-tooltip"
+									data-tooltip-content={intl.formatMessage({
+										id: "sale.prescription_number",
+									})}
+								>
+									{/* Icono y texto más tenues para indicar información secundaria */}
+									<div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-gray-400">
+										<RiReceiptLine className="size-4" />
+									</div>
+									<span className="text-xs font-medium text-gray-500">
+										{prescriptionNumber}
+									</span>
+								</div>
+							)}
+						</div>
+					);
+				},
 			},
 			{
 				header: intl.formatMessage({ id: "products" }, { count: 2 }),

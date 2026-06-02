@@ -338,7 +338,7 @@ const AppSidebar: React.FC = () => {
 					!isExpanded ? "lg:justify-center" : "justify-start"
 				}`}
 			>
-				<Link to="/">
+				<Link to="/home">
 					{isExpanded || isMobileOpen ? (
 						<>
 							<img

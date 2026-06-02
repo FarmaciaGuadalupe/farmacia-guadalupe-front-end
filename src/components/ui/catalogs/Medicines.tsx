@@ -6,6 +6,7 @@ import SimpleModal from "../utils/SimpleModal";
 import MedicineTable from "../../tables/BasicTables/MedicineTable";
 import AddNewMedicine from "../table/CustomDrawers/AddNewMedicine";
 import { useAuth } from "../../../context/AuthContext";
+import MedicineExportButton from "./MedicineExportButton";
 
 const AddNewBrandDrawer = ({ onClose }: any) => {
 	const intl = useIntl();
@@ -33,7 +34,8 @@ export default function Medicines() {
 	return (
 		<div className="flex-1">
 			{user?.roleId !== 2 && (
-				<div className="flex justify-end mb-4">
+				<div className="flex flex-col items-end gap-2 mb-4">
+					<MedicineExportButton />    
 					<button
 						onClick={() => setShowDrawer(true)}
 						className="px-4 py-2 text-white rounded-xl transition-colors flex items-center gap-2 bg-brand-500"
