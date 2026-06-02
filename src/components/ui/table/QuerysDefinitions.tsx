@@ -4,10 +4,9 @@ export const GET_ALL_SALES = () => gql`
 	query GetSalesWithDetails(
 		$first: Int
 		$after: String
-		$order: [SaleSortInput!]
 		$where: SaleFilterInput
 	) {
-		sales(first: $first, after: $after, order: $order, where: $where) {
+		sales(first: $first, after: $after, order: [{ saleDate: DESC }], where: $where) {
 			# Información de la paginación
 			pageInfo {
 				hasNextPage
@@ -243,8 +242,11 @@ export const GET_MEDICINE_QUERY = () => gql`
 
 				# Relación con Ingredientes Activos (Todos los que tenga el ID)
 				medicine_active_ingredients {
+					active_ingredient_id
+					dose_unit_id
 					dose_value
 					dose_unit {
+						name
 						abbreviation
 					}
 					active_ingredient {
@@ -254,22 +256,27 @@ export const GET_MEDICINE_QUERY = () => gql`
 
 				# Datos de clasificación
 				brand {
+					id_brand
 					name
 				}
 
 				manufacturer {
+					manufacturer_id
 					name
 				}
 
 				category {
+					category_id
 					name
 				}
 
 				administration_route {
+					administration_route_id
 					name
 				}
 
 				product {
+					barcode
 					product_id
 					stock_units
 					min_stock_units
@@ -277,12 +284,35 @@ export const GET_MEDICINE_QUERY = () => gql`
 					price_full_presentation
 					cost_price
 					currency
+					supplier_id
+					presentation_id
+					unit_of_measure_id
+					units_per_presentation
+					is_fractionable
 				}
 			}
 			pageInfo {
 				hasNextPage
 				endCursor
 			}
+		}
+	}
+`;
+
+export const UPDATE_MEDICINE_MUTATION = gql`
+	mutation UpdateMedicine($input: UpdateMedicineInput!) {
+		updateMedicine(input: $input) {
+			result
+			message
+		}
+	}
+`;
+
+export const UPDATE_BATCH_MUTATION = gql`
+	mutation UpdateBatch($input: UpdateBatchInput!) {
+		updateBatch(input: $input) {
+			result
+			message
 		}
 	}
 `;
