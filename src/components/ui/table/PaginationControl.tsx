@@ -35,15 +35,15 @@ const getPaginationRange = (
 
 	// Caso 2: No mostrar '...' a la izquierda
 	if (!shouldShowLeftDots && shouldShowRightDots) {
-		let leftItemCount = 3 + 2 * siblingCount;
-		let leftRange = Array.from({ length: leftItemCount }, (_, i) => i + 1);
+		const leftItemCount = 3 + 2 * siblingCount;
+		const leftRange = Array.from({ length: leftItemCount }, (_, i) => i + 1);
 		return [...leftRange, "...", totalPages];
 	}
 
 	// Caso 3: No mostrar '...' a la derecha
 	if (shouldShowLeftDots && !shouldShowRightDots) {
-		let rightItemCount = 3 + 2 * siblingCount;
-		let rightRange = Array.from(
+		const rightItemCount = 3 + 2 * siblingCount;
+		const rightRange = Array.from(
 			{ length: rightItemCount },
 			(_, i) => totalPages - rightItemCount + i + 1,
 		);
@@ -52,7 +52,7 @@ const getPaginationRange = (
 
 	// Caso 4: Mostrar '...' en ambos lados
 	if (shouldShowLeftDots && shouldShowRightDots) {
-		let middleRange = Array.from(
+		const middleRange = Array.from(
 			{ length: rightSiblingIndex - leftSiblingIndex + 1 },
 			(_, i) => leftSiblingIndex + i,
 		);
