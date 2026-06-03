@@ -789,7 +789,7 @@ export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
 		},
 	);
 
-	const defaultExpirationDate = dayjs().add(2, "year").format("YYYY-MM-DD");
+	const defaultExpirationDate = dayjs().format("YYYY-MM-DD");
 
 	// Tipamos el estado inicial con la interfaz MedicineFormData
 	const [formData, setFormData] = React.useState<MedicineFormData>({
@@ -813,7 +813,7 @@ export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
 
 		description: "",
 		batch_code: "",
-		expiration_date: defaultExpirationDate,
+		expiration_date: "",
 		units: "",
 		stock_units: "",
 		min_stock_units: "",
@@ -946,7 +946,10 @@ export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
 
 			batchCode: formData.batch_code,
 			expirationDate: formData.expiration_date
-				? `${formData.expiration_date}T23:59:59Z`
+				? dayjs(formData.expiration_date, [
+						"YYYY-MM-DD",
+						"DD/MM/YYYY",
+					]).toISOString()
 				: undefined,
 
 			units: parseInt(String(formData.units), 10) || 0,
