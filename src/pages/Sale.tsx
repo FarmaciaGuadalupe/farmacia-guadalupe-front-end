@@ -583,6 +583,8 @@ export default function Sale() {
 									</InputLabel>
 									<Select
 										sx={{
+											// Si hay un ancestro con clase .dark, aplica este color al texto
+											".dark & .MuiSelect-select": {
 												color: "#9ca3af !important",
 											},
 											// Y este color al icono de la flecha
@@ -590,6 +592,10 @@ export default function Sale() {
 												color: "#9ca3af !important",
 											},
 											// Opcional: si quieres cambiar el color del borde en modo oscuro
+											".dark & .MuiOutlinedInput-notchedOutline": {
+												borderColor: "#4b5563 !important",
+											}
+										}}
 										value={saleType}
 										label={intl.formatMessage({
 											id: "sale.type",
@@ -631,6 +637,9 @@ export default function Sale() {
 							{showMedicalData && (
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
 									<TextField
+										sx={{
+											".dark & .MuiInputBase-input": {
+												color: "#9ca3af", // Equivalente a text-gray-400
 											},
 											".dark & .MuiInputLabel-root": {
 												color: "#9ca3af",
@@ -638,6 +647,7 @@ export default function Sale() {
 											".dark & .MuiOutlinedInput-notchedOutline": {
 												borderColor: "#4b5563 !important",
 											}
+										}}
 										label={intl.formatMessage({
 											id: "sale.prescription_number",
 										})}
