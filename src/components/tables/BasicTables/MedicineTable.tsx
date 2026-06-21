@@ -11,7 +11,6 @@ import {
 import { useMedicineColumns } from "../../ui/table/ColumnsDefinitions";
 import Select from "../../form/Select";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import MedicineExportButton from "../../ui/catalogs/MedicineExportButton";
 
 export default function MedicineTable() {
 	const intl = useIntl();
@@ -119,7 +118,7 @@ return (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         
                         {/* 1. Input de Búsqueda */}
-                        <div className="w-full flex flex-col gap-1.5">
+                        <div id="tour-med-search" className="w-full flex flex-col gap-1.5">
                             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                                 {intl.formatMessage({ id: "name" })}
                             </label>
@@ -133,7 +132,7 @@ return (
                         </div>
 
                         {/* 2. Select de Categorías */}
-                        <div className="w-full flex flex-col gap-1.5">
+                        <div id="tour-med-category" className="w-full flex flex-col gap-1.5">
                             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                                 <FormattedMessage id="category" defaultMessage="Categoría" />
                             </label>
@@ -145,7 +144,7 @@ return (
                         </div>
 
                         {/* 3. Select de Vías de Administración */}
-                        <div className="w-full flex flex-col gap-1.5">
+                        <div id="tour-med-route" className="w-full flex flex-col gap-1.5">
                             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                                 <FormattedMessage id="route" defaultMessage="Vía de Administración" />
                             </label>
@@ -157,7 +156,7 @@ return (
                         </div>
 
                         {/* 4. Select de Ingredientes Activos */}
-                        <div className="w-full flex flex-col gap-1.5">
+                        <div id="tour-med-ingredient" className="w-full flex flex-col gap-1.5">
                             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                                 <FormattedMessage id="active_ingredient" defaultMessage="Ingrediente Activo" />
                             </label>
@@ -172,12 +171,14 @@ return (
                 </div>
             </div>
 
-            <ServerDataTable
-                columns={columns}
-                query={query}
-                queryKeyName="medicines"
-                filter={filter}
-            />
+            <div id="tour-med-table">
+                <ServerDataTable
+                    columns={columns}
+                    query={query}
+                    queryKeyName="medicines"
+                    filter={filter}
+                />
+            </div>
         </div>
     );
 }
