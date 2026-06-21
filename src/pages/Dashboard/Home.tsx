@@ -1,6 +1,9 @@
 import { useRef, useState } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import { driver } from "driver.js";
+import "driver.js/dist/driver.css";
 
 import EcommerceMetrics from "../../components/ecommerce/EcommerceMetrics";
 import MonthlySalesChart from "../../components/ecommerce/MonthlySalesChart";
@@ -76,6 +79,64 @@ export default function Home() {
 		}
 	};
 
+	const startTour = () => {
+		const driverObj = driver({
+			showProgress: true,
+			nextBtnText: "Siguiente",
+			prevBtnText: "Anterior",
+			doneBtnText: "Finalizar",
+			steps: [
+				{
+					element: "#tour-export",
+					popover: {
+						title: "Exportar a PDF",
+						description: "Guarda un respaldo visual de todo tu panel de control en un documento PDF optimizado con un solo clic.",
+						side: "bottom",
+						align: "end",
+					},
+				},
+				{
+					element: "#tour-chart-tabs",
+					popover: {
+						title: "Pestañas de Reporte",
+						description: "Cambia la vista del reporte entre análisis Diario, Mensual o Anual según tus necesidades.",
+						side: "bottom",
+						align: "start",
+					},
+				},
+				{
+					element: "#tour-chart-picker",
+					popover: {
+						title: "Rango de Fechas",
+						description: "Haz clic aquí para seleccionar un rango personalizado de fechas y filtrar el gráfico dinámicamente.",
+						side: "bottom",
+						align: "end",
+					},
+				},
+				{
+					element: "#tour-sales-graph",
+					popover: {
+						title: "Gráfico de Ingresos",
+						description: "Visualiza de forma clara el comportamiento y las tendencias de tus ingresos por ventas en el período seleccionado.",
+						side: "top",
+						align: "start",
+					},
+				},
+				{
+					element: "#tour-metrics-grid",
+					popover: {
+						title: "Métricas Diarias",
+						description: "Monitorea los totales de ingresos del día de hoy y el número de transacciones realizadas, junto con su porcentaje de crecimiento comparativo.",
+						side: "top",
+						align: "start",
+					},
+				},
+			],
+		});
+
+		driverObj.drive();
+	};
+
 	return (
 		<div className="space-y-4">
 			<PageMeta
@@ -85,8 +146,16 @@ export default function Home() {
 
 			{/* Botón para disparar la exportación a PDF */}
 			{user?.roleId !== 2 && (
-				<div className="flex justify-end mb-4">
+				<div className="flex justify-end items-center gap-2 mb-4">
 					<button
+						onClick={startTour}
+						className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/[0.03] transition-colors flex items-center justify-center gap-2 cursor-pointer"
+					>
+						<QuestionMarkCircleIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+						Guía rápida
+					</button>
+					<button
+						id="tour-export"
 						className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/[0.03] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
 						onClick={handleExportPDF}
 						disabled={isExporting}
@@ -105,4 +174,5 @@ export default function Home() {
 		</div>
 	);
 }
+
 

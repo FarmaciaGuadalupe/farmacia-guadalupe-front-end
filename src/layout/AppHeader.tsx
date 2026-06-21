@@ -97,34 +97,14 @@ const AppHeader: React.FC = () => {
 							</span>
 						)}
 					</button>
-
-					{/* <button
-            onClick={toggleApplicationMenu}
-            className="flex items-center justify-center w-10 h-10 text-gray-700 rounded-lg z-99999 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 lg:hidden"
-          >
-            <span
-              className={`relative inline-block w-5 h-5 transition-transform duration-300 ease-in-out [transform-style:preserve-3d] ${isExpanded  ? "[transform:rotateY(180deg)]" : ""
-                }`}
-            >
-              <span className="absolute top-0 left-0 inline-flex items-center justify-center w-full h-full [backface-visibility:hidden]">
-                <CgMenuLeft className="size-5" />
-              </span>
-
-              <span className="absolute top-0 left-0 inline-flex items-center justify-center w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)]">
-                <IoIosArrowBack className="size-5" />
-              </span>
-            </span>
-          </button> */}
 				</div>
 				<div
-					className={`${
-						isApplicationMenuOpen ? "flex" : "hidden"
-					} items-center justify-between w-full gap-4 px-5 py-4 lg:flex shadow-theme-md lg:justify-end lg:px-0 lg:shadow-none`}
+					className={`${isApplicationMenuOpen ? "flex" : "hidden"
+						} items-center justify-between w-full gap-4 px-5 py-4 lg:flex shadow-theme-md lg:justify-end lg:px-0 lg:shadow-none`}
 				>
-					{/* <div className="flex items-center gap-2 2xsm:gap-3">
-            <ThemeToggleButton />
-          </div> */}
-					{/* <!-- User Area --> */}
+					<div className="flex items-center gap-2 2xsm:gap-3">
+						<ThemeToggleButton />
+					</div>
 					<UserDropdown />
 				</div>
 			</div>
