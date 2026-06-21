@@ -94,65 +94,90 @@ export default function MedicineTable() {
 	const isFiltered = nameFilter || (categoryFilter && categoryFilter !== "ALL") || 
 					  (routeFilter && routeFilter !== "ALL") || (ingredientFilter && ingredientFilter !== "ALL");
 
-	return (
-		<div className="space-y-4">
-			<div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
-				<div className="flex flex-col gap-4">
-					<div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-						<div className="flex items-center gap-3">
-							<h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
-								<FormattedMessage id="medicines" values={{ count: 2 }} />
-							</h3>
-						</div>
-						{isFiltered && (
-							<button
-								onClick={clearFilters}
-								className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 dark:bg-red-900/20 dark:border-red-900/30 dark:text-red-400 transition-colors w-max"
-							>
-								<XMarkIcon className="size-4" />
-								<FormattedMessage id="cancel" />
-							</button>
-						)}
-					</div>
+return (
+        <div className="space-y-4">
+            <div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
+                <div className="flex flex-col gap-4">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                            <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
+                                <FormattedMessage id="medicines" values={{ count: 2 }} />
+                            </h3>
+                        </div>
+                        {isFiltered && (
+                            <button
+                                onClick={clearFilters}
+                                className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 dark:bg-red-900/20 dark:border-red-900/30 dark:text-red-400 transition-colors w-max"
+                            >
+                                <XMarkIcon className="size-4" />
+                                <FormattedMessage id="cancel" />
+                            </button>
+                        )}
+                    </div>
 
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-						<div className="w-full">
-							<input
-								type="text"
-								placeholder={intl.formatMessage({ id: "search" })}
-								value={nameFilter}
-								onChange={(e) => setNameFilter(e.target.value)}
-								className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
-							/>
-						</div>
+                    {/* Contenedor Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        
+                        {/* 1. Input de Búsqueda */}
+                        <div className="w-full flex flex-col gap-1.5">
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                {intl.formatMessage({ id: "name" })}
+                            </label>
+                            <input
+                                type="text"
+                                placeholder={intl.formatMessage({ id: "search" })}
+                                value={nameFilter}
+                                onChange={(e) => setNameFilter(e.target.value)}
+                                className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+                            />
+                        </div>
 
-						<Select
-							options={categoriesOptions}
-							value={categoryFilter}
-							onChange={setCategoryFilter}
-						/>
+                        {/* 2. Select de Categorías */}
+                        <div className="w-full flex flex-col gap-1.5">
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <FormattedMessage id="category" defaultMessage="Categoría" />
+                            </label>
+                            <Select
+                                options={categoriesOptions}
+                                value={categoryFilter}
+                                onChange={setCategoryFilter}
+                            />
+                        </div>
 
-						<Select
-							options={routesOptions}
-							value={routeFilter}
-							onChange={setAdministrationRouteFilter}
-						/>
+                        {/* 3. Select de Vías de Administración */}
+                        <div className="w-full flex flex-col gap-1.5">
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <FormattedMessage id="route" defaultMessage="Vía de Administración" />
+                            </label>
+                            <Select
+                                options={routesOptions}
+                                value={routeFilter}
+                                onChange={setAdministrationRouteFilter}
+                            />
+                        </div>
 
-						<Select
-							options={ingredientsOptions}
-							value={ingredientFilter}
-							onChange={setActiveIngredientFilter}
-						/>
-					</div>
-				</div>
-			</div>
+                        {/* 4. Select de Ingredientes Activos */}
+                        <div className="w-full flex flex-col gap-1.5">
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <FormattedMessage id="active_ingredient" defaultMessage="Ingrediente Activo" />
+                            </label>
+                            <Select
+                                options={ingredientsOptions}
+                                value={ingredientFilter}
+                                onChange={setActiveIngredientFilter}
+                            />
+                        </div>
 
-			<ServerDataTable
-				columns={columns}
-				query={query}
-				queryKeyName="medicines"
-				filter={filter}
-			/>
-		</div>
-	);
+                    </div>
+                </div>
+            </div>
+
+            <ServerDataTable
+                columns={columns}
+                query={query}
+                queryKeyName="medicines"
+                filter={filter}
+            />
+        </div>
+    );
 }

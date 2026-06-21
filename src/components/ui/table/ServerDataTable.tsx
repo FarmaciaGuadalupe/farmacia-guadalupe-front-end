@@ -166,7 +166,7 @@ export function ServerDataTable<TData>({
 									: ""
 							}
 						>
-							{nodes.length >0 ? (
+							{nodes.length > 0 ? (
 								table.getRowModel().rows.map((row) => (
 									<TableRow key={row.id}>
 										{row.getVisibleCells().map((cell) => (
@@ -183,18 +183,20 @@ export function ServerDataTable<TData>({
 									</TableRow>
 								))
 							) : (
-							<TableRow>
-								{/* Quitamos text-center del TableCell porque el div hará el trabajo */}
-								<TableCell className="py-10 dark:text-gray-400">
-									<div className="flex justify-center items-center w-full h-full">
-										{loading
-											? <div className="flex justify-center items-center w-full h-full">
+								<TableRow>
+									<td
+										colSpan={columns.length}
+										className="py-10 px-5 dark:text-gray-400"
+									>
+										<div className="flex justify-center items-center w-full h-full min-h-[150px]">
+											{loading ? (
 												<Loading size="lg" />
-											</div>
-											: "No se encontraron resultados"}
-									</div>
-								</TableCell>
-							</TableRow>
+											) : (
+												"No se encontraron resultados"
+											)}
+										</div>
+									</td>
+								</TableRow>
 							)}
 						</TableBody>
 					</Table>
