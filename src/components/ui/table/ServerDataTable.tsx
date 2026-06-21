@@ -16,6 +16,7 @@ import {
 import { Table, TableBody, TableCell, TableHeader, TableRow } from ".";
 import { useGraphQLPagination } from "../../../hooks/useGraphQLPagination";
 import CursorPaginationControl from "./CursorPaginationControl";
+import Loading from "../loading/Loading";
 
 interface ServerDataTableProps<TData> {
 	columns: ColumnDef<TData, any>[];
@@ -121,7 +122,7 @@ export function ServerDataTable<TData>({
 										<TableCell
 											key={header.id}
 											isHeader
-											className="px-5 py-3 text-start font-medium text-gray-500"
+											className="px-5 py-3 text-start font-medium text-gray-500 dark:text-white"
 										>
 											<div
 												className={
@@ -165,7 +166,7 @@ export function ServerDataTable<TData>({
 									: ""
 							}
 						>
-							{nodes.length > 0 ? (
+							{nodes.length >0 ? (
 								table.getRowModel().rows.map((row) => (
 									<TableRow key={row.id}>
 										{row.getVisibleCells().map((cell) => (
@@ -182,13 +183,18 @@ export function ServerDataTable<TData>({
 									</TableRow>
 								))
 							) : (
-								<TableRow>
-									<TableCell className="text-center py-10">
+							<TableRow>
+								{/* Quitamos text-center del TableCell porque el div hará el trabajo */}
+								<TableCell className="py-10 dark:text-gray-400">
+									<div className="flex justify-center items-center w-full h-full">
 										{loading
-											? "Cargando datos..."
+											? <div className="flex justify-center items-center w-full h-full">
+												<Loading size="lg" />
+											</div>
 											: "No se encontraron resultados"}
-									</TableCell>
-								</TableRow>
+									</div>
+								</TableCell>
+							</TableRow>
 							)}
 						</TableBody>
 					</Table>

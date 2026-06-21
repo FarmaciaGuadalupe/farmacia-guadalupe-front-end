@@ -434,7 +434,7 @@ export default function Sale() {
 			if (data?.createSale?.success) {
 				toast.success(
 					data.createSale.message ||
-						intl.formatMessage({ id: "sale.success.message" }),
+					intl.formatMessage({ id: "sale.success.message" }),
 				);
 
 				const saleSummary: SaleSummary = {
@@ -456,11 +456,11 @@ export default function Sale() {
 							total: item.quantity * price,
 							presentation: item.isFullPresentation
 								? item.medicine.product.presentation?.name || intl.formatMessage({
-										id: "sale.presentation.box",
-									})
+									id: "sale.presentation.box",
+								})
 								: item.medicine.product.unit_of_measure?.name || intl.formatMessage({
-										id: "sale.presentation.unit",
-									}),
+									id: "sale.presentation.unit",
+								}),
 						};
 					}),
 					subtotal,
@@ -497,7 +497,7 @@ export default function Sale() {
 			} else {
 				toast.error(
 					data?.createSale?.message ||
-						intl.formatMessage({ id: "sale.error.save" }),
+					intl.formatMessage({ id: "sale.error.save" }),
 				);
 			}
 		} catch (err) {
@@ -549,6 +549,18 @@ export default function Sale() {
 										}
 										renderInput={(params) => (
 											<TextField
+												sx={{
+													".dark & .MuiInputBase-input": {
+														color: "#9ca3af", // Equivalente a text-gray-400
+													},
+													".dark & .MuiInputLabel-root": {
+														color: "#9ca3af",
+													},
+
+													".dark & .MuiOutlinedInput-notchedOutline": {
+														borderColor: "#4b5563 !important",
+													}
+												}}
 												{...params}
 												label={intl.formatMessage({
 													id: "sale.customer",
@@ -565,9 +577,19 @@ export default function Sale() {
 									sx={{ minWidth: 200 }}
 								>
 									<InputLabel>
-										<FormattedMessage id="sale.type" />
+										<div className="dark:text-gray-400">
+											<FormattedMessage id="sale.type" />
+										</div>
 									</InputLabel>
 									<Select
+										sx={{
+												color: "#9ca3af !important",
+											},
+											// Y este color al icono de la flecha
+											".dark & .MuiSvgIcon-root": {
+												color: "#9ca3af !important",
+											},
+											// Opcional: si quieres cambiar el color del borde en modo oscuro
 										value={saleType}
 										label={intl.formatMessage({
 											id: "sale.type",
@@ -591,7 +613,7 @@ export default function Sale() {
 							</div>
 						</div>
 
-						<div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+						<div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 dark:text-gray-400">
 							<FormControlLabel
 								control={
 									<Switch
@@ -609,6 +631,13 @@ export default function Sale() {
 							{showMedicalData && (
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
 									<TextField
+											},
+											".dark & .MuiInputLabel-root": {
+												color: "#9ca3af",
+											},
+											".dark & .MuiOutlinedInput-notchedOutline": {
+												borderColor: "#4b5563 !important",
+											}
 										label={intl.formatMessage({
 											id: "sale.prescription_number",
 										})}
@@ -627,6 +656,17 @@ export default function Sale() {
 										}
 									/>
 									<TextField
+										sx={{
+											".dark & .MuiInputBase-input": {
+												color: "#9ca3af", // Equivalente a text-gray-400
+											},
+											".dark & .MuiInputLabel-root": {
+												color: "#9ca3af",
+											},
+											".dark & .MuiOutlinedInput-notchedOutline": {
+												borderColor: "#4b5563 !important",
+											}
+										}}
 										label={intl.formatMessage({
 											id: "sale.doctor_name",
 										})}
@@ -671,6 +711,24 @@ export default function Sale() {
 							}}
 							renderInput={(params) => (
 								<TextField
+									sx={{
+										".dark & .MuiInputBase-input": {
+											color: "#9ca3af", // Equivalente a text-gray-400
+										},
+										".dark & .MuiInputLabel-root": {
+											color: "#9ca3af",
+										},
+
+										".dark & .MuiOutlinedInput-notchedOutline": {
+											borderColor: "#4b5563 !important",
+										},
+										".dark & .MuiAutocomplete-clearIndicator": {
+											color: "#9ca3af !important",
+										},
+										".dark & .MuiAutocomplete-popupIndicator": {
+											color: "#9ca3af !important",
+										}
+									}}
 									{...params}
 									label={intl.formatMessage({
 										id: "sale.search_placeholder",
@@ -726,9 +784,9 @@ export default function Sale() {
 											const price =
 												item.isFullPresentation
 													? item.medicine.product
-															.price_full_presentation
+														.price_full_presentation
 													: item.medicine.product
-															.price_per_unit;
+														.price_per_unit;
 											const lineTotal =
 												price * item.quantity;
 
@@ -741,10 +799,10 @@ export default function Sale() {
 														{item.medicine.name}
 														{item.medicine
 															.requires_prescription && (
-															<span className="ml-2 inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
-																Rx
-															</span>
-														)}
+																<span className="ml-2 inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
+																	Rx
+																</span>
+															)}
 													</td>
 													<td className="px-4 py-3">
 														{item.batch ? (
@@ -799,21 +857,33 @@ export default function Sale() {
 																<span className="text-xs">
 																	{item.isFullPresentation
 																		? item.medicine.product.presentation?.name || intl.formatMessage(
-																				{
-																					id: "sale.presentation.box",
-																				},
-																			)
+																			{
+																				id: "sale.presentation.box",
+																			},
+																		)
 																		: item.medicine.product.unit_of_measure?.name || intl.formatMessage(
-																				{
-																					id: "sale.presentation.unit",
-																				},
-																			)}
+																			{
+																				id: "sale.presentation.unit",
+																			},
+																		)}
 																</span>
 															}
 														/>
 													</td>
 													<td className="px-4 py-3 w-24">
 														<TextField
+															sx={{
+																".dark & .MuiInputBase-input": {
+																	color: "#9ca3af", // Equivalente a text-gray-400
+																},
+																".dark & .MuiInputLabel-root": {
+																	color: "#9ca3af",
+																},
+
+																".dark & .MuiOutlinedInput-notchedOutline": {
+																	borderColor: "#4b5563 !important",
+																}
+															}}
 															type="number"
 															size="small"
 															slotProps={{
@@ -923,9 +993,25 @@ export default function Sale() {
 									<div className="grid grid-cols-2 gap-3 mb-3">
 										<FormControl size="small" fullWidth>
 											<InputLabel>
-												<FormattedMessage id="sale.payment_method" />
+												<div className="dark:text-gray-400">
+													<FormattedMessage id="sale.payment_method" />
+												</div>
 											</InputLabel>
 											<Select
+												sx={{
+													// Si hay un ancestro con clase .dark, aplica este color al texto
+													".dark & .MuiSelect-select": {
+														color: "#9ca3af !important",
+													},
+													// Y este color al icono de la flecha
+													".dark & .MuiSvgIcon-root": {
+														color: "#9ca3af !important",
+													},
+													// Opcional: si quieres cambiar el color del borde en modo oscuro
+													".dark & .MuiOutlinedInput-notchedOutline": {
+														borderColor: "#4b5563 !important",
+													}
+												}}
 												value={payment.paymentMethodId}
 												label={intl.formatMessage({
 													id: "sale.payment_method",
@@ -960,6 +1046,18 @@ export default function Sale() {
 											</Select>
 										</FormControl>
 										<TextField
+											sx={{
+												".dark & .MuiInputBase-input": {
+													color: "#9ca3af", // Equivalente a text-gray-400
+												},
+												".dark & .MuiInputLabel-root": {
+													color: "#9ca3af",
+												},
+
+												".dark & .MuiOutlinedInput-notchedOutline": {
+													borderColor: "#4b5563 !important",
+												}
+											}}
 											label={intl.formatMessage({
 												id: "sale.amount",
 											})}
@@ -979,6 +1077,18 @@ export default function Sale() {
 									{payment.paymentMethodId !== 1 &&
 										payment.paymentMethodId !== "" && (
 											<TextField
+												sx={{
+													".dark & .MuiInputBase-input": {
+														color: "#9ca3af", // Equivalente a text-gray-400
+													},
+													".dark & .MuiInputLabel-root": {
+														color: "#9ca3af",
+													},
+
+													".dark & .MuiOutlinedInput-notchedOutline": {
+														borderColor: "#4b5563 !important",
+													}
+												}}
 												label={intl.formatMessage({
 													id: "sale.reference_voucher",
 												})}
@@ -1024,7 +1134,7 @@ export default function Sale() {
 						</div>
 
 						<button
-							className="w-full mt-6 px-4 py-3 text-white rounded-xl transition-colors flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-300 text-lg font-bold"
+							className="w-full mt-6 px-4 py-3 text-white rounded-xl transition-colors flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-300 text-lg font-bold dark:disabled:bg-sky-950 dark:disabled:text-gray-400"
 							onClick={handleProcessSale}
 							disabled={
 								isSubmitting ||
@@ -1035,8 +1145,8 @@ export default function Sale() {
 							{isSubmitting
 								? intl.formatMessage({ id: "sale.processing" })
 								: intl.formatMessage({
-										id: "sale.process_sale",
-									})}
+									id: "sale.process_sale",
+								})}
 						</button>
 					</div>
 				</div>
