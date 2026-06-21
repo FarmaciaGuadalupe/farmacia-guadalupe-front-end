@@ -7,16 +7,12 @@ import Box from "@mui/material/Box";
 import { FormattedMessage, useIntl } from "react-intl";
 
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-// ComponentCard y PageMeta no se estaban usando en el snippet original,
-// pero los dejo por si los necesitas.
 import Brands from "../../components/ui/catalogs/Brands";
 import Categories from "../../components/ui/catalogs/Categories";
 import ActiveIngredients from "../../components/ui/catalogs/ActiveIngredients";
 import AdministrationRoutes from "../../components/ui/catalogs/AdministrationRoutes";
 import SupplierTypes from "../../components/ui/catalogs/SupplierTypes";
 import Suppliers from "../../components/ui/catalogs/Suppliers";
-import Medicines from "../../components/ui/catalogs/Medicines";
-import Sales from "../../components/ui/catalogs/Sales";
 
 interface TabPanelProps {
 	children?: React.ReactNode;
@@ -116,6 +112,23 @@ export default function Catalogs() {
 							scrollButtons
 							allowScrollButtonsMobile
 							aria-label="scrollable auto tabs example"
+							sx={{
+								".dark & .MuiTab-root": {
+									color: "#9ca3af", // Gris (text-gray-400)
+								},
+								
+								".dark & .MuiTab-root.Mui-selected": {
+									color: "#ffffff !important", // Blanco para que resalte
+								},
+
+								".dark & .MuiTabScrollButton-root": {
+									color: "#9ca3af",
+								},
+
+								".dark & .MuiTabs-indicator": {
+									backgroundColor: "#ffffff", 
+								}
+							}}
 						>
 							{items.map((item, index) => (
 								<Tab

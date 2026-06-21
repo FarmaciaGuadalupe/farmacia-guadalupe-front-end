@@ -23,6 +23,8 @@ import {
 } from "../utils/generateSaleVoucher";
 import { nicaDate, nowInNica } from "../utils/dateUtils";
 import SimpleModal from "../components/ui/utils/SimpleModal";
+import { driver } from "driver.js";
+import "driver.js/dist/driver.css";
 
 // --- GRAPHQL DEFINITIONS ---
 const GET_CUSTOMERS = gql`
@@ -434,7 +436,7 @@ export default function Sale() {
 			if (data?.createSale?.success) {
 				toast.success(
 					data.createSale.message ||
-						intl.formatMessage({ id: "sale.success.message" }),
+					intl.formatMessage({ id: "sale.success.message" }),
 				);
 
 				const saleSummary: SaleSummary = {
@@ -456,11 +458,11 @@ export default function Sale() {
 							total: item.quantity * price,
 							presentation: item.isFullPresentation
 								? item.medicine.product.presentation?.name || intl.formatMessage({
-										id: "sale.presentation.box",
-									})
+									id: "sale.presentation.box",
+								})
 								: item.medicine.product.unit_of_measure?.name || intl.formatMessage({
-										id: "sale.presentation.unit",
-									}),
+									id: "sale.presentation.unit",
+								}),
 						};
 					}),
 					subtotal,
@@ -497,13 +499,62 @@ export default function Sale() {
 			} else {
 				toast.error(
 					data?.createSale?.message ||
-						intl.formatMessage({ id: "sale.error.save" }),
+					intl.formatMessage({ id: "sale.error.save" }),
 				);
 			}
 		} catch (err) {
 			console.error(err);
 			toast.error(intl.formatMessage({ id: "sale.error.process" }));
 		}
+	};
+
+	const startTour = () => {
+		const driverObj = driver({
+			showProgress: true,
+			nextBtnText: "Siguiente",
+			prevBtnText: "Anterior",
+			doneBtnText: "Finalizar",
+			steps: [
+				{
+					element: "#tour-tipo-venta",
+					popover: {
+						title: "Tipo de Venta",
+						description: "Cambia el tipo de venta. Si es con receta, te pediremos los datos médicos.",
+						side: "bottom",
+						align: "start",
+					},
+				},
+				{
+					element: "#tour-busqueda-producto",
+					popover: {
+						title: "Búsqueda de Productos",
+						description: "Busca productos por nombre o código de barras. Selecciona uno para ver sus lotes disponibles.",
+						side: "bottom",
+						align: "start",
+					},
+				},
+				{
+					element: "#tour-pagos",
+					popover: {
+						title: "Métodos de Pago",
+						description: "Puedes agregar múltiples métodos de pago (ej. Efectivo y Tarjeta) para cubrir el total.",
+						side: "left",
+						align: "start",
+					},
+				},
+				{
+					element: "#tour-procesar",
+					popover: {
+						title: "Procesar Venta",
+						description: "Una vez que el total esté cubierto, haz clic aquí para facturar e imprimir el ticket.",
+						side: "top",
+						align: "start",
+					},
+				},
+			],
+		});
+
+		driverObj.drive();
 	};
 
 	const productSearchOptions = useMemo(() => {
@@ -521,9 +572,32 @@ export default function Sale() {
 
 	return (
 		<div className="pb-20">
-			<PageBreadcrumb
-				pageTitle={intl.formatMessage({ id: "sale.page_title" })}
-			/>
+			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+				<div className="flex-1 [&>div]:mb-0">
+					<PageBreadcrumb
+						pageTitle={intl.formatMessage({ id: "sale.page_title" })}
+					/>
+				</div>
+				<button
+					onClick={startTour}
+					className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-xl shadow-sm hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/[0.03] transition-colors cursor-pointer"
+				>
+					<svg
+						className="h-5 w-5 text-gray-500 dark:text-gray-400"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke="currentColor"
+						strokeWidth={2}
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+						/>
+					</svg>
+					Guía rápida
+				</button>
+			</div>
 
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 				<div className="lg:col-span-2 space-y-6">
@@ -549,6 +623,18 @@ export default function Sale() {
 										}
 										renderInput={(params) => (
 											<TextField
+												sx={{
+													".dark & .MuiInputBase-input": {
+														color: "#9ca3af", // Equivalente a text-gray-400
+													},
+													".dark & .MuiInputLabel-root": {
+														color: "#9ca3af",
+													},
+
+													".dark & .MuiOutlinedInput-notchedOutline": {
+														borderColor: "#4b5563 !important",
+													}
+												}}
 												{...params}
 												label={intl.formatMessage({
 													id: "sale.customer",
@@ -561,13 +647,30 @@ export default function Sale() {
 								</div>
 
 								<FormControl
+									id="tour-tipo-venta"
 									size="small"
 									sx={{ minWidth: 200 }}
 								>
 									<InputLabel>
-										<FormattedMessage id="sale.type" />
+										<div className="dark:text-gray-400">
+											<FormattedMessage id="sale.type" />
+										</div>
 									</InputLabel>
 									<Select
+										sx={{
+											// Si hay un ancestro con clase .dark, aplica este color al texto
+											".dark & .MuiSelect-select": {
+												color: "#9ca3af !important",
+											},
+											// Y este color al icono de la flecha
+											".dark & .MuiSvgIcon-root": {
+												color: "#9ca3af !important",
+											},
+											// Opcional: si quieres cambiar el color del borde en modo oscuro
+											".dark & .MuiOutlinedInput-notchedOutline": {
+												borderColor: "#4b5563 !important",
+											}
+										}}
 										value={saleType}
 										label={intl.formatMessage({
 											id: "sale.type",
@@ -591,7 +694,7 @@ export default function Sale() {
 							</div>
 						</div>
 
-						<div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+						<div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 dark:text-gray-400">
 							<FormControlLabel
 								control={
 									<Switch
@@ -609,6 +712,17 @@ export default function Sale() {
 							{showMedicalData && (
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
 									<TextField
+										sx={{
+											".dark & .MuiInputBase-input": {
+												color: "#9ca3af", // Equivalente a text-gray-400
+											},
+											".dark & .MuiInputLabel-root": {
+												color: "#9ca3af",
+											},
+											".dark & .MuiOutlinedInput-notchedOutline": {
+												borderColor: "#4b5563 !important",
+											}
+										}}
 										label={intl.formatMessage({
 											id: "sale.prescription_number",
 										})}
@@ -627,6 +741,17 @@ export default function Sale() {
 										}
 									/>
 									<TextField
+										sx={{
+											".dark & .MuiInputBase-input": {
+												color: "#9ca3af", // Equivalente a text-gray-400
+											},
+											".dark & .MuiInputLabel-root": {
+												color: "#9ca3af",
+											},
+											".dark & .MuiOutlinedInput-notchedOutline": {
+												borderColor: "#4b5563 !important",
+											}
+										}}
 										label={intl.formatMessage({
 											id: "sale.doctor_name",
 										})}
@@ -655,34 +780,53 @@ export default function Sale() {
 							/>
 						</h2>
 
-						<Autocomplete
-							options={productSearchOptions}
-							getOptionLabel={(opt: Medicine | string) => {
-								if (typeof opt === "string") return opt;
-								return `${opt.product?.barcode || "N/A"} - ${opt.name}`;
-							}}
-							inputValue={searchQuery}
-							onInputChange={(_, newInputValue) =>
-								setSearchQuery(newInputValue)
-							}
-							onChange={(_, val) => {
-								if (val && typeof val !== "string")
-									handleProductSelect(val);
-							}}
-							renderInput={(params) => (
-								<TextField
-									{...params}
-									label={intl.formatMessage({
-										id: "sale.search_placeholder",
-									})}
-									variant="outlined"
-									autoFocus
-								/>
-							)}
-							className="mb-6"
-							freeSolo
-							clearOnBlur
-						/>
+						<div id="tour-busqueda-producto" className="mb-6">
+							<Autocomplete
+								options={productSearchOptions}
+								getOptionLabel={(opt: Medicine | string) => {
+									if (typeof opt === "string") return opt;
+									return `${opt.product?.barcode || "N/A"} - ${opt.name}`;
+								}}
+								inputValue={searchQuery}
+								onInputChange={(_, newInputValue) =>
+									setSearchQuery(newInputValue)
+								}
+								onChange={(_, val) => {
+									if (val && typeof val !== "string")
+										handleProductSelect(val);
+								}}
+								renderInput={(params) => (
+									<TextField
+										sx={{
+											".dark & .MuiInputBase-input": {
+												color: "#9ca3af", // Equivalente a text-gray-400
+											},
+											".dark & .MuiInputLabel-root": {
+												color: "#9ca3af",
+											},
+
+											".dark & .MuiOutlinedInput-notchedOutline": {
+												borderColor: "#4b5563 !important",
+											},
+											".dark & .MuiAutocomplete-clearIndicator": {
+												color: "#9ca3af !important",
+											},
+											".dark & .MuiAutocomplete-popupIndicator": {
+												color: "#9ca3af !important",
+											}
+										}}
+										{...params}
+										label={intl.formatMessage({
+											id: "sale.search_placeholder",
+										})}
+										variant="outlined"
+										autoFocus
+									/>
+								)}
+								freeSolo
+								clearOnBlur
+							/>
+						</div>
 
 						<div className="overflow-x-auto">
 							<table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
@@ -726,9 +870,9 @@ export default function Sale() {
 											const price =
 												item.isFullPresentation
 													? item.medicine.product
-															.price_full_presentation
+														.price_full_presentation
 													: item.medicine.product
-															.price_per_unit;
+														.price_per_unit;
 											const lineTotal =
 												price * item.quantity;
 
@@ -741,10 +885,10 @@ export default function Sale() {
 														{item.medicine.name}
 														{item.medicine
 															.requires_prescription && (
-															<span className="ml-2 inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
-																Rx
-															</span>
-														)}
+																<span className="ml-2 inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
+																	Rx
+																</span>
+															)}
 													</td>
 													<td className="px-4 py-3">
 														{item.batch ? (
@@ -799,21 +943,33 @@ export default function Sale() {
 																<span className="text-xs">
 																	{item.isFullPresentation
 																		? item.medicine.product.presentation?.name || intl.formatMessage(
-																				{
-																					id: "sale.presentation.box",
-																				},
-																			)
+																			{
+																				id: "sale.presentation.box",
+																			},
+																		)
 																		: item.medicine.product.unit_of_measure?.name || intl.formatMessage(
-																				{
-																					id: "sale.presentation.unit",
-																				},
-																			)}
+																			{
+																				id: "sale.presentation.unit",
+																			},
+																		)}
 																</span>
 															}
 														/>
 													</td>
 													<td className="px-4 py-3 w-24">
 														<TextField
+															sx={{
+																".dark & .MuiInputBase-input": {
+																	color: "#9ca3af", // Equivalente a text-gray-400
+																},
+																".dark & .MuiInputLabel-root": {
+																	color: "#9ca3af",
+																},
+
+																".dark & .MuiOutlinedInput-notchedOutline": {
+																	borderColor: "#4b5563 !important",
+																}
+															}}
 															type="number"
 															size="small"
 															slotProps={{
@@ -901,109 +1057,151 @@ export default function Sale() {
 							</div>
 						</div>
 
-						<h3 className="text-md font-medium text-gray-800 dark:text-white mb-3">
-							<FormattedMessage id="sale.payment_methods" />
-						</h3>
-						<div className="space-y-4">
-							{payments.map((payment) => (
-								<div
-									key={payment.id}
-									className="relative p-4 border border-gray-100 rounded-lg bg-gray-50 dark:bg-gray-800/50 dark:border-gray-700"
-								>
-									{payments.length > 1 && (
-										<button
-											onClick={() =>
-												removePaymentRow(payment.id)
-											}
-											className="absolute -top-2 -right-2 bg-red-100 text-red-600 rounded-full p-1 hover:bg-red-200 transition-colors"
-										>
-											<TrashIcon className="h-4 w-4" />
-										</button>
-									)}
-									<div className="grid grid-cols-2 gap-3 mb-3">
-										<FormControl size="small" fullWidth>
-											<InputLabel>
-												<FormattedMessage id="sale.payment_method" />
-											</InputLabel>
-											<Select
-												value={payment.paymentMethodId}
-												label={intl.formatMessage({
-													id: "sale.payment_method",
-												})}
-												onChange={(e) =>
-													updatePaymentRow(
-														payment.id,
-														"paymentMethodId",
-														e.target.value as number,
-													)
+						<div id="tour-pagos">
+							<h3 className="text-md font-medium text-gray-800 dark:text-white mb-3">
+								<FormattedMessage id="sale.payment_methods" />
+							</h3>
+							<div className="space-y-4">
+								{payments.map((payment) => (
+									<div
+										key={payment.id}
+										className="relative p-4 border border-gray-100 rounded-lg bg-gray-50 dark:bg-gray-800/50 dark:border-gray-700"
+									>
+										{payments.length > 1 && (
+											<button
+												onClick={() =>
+													removePaymentRow(payment.id)
 												}
+												className="absolute -top-2 -right-2 bg-red-100 text-red-600 rounded-full p-1 hover:bg-red-200 transition-colors"
 											>
-												{paymentMethodsData?.paymentMethods?.nodes
-													?.filter(
-														(pm: PaymentMethod) =>
-															pm.isActive,
-													)
-													.map(
-														(pm: PaymentMethod) => (
-															<MenuItem
-																key={
-																	pm.paymentMethodId
-																}
-																value={
-																	pm.paymentMethodId
-																}
-															>
-																{pm.name}
-															</MenuItem>
-														),
-													)}
-											</Select>
-										</FormControl>
-										<TextField
-											label={intl.formatMessage({
-												id: "sale.amount",
-											})}
-											type="number"
-											size="small"
-											fullWidth
-											value={payment.amount}
-											onChange={(e) =>
-												updatePaymentRow(
-													payment.id,
-													"amount",
-													e.target.value,
-												)
-											}
-										/>
-									</div>
-									{payment.paymentMethodId !== 1 &&
-										payment.paymentMethodId !== "" && (
+												<TrashIcon className="h-4 w-4" />
+											</button>
+										)}
+										<div className="grid grid-cols-2 gap-3 mb-3">
+											<FormControl size="small" fullWidth>
+												<InputLabel>
+													<div className="dark:text-gray-400">
+														<FormattedMessage id="sale.payment_method" />
+													</div>
+												</InputLabel>
+												<Select
+													sx={{
+														// Si hay un ancestro con clase .dark, aplica este color al texto
+														".dark & .MuiSelect-select": {
+															color: "#9ca3af !important",
+														},
+														// Y este color al icono de la flecha
+														".dark & .MuiSvgIcon-root": {
+															color: "#9ca3af !important",
+														},
+														// Opcional: si quieres cambiar el color del borde en modo oscuro
+														".dark & .MuiOutlinedInput-notchedOutline": {
+															borderColor: "#4b5563 !important",
+														}
+													}}
+													value={payment.paymentMethodId}
+													label={intl.formatMessage({
+														id: "sale.payment_method",
+													})}
+													onChange={(e) =>
+														updatePaymentRow(
+															payment.id,
+															"paymentMethodId",
+															e.target.value as number,
+														)
+													}
+												>
+													{paymentMethodsData?.paymentMethods?.nodes
+														?.filter(
+															(pm: PaymentMethod) =>
+																pm.isActive,
+														)
+														.map(
+															(pm: PaymentMethod) => (
+																<MenuItem
+																	key={
+																		pm.paymentMethodId
+																	}
+																	value={
+																		pm.paymentMethodId
+																	}
+																>
+																	{pm.name}
+																</MenuItem>
+															),
+														)}
+												</Select>
+											</FormControl>
 											<TextField
+												sx={{
+													".dark & .MuiInputBase-input": {
+														color: "#9ca3af", // Equivalente a text-gray-400
+													},
+													".dark & .MuiInputLabel-root": {
+														color: "#9ca3af",
+													},
+
+													".dark & .MuiOutlinedInput-notchedOutline": {
+														borderColor: "#4b5563 !important",
+													}
+												}}
 												label={intl.formatMessage({
-													id: "sale.reference_voucher",
+													id: "sale.amount",
 												})}
+												type="number"
 												size="small"
 												fullWidth
-												value={
-													payment.transactionReference
-												}
+												value={payment.amount}
 												onChange={(e) =>
 													updatePaymentRow(
 														payment.id,
-														"transactionReference",
+														"amount",
 														e.target.value,
 													)
 												}
 											/>
-										)}
-								</div>
-							))}
-							<button
-								onClick={addPaymentRow}
-								className="w-full items-center justify-center px-4 py-2 rounded-xl transition-colors flex items-center gap-2 border border-solid border-gray-300 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/[0.03] text-gray-700"
-							>
-								<FormattedMessage id="sale.add_payment" />
-							</button>
+										</div>
+										{payment.paymentMethodId !== 1 &&
+											payment.paymentMethodId !== "" && (
+												<TextField
+													sx={{
+														".dark & .MuiInputBase-input": {
+															color: "#9ca3af", // Equivalente a text-gray-400
+														},
+														".dark & .MuiInputLabel-root": {
+															color: "#9ca3af",
+														},
+
+														".dark & .MuiOutlinedInput-notchedOutline": {
+															borderColor: "#4b5563 !important",
+														}
+													}}
+													label={intl.formatMessage({
+														id: "sale.reference_voucher",
+													})}
+													size="small"
+													fullWidth
+													value={
+														payment.transactionReference
+													}
+													onChange={(e) =>
+														updatePaymentRow(
+															payment.id,
+															"transactionReference",
+															e.target.value,
+														)
+													}
+												/>
+											)}
+									</div>
+								))}
+								<button
+									onClick={addPaymentRow}
+									className="w-full items-center justify-center px-4 py-2 rounded-xl transition-colors flex items-center gap-2 border border-solid border-gray-300 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-white/[0.03] text-gray-700"
+								>
+									<FormattedMessage id="sale.add_payment" />
+								</button>
+							</div>
 						</div>
 
 						<div
@@ -1024,7 +1222,8 @@ export default function Sale() {
 						</div>
 
 						<button
-							className="w-full mt-6 px-4 py-3 text-white rounded-xl transition-colors flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-300 text-lg font-bold"
+							id="tour-procesar"
+							className="w-full mt-6 px-4 py-3 text-white rounded-xl transition-colors flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 disabled:bg-brand-300 text-lg font-bold dark:disabled:bg-sky-950 dark:disabled:text-gray-400"
 							onClick={handleProcessSale}
 							disabled={
 								isSubmitting ||
@@ -1035,8 +1234,8 @@ export default function Sale() {
 							{isSubmitting
 								? intl.formatMessage({ id: "sale.processing" })
 								: intl.formatMessage({
-										id: "sale.process_sale",
-									})}
+									id: "sale.process_sale",
+								})}
 						</button>
 					</div>
 				</div>

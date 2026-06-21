@@ -183,8 +183,10 @@ export default function MonthlySalesChart() {
 					<FormattedMessage id="sales.summary" />
 				</h3>
 				<div className="flex flex-wrap items-center gap-3">
-					<ChartTab selected={chartType} onSelect={setChartType} />
-					<div className="relative inline-flex items-center">
+					<div id="tour-chart-tabs">
+						<ChartTab selected={chartType} onSelect={setChartType} />
+					</div>
+					<div id="tour-chart-picker" className="relative inline-flex items-center">
 						<CalenderIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-gray-500 dark:text-gray-400 pointer-events-none z-10" />
 						<input
 							ref={datePickerRef}
@@ -198,7 +200,7 @@ export default function MonthlySalesChart() {
 			</div>
 
 			<div className="max-w-full overflow-x-auto custom-scrollbar">
-				<div className="-ml-5 min-w-[650px] xl:min-w-full pl-2">
+				<div id="tour-sales-graph" className="-ml-5 min-w-[650px] xl:min-w-full pl-2">
 					{loading ? (
 						<div className="h-75">
 							<Loading className="h-[210px]" />

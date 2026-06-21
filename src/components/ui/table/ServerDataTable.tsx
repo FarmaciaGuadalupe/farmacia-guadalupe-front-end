@@ -16,6 +16,7 @@ import {
 import { Table, TableBody, TableCell, TableHeader, TableRow } from ".";
 import { useGraphQLPagination } from "../../../hooks/useGraphQLPagination";
 import CursorPaginationControl from "./CursorPaginationControl";
+import Loading from "../loading/Loading";
 
 interface ServerDataTableProps<TData> {
 	columns: ColumnDef<TData, any>[];
@@ -121,7 +122,7 @@ export function ServerDataTable<TData>({
 										<TableCell
 											key={header.id}
 											isHeader
-											className="px-5 py-3 text-start font-medium text-gray-500"
+											className="px-5 py-3 text-start font-medium text-gray-500 dark:text-white"
 										>
 											<div
 												className={
@@ -183,11 +184,18 @@ export function ServerDataTable<TData>({
 								))
 							) : (
 								<TableRow>
-									<TableCell className="text-center py-10">
-										{loading
-											? "Cargando datos..."
-											: "No se encontraron resultados"}
-									</TableCell>
+									<td
+										colSpan={columns.length}
+										className="py-10 px-5 dark:text-gray-400"
+									>
+										<div className="flex justify-center items-center w-full h-full min-h-[150px]">
+											{loading ? (
+												<Loading size="lg" />
+											) : (
+												"No se encontraron resultados"
+											)}
+										</div>
+									</td>
 								</TableRow>
 							)}
 						</TableBody>
