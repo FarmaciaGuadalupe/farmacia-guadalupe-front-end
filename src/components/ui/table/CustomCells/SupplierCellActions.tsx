@@ -19,37 +19,43 @@ import {
 
 import CellWithDrawer from "../CellWithDrawer";
 import SimpleModal from "../../../ui/utils/SimpleModal";
-import EditBrand from "../CustomDrawers/EditBrand";
+import EditSupplier from "../CustomDrawers/EditSupplier";
 
-const TOGGLE_BRAND_STATUS_MUTATION = gql`
-	mutation ToggleBrandStatus($id_brand: Int!) {
-		toggleBrandStatus(id_brand: $id_brand) {
-			id_brand
-			name
+const UPDATE_SUPPLIER_STATUS_MUTATION = gql`
+	mutation ToggleSupplierStatus($id: Int!, $isActive: Boolean) {
+		updateSupplier(id: $id, isActive: $isActive) {
+			supplier_id
 			is_active
 		}
 	}
 `;
 
-interface BrandData {
-	id_brand: string | number;
-	name: string;
-	contact_phone?: string;
-	contact_email?: string;
-	logo_url?: string;
+interface SupplierData {
+	supplier_id: string | number;
+	company_name?: string;
+	tax_id?: string;
+	contact_name?: string;
+	phone?: string;
+	address?: string;
+	email?: string;
+	website?: string;
 	is_active?: boolean;
+	type?: {
+		supplier_type_id: string | number;
+		type_name: string;
+	};
 }
 
-interface EditBrandDrawerProps {
+interface EditSupplierDrawerProps {
 	row: {
-		original: BrandData;
+		original: SupplierData;
 	};
 	onClose: () => void;
 }
 
 interface ToggleActivatedModalProps {
 	row: {
-		original: BrandData;
+		original: SupplierData;
 	};
 	onClose: () => void;
 }
@@ -61,49 +67,50 @@ interface SetStatusLevelProps {
 interface MenuItem {
 	showWhen: boolean;
 	label: React.ReactNode;
-	drawer: React.ComponentType<{ row: { original: BrandData }; onClose: () => void }>;
+	drawer: React.ComponentType<{
+		row: { original: SupplierData };
+		onClose: () => void;
+	}>;
 }
 
-interface BrandCellActionsProps {
+interface SupplierCellActionsProps {
 	row: {
-		original: BrandData;
+		original: SupplierData;
 	};
 }
 
-const EditBrandDrawer = ({ row, onClose }: EditBrandDrawerProps) => {
+const EditSupplierDrawer = ({ row, onClose }: EditSupplierDrawerProps) => {
 	const intl = useIntl();
 
 	return (
 		<CellWithDrawer
 			isOpen={true}
 			onClose={onClose}
-			title={intl.formatMessage({ id: "brand.edit" })}
+			title={intl.formatMessage({ id: "supplier.edit" })}
 			widthClass="w-150"
 		>
-			<EditBrand row={row} onClose={onClose} />
+			<EditSupplier row={row} onClose={onClose} />
 		</CellWithDrawer>
 	);
 };
 
 const ToggleActivatedModal = ({ row, onClose }: ToggleActivatedModalProps) => {
 	const intl = useIntl();
-	// Asegurarse de extraer id_brand
-	const { id_brand, is_active, name } = row.original;
+	const { supplier_id, is_active, company_name } = row.original;
 
-	// 3. CONFIGURAR EL HOOK useMutation
-	const [toggleStatus, { loading }] = useMutation(
-		TOGGLE_BRAND_STATUS_MUTATION,
+	const [updateStatus, { loading }] = useMutation(
+		UPDATE_SUPPLIER_STATUS_MUTATION,
 		{
-			// Solo necesitas pasar el nombre del query o el objeto gql
-			refetchQueries: ["GetBrands"],
+			refetchQueries: ["GetSuppliers"],
 			onCompleted: () => onClose(),
-		},
+		}
 	);
 
 	const handleConfirm = () => {
-		toggleStatus({
+		updateStatus({
 			variables: {
-				id_brand: parseInt(id_brand), // Asegurar que sea entero según tu schema
+				id: parseInt(String(supplier_id), 10),
+				isActive: !is_active,
 			},
 		});
 	};
@@ -115,14 +122,10 @@ const ToggleActivatedModal = ({ row, onClose }: ToggleActivatedModalProps) => {
 			title={
 				intl.formatMessage({
 					id: is_active ? "deactivate" : "activate",
-				}) + ` ${name}`
+				}) + ` ${company_name}`
 			}
 		>
 			<p>{intl.formatMessage({ id: "confirm_action_message" })}</p>
-
-			{/* {error && (
-        <p className="text-red-500 text-sm mt-2">Error: {error.message}</p>
-      )} */}
 
 			<div className="mt-6 flex justify-end gap-3">
 				<button
@@ -141,7 +144,7 @@ const ToggleActivatedModal = ({ row, onClose }: ToggleActivatedModalProps) => {
 						is_active
 							? "bg-red-600 hover:bg-red-700"
 							: "bg-green-600 hover:bg-green-700",
-						loading && "opacity-70 cursor-not-allowed",
+						loading && "opacity-70 cursor-not-allowed"
 					)}
 				>
 					{loading ? (
@@ -177,7 +180,7 @@ const SetStatusLevel = ({ is_active }: SetStatusLevelProps) => {
 	);
 };
 
-export const BrandCellActions = ({ row }: BrandCellActionsProps) => {
+export const SupplierCellActions = ({ row }: SupplierCellActionsProps) => {
 	const { original } = row;
 	const { is_active } = original;
 	const [activeItem, setActiveItem] = useState<MenuItem | null>(null);
@@ -193,7 +196,7 @@ export const BrandCellActions = ({ row }: BrandCellActionsProps) => {
 					</span>
 				</Fragment>
 			),
-			drawer: EditBrandDrawer,
+			drawer: EditSupplierDrawer,
 		},
 		{
 			showWhen: true,
@@ -205,8 +208,6 @@ export const BrandCellActions = ({ row }: BrandCellActionsProps) => {
 	const renderItems = items.filter((i) => i.showWhen);
 	if (renderItems.length === 0) return null;
 
-	// return <EllipsisHorizontalIcon className="h-6 w-6 text-gray-500 hover:text-gray-700 cursor-pointer" />;
-
 	return (
 		<Fragment>
 			<div className="flex justify-center overflow-visible z-[110]">
@@ -214,33 +215,35 @@ export const BrandCellActions = ({ row }: BrandCellActionsProps) => {
 					<MenuButton className="flex items-center justify-center size-8 rounded-full transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400">
 						<EllipsisHorizontalIcon className="size-5" />
 					</MenuButton>
-					
+
 					<Transition
-						as={MenuItems}
+						as={Fragment}
 						enter="transition ease-out duration-100"
 						enterFrom="opacity-0 translate-y-2 scale-95"
 						enterTo="opacity-100 translate-y-0 scale-100"
 						leave="transition ease-in duration-75"
 						leaveFrom="opacity-100 translate-y-0 scale-100"
 						leaveTo="opacity-0 translate-y-2 scale-95"
-						className="absolute z-[100] mt-1.5 min-w-[10rem] rounded-lg border border-gray-300 bg-white py-1 shadow-lg outline-none focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:shadow-none ltr:right-0 rtl:left-0 right-0"
 					>
-						{renderItems.map((item, index) => (
-							<MenuItem as="div" key={index}>
-								{({ focus }) => (
-									<button
-										className={clsx(
-											"flex h-9 w-full items-center space-x-3 px-3 tracking-wide outline-none transition-colors",
-											"text-gray-700 dark:text-gray-300",
-											focus && "bg-gray-100 !text-gray-900 dark:bg-gray-700 dark:!text-white"
-										)}
-										onClick={() => setActiveItem(item)}
-									>
-										{item.label}
-									</button>
-								)}
-							</MenuItem>
-						))}
+						<MenuItems className="absolute z-[100] mt-1.5 min-w-[10rem] rounded-lg border border-gray-300 bg-white py-1 shadow-lg outline-none focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:shadow-none ltr:right-0 rtl:left-0 right-0">
+							{renderItems.map((item, index) => (
+								<MenuItem as="div" key={index}>
+									{({ focus }) => (
+										<button
+											className={clsx(
+												"flex h-9 w-full items-center space-x-3 px-3 tracking-wide outline-none transition-colors",
+												"text-gray-700 dark:text-gray-300",
+												focus &&
+													"bg-gray-100 !text-gray-900 dark:bg-gray-700 dark:!text-white"
+											)}
+											onClick={() => setActiveItem(item)}
+										>
+											{item.label}
+										</button>
+									)}
+								</MenuItem>
+							))}
+						</MenuItems>
 					</Transition>
 				</Menu>
 			</div>
