@@ -4,10 +4,10 @@ import { useState } from "react";
 // Local imports
 import { useIntl } from "react-intl";
 import CellWithDrawer from "../table/CellWithDrawer";
-import AddNewBrand from "../table/CustomDrawers/AddNewBrand";
+import AddNewAdministrationRoute from "../table/CustomDrawers/AddNewAdministrationRoute";
 import AdministrationRoutesTable from "../../tables/BasicTables/AdministrationRoutesTable";
 
-const AddNewBrandDrawer = ({ onClose }: any) => {
+const AddNewAdministrationRouteDrawer = ({ onClose }: { onClose: () => void }) => {
 	const intl = useIntl();
 
 	return (
@@ -17,9 +17,7 @@ const AddNewBrandDrawer = ({ onClose }: any) => {
 			title={intl.formatMessage({ id: "administration_route.add" })}
 			widthClass="w-150"
 		>
-			<div>
-				<AddNewBrand />
-			</div>
+			<AddNewAdministrationRoute onClose={onClose} />
 		</CellWithDrawer>
 	);
 };
@@ -30,7 +28,7 @@ export default function AdministrationRoutes() {
 
 	return (
 		<div className="flex-1">
-			{/* <div className="flex justify-end mb-4">
+			<div className="flex justify-end mb-4">
 				<button
 					onClick={() => setShowDrawer(true)}
 					className="px-4 py-2 text-white rounded-xl transition-colors flex items-center gap-2 bg-brand-500"
@@ -38,12 +36,12 @@ export default function AdministrationRoutes() {
 					<PlusCircleIcon className="h-5 w-5" />
 					{intl.formatMessage({ id: "administration_route.add" })}
 				</button>
-			</div> */}
+			</div>
 
 			<AdministrationRoutesTable />
 
 			{showDrawer && (
-				<AddNewBrandDrawer onClose={() => setShowDrawer(false)} />
+				<AddNewAdministrationRouteDrawer onClose={() => setShowDrawer(false)} />
 			)}
 		</div>
 	);

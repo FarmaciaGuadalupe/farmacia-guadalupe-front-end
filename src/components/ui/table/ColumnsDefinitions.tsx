@@ -12,6 +12,9 @@ import BatchExpiration from "./CustomCells/ExpirationDate";
 import { BrandCellActions } from "./CustomCells/BrandCellActions";
 import { CategoryCellActions } from "./CustomCells/CategoryCellActions";
 import { ActiveIngredientCellActions } from "./CustomCells/ActiveIngredientCellActions";
+import { AdministrationRouteCellActions } from "./CustomCells/AdministrationRouteCellActions";
+import { SupplierTypeCellActions } from "./CustomCells/SupplierTypeCellActions";
+import { SupplierCellActions } from "./CustomCells/SupplierCellActions";
 import { BatchCellActions } from "./CustomCells/BatchCellActions";
 import MedicineClasification from "./CustomCells/MedicineClasification";
 import { EmployeeCellActions } from "../table/CustomCells/EmployeeCellActions";
@@ -341,7 +344,7 @@ export const useActiveIngredientsColumns = () => {
 
 export const useAdministrationRoutesColumns = () => {
 	const intl = useIntl();
-	const columns = useMemo<ColumnDef<any>[]>(
+	const columns = useMemo<ColumnDef<unknown>[]>(
 		() => [
 			{
 				header: intl.formatMessage({ id: "name" }),
@@ -375,10 +378,10 @@ export const useAdministrationRoutesColumns = () => {
 					<Status status={getValue() ? true : false} />
 				),
 			},
-			// {
-			// 	id: "actions",
-			// 	cell: ({ row }) => <BrandCellActions row={row} />,
-			// },
+			{
+				id: "actions",
+				cell: ({ row }) => <AdministrationRouteCellActions row={row} />,
+			},
 		],
 		[intl],
 	);
@@ -388,7 +391,7 @@ export const useAdministrationRoutesColumns = () => {
 
 export const useSupplierTypesColumns = () => {
 	const intl = useIntl();
-	const columns = useMemo<ColumnDef<any>[]>(
+	const columns = useMemo<ColumnDef<unknown>[]>(
 		() => [
 			{
 				header: intl.formatMessage({ id: "name" }),
@@ -412,10 +415,10 @@ export const useSupplierTypesColumns = () => {
 					</span>
 				),
 			},
-			// {
-			// 	id: "actions",
-			// 	cell: ({ row }) => <BrandCellActions row={row} />,
-			// },
+			{
+				id: "actions",
+				cell: ({ row }) => <SupplierTypeCellActions row={row} />,
+			},
 		],
 		[intl],
 	);
@@ -425,7 +428,7 @@ export const useSupplierTypesColumns = () => {
 
 export const useSupplierColumns = () => {
 	const intl = useIntl();
-	const columns = useMemo<ColumnDef<any>[]>(
+	const columns = useMemo<ColumnDef<unknown>[]>(
 		() => [
 			{
 				header: intl.formatMessage({ id: "supplier" }),
@@ -534,10 +537,10 @@ export const useSupplierColumns = () => {
 					<Status status={getValue() ? true : false} />
 				),
 			},
-			// {
-			// 	id: "actions",
-			// 	cell: ({ row }) => <BrandCellActions row={row} />,
-			// },
+			{
+				id: "actions",
+				cell: ({ row }) => <SupplierCellActions row={row} />,
+			},
 		],
 		[intl],
 	);
