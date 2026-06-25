@@ -10,6 +10,8 @@ import { BatchStock } from "./CustomCells/BatchStock";
 import { stringAvatar } from "../../../utils/AvatarUtils";
 import BatchExpiration from "./CustomCells/ExpirationDate";
 import { BrandCellActions } from "./CustomCells/BrandCellActions";
+import { CategoryCellActions } from "./CustomCells/CategoryCellActions";
+import { ActiveIngredientCellActions } from "./CustomCells/ActiveIngredientCellActions";
 import { BatchCellActions } from "./CustomCells/BatchCellActions";
 import MedicineClasification from "./CustomCells/MedicineClasification";
 import { EmployeeCellActions } from "../table/CustomCells/EmployeeCellActions";
@@ -251,7 +253,7 @@ export const useBrandColumns = () => {
 
 export const useCategoryColumns = () => {
 	const intl = useIntl();
-	const columns = useMemo<ColumnDef<any>[]>(
+	const columns = useMemo<ColumnDef<unknown>[]>(
 		() => [
 			{
 				header: intl.formatMessage({ id: "name" }),
@@ -282,10 +284,10 @@ export const useCategoryColumns = () => {
 					<Status status={getValue() ? true : false} />
 				),
 			},
-			// {
-			// 	id: "actions",
-			// 	cell: ({ row }) => <BrandCellActions row={row} />,
-			// },
+			{
+				id: "actions",
+				cell: ({ row }) => <CategoryCellActions row={row} />,
+			},
 		],
 		[intl],
 	);
@@ -295,7 +297,7 @@ export const useCategoryColumns = () => {
 
 export const useActiveIngredientsColumns = () => {
 	const intl = useIntl();
-	const columns = useMemo<ColumnDef<any>[]>(
+	const columns = useMemo<ColumnDef<unknown>[]>(
 		() => [
 			{
 				header: intl.formatMessage({ id: "name" }),
@@ -326,10 +328,10 @@ export const useActiveIngredientsColumns = () => {
 					<Status status={getValue() ? true : false} />
 				),
 			},
-			// {
-			// 	id: "actions",
-			// 	cell: ({ row }) => <BrandCellActions row={row} />,
-			// },
+			{
+				id: "actions",
+				cell: ({ row }) => <ActiveIngredientCellActions row={row} />,
+			},
 		],
 		[intl],
 	);

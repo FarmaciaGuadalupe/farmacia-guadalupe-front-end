@@ -2,13 +2,12 @@ import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
 // Local imports
-import CategoriesTable from "../../tables/BasicTables/CategoriesTable";
 import { useIntl } from "react-intl";
 import CellWithDrawer from "../table/CellWithDrawer";
-import AddNewBrand from "../table/CustomDrawers/AddNewBrand";
+import AddNewActiveIngredient from "../table/CustomDrawers/AddNewActiveIngredient";
 import ActiveIngredientsTable from "../../tables/BasicTables/ActiveIngredientsTable";
 
-const AddNewBrandDrawer = ({ onClose }: any) => {
+const AddNewActiveIngredientDrawer = ({ onClose }: { onClose: () => void }) => {
 	const intl = useIntl();
 
 	return (
@@ -18,9 +17,7 @@ const AddNewBrandDrawer = ({ onClose }: any) => {
 			title={intl.formatMessage({ id: "active_ingredient.add" })}
 			widthClass="w-150"
 		>
-			<div>
-				<AddNewBrand />
-			</div>
+			<AddNewActiveIngredient onClose={onClose} />
 		</CellWithDrawer>
 	);
 };
@@ -31,7 +28,7 @@ export default function ActiveIngredients() {
 
 	return (
 		<div className="flex-1">
-			{/* <div className="flex justify-end mb-4">
+			<div className="flex justify-end mb-4">
 				<button
 					onClick={() => setShowDrawer(true)}
 					className="px-4 py-2 text-white rounded-xl transition-colors flex items-center gap-2 bg-brand-500"
@@ -39,12 +36,12 @@ export default function ActiveIngredients() {
 					<PlusCircleIcon className="h-5 w-5" />
 					{intl.formatMessage({ id: "active_ingredient.add" })}
 				</button>
-			</div> */}
+			</div>
 
 			<ActiveIngredientsTable />
 
 			{showDrawer && (
-				<AddNewBrandDrawer onClose={() => setShowDrawer(false)} />
+				<AddNewActiveIngredientDrawer onClose={() => setShowDrawer(false)} />
 			)}
 		</div>
 	);

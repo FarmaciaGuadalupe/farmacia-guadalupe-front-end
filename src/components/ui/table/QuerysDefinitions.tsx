@@ -139,6 +139,7 @@ export const GET_ACTIVE_INGREDIENTES_QUERY = () => gql`
 				active_ingredient_id
 				name
 				description
+				is_controlled
 				is_active
 			}
 			pageInfo {
