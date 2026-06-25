@@ -19,6 +19,7 @@ import {
 
 import CellWithDrawer from "../CellWithDrawer";
 import SimpleModal from "../../../ui/utils/SimpleModal";
+import EditBrand from "../CustomDrawers/EditBrand";
 
 const TOGGLE_BRAND_STATUS_MUTATION = gql`
 	mutation ToggleBrandStatus($id_brand: Int!) {
@@ -30,21 +31,61 @@ const TOGGLE_BRAND_STATUS_MUTATION = gql`
 	}
 `;
 
-const EditUserDrawer = ({ row, onClose }: any) => {
+interface BrandData {
+	id_brand: string | number;
+	name: string;
+	contact_phone?: string;
+	contact_email?: string;
+	logo_url?: string;
+	is_active?: boolean;
+}
+
+interface EditBrandDrawerProps {
+	row: {
+		original: BrandData;
+	};
+	onClose: () => void;
+}
+
+interface ToggleActivatedModalProps {
+	row: {
+		original: BrandData;
+	};
+	onClose: () => void;
+}
+
+interface SetStatusLevelProps {
+	is_active: boolean | null | undefined;
+}
+
+interface MenuItem {
+	showWhen: boolean;
+	label: React.ReactNode;
+	drawer: React.ComponentType<{ row: { original: BrandData }; onClose: () => void }>;
+}
+
+interface BrandCellActionsProps {
+	row: {
+		original: BrandData;
+	};
+}
+
+const EditBrandDrawer = ({ row, onClose }: EditBrandDrawerProps) => {
 	const intl = useIntl();
 
 	return (
 		<CellWithDrawer
 			isOpen={true}
 			onClose={onClose}
-			title={intl.formatMessage({ id: "edit_user" })}
+			title={intl.formatMessage({ id: "brand.edit" })}
+			widthClass="w-150"
 		>
-			<h1>test</h1>
+			<EditBrand row={row} onClose={onClose} />
 		</CellWithDrawer>
 	);
 };
 
-const ToggleActivatedModal = ({ row, onClose }: any) => {
+const ToggleActivatedModal = ({ row, onClose }: ToggleActivatedModalProps) => {
 	const intl = useIntl();
 	// Asegurarse de extraer id_brand
 	const { id_brand, is_active, name } = row.original;
@@ -118,7 +159,7 @@ const ToggleActivatedModal = ({ row, onClose }: any) => {
 	);
 };
 
-const SetStatusLevel = ({ is_active }: any) => {
+const SetStatusLevel = ({ is_active }: SetStatusLevelProps) => {
 	return is_active ? (
 		<Fragment>
 			<span className="text-red-600 flex items-center gap-2">
@@ -136,14 +177,14 @@ const SetStatusLevel = ({ is_active }: any) => {
 	);
 };
 
-export const BrandCellActions = ({ row }: any) => {
+export const BrandCellActions = ({ row }: BrandCellActionsProps) => {
 	const { original } = row;
 	const { is_active } = original;
-	const [activeItem, setActiveItem] = useState<any>(null);
+	const [activeItem, setActiveItem] = useState<MenuItem | null>(null);
 
 	const items = [
 		{
-			showWhen: false,
+			showWhen: true,
 			label: (
 				<Fragment>
 					<PencilSquareIcon className="size-4.5 stroke-1" />
@@ -152,7 +193,7 @@ export const BrandCellActions = ({ row }: any) => {
 					</span>
 				</Fragment>
 			),
-			drawer: EditUserDrawer,
+			drawer: EditBrandDrawer,
 		},
 		{
 			showWhen: true,
