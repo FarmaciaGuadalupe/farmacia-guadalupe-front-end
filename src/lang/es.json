@@ -272,6 +272,8 @@
     "supplier_type.update.error": "Error al actualizar el tipo de proveedor",
     "supplier_type.update.success": "Tipo de proveedor actualizado con éxito",
     "supplier.add": "Agregar proveedor",
+    "supplier.create.success": "Proveedor creado con éxito",
+    "supplier.create.error": "Error al crear el proveedor",
     "supplier.edit": "Editar proveedor",
     "supplier.update.error": "Error al actualizar el proveedor",
     "supplier.update.success": "Proveedor actualizado con éxito",

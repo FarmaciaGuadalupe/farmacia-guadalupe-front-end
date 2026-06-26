@@ -3,10 +3,8 @@ import {
 	CreditCardIcon,
 	BanknotesIcon,
 	CurrencyDollarIcon,
-	CalendarIcon,
-	DocumentArrowDownIcon
+	ArrowDownCircleIcon
 } from "@heroicons/react/24/outline";
-import { GrTransaction } from "react-icons/gr";
 
 const TransactionPay = ({ row }: any) => {
 	const payments = row.original.salePayments || [];
@@ -25,7 +23,7 @@ const TransactionPay = ({ row }: any) => {
 				);
 			case 3:
 				return (
-					<DocumentArrowDownIcon className={`${className} text-purple-600`} />
+					<ArrowDownCircleIcon className={`${className} text-purple-600`} />
 				);
 			default:
 				return (
@@ -68,7 +66,7 @@ const TransactionPay = ({ row }: any) => {
 	return (
 		<div className="flex flex-col justify-center h-full py-1">
 			<Tooltip
-				title={hasMultiplePayments ? TooltipContent : ""}
+				title={TooltipContent}
 				arrow
 				placement="top"
 				slotProps={{
@@ -97,7 +95,7 @@ const TransactionPay = ({ row }: any) => {
 				}}
 			>
 				<div
-					className={`flex flex-row items-center gap-2 ${hasMultiplePayments ? "cursor-help" : ""}`}
+					className={`flex flex-row items-center gap-2 cursor-help`}
 				>
 					{hasMultiplePayments ? (
 						<CurrencyDollarIcon className="size-4 text-amber-500" />
