@@ -206,7 +206,7 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
 				<Typography
 					variant="subtitle1"
 					fontWeight="bold"
-					className="mb-2 text-gray-700"
+					className="mb-2 text-gray-700 dark:text-gray-100"
 				>
 					<FormattedMessage id="medicine.section.data" />
 				</Typography>
@@ -360,7 +360,7 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
 								<Typography
 									variant="subtitle1"
 									fontWeight="bold"
-									className="mb-2 text-gray-700"
+									className="mb-2 text-gray-700 dark:text-gray-100"
 								>
 									<FormattedMessage id="medicine.section.formula" />
 								</Typography>
@@ -446,7 +446,7 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
 																index,
 															)
 														}
-														className="p-3 text-red-600 border border-red-300 rounded-full bg-red-50 transition-colors flex items-center justify-center disabled:opacity-50"
+														className="p-3 text-red-600 dark:text-red-50 border border-red-300 rounded-full bg-red-50 dark:bg-red-900 transition-colors flex items-center justify-center"
 													>
 														<TrashIcon className="size-4" />
 													</button>
@@ -460,7 +460,7 @@ function MedicalSpecsStep({ formData, onChange, setFormData }: StepProps) {
 								<button
 									type="button"
 									onClick={addIngredient}
-									className="mt-1 px-4 py-2 text-brand-500 bg-white border border-brand-500 rounded-xl hover:bg-brand-50 transition-colors flex items-center justify-center gap-2"
+									className="mt-1 px-4 py-2 text-brand-500 border border-brand-500 dark:border-gray-400 dark:text-gray-400 rounded-xl hover:bg-brand-50 transition-colors flex items-center justify-center gap-2 w-max"
 								>
 									<FormattedMessage id="medicine.action.add_ingredient" />
 								</button>
@@ -522,7 +522,7 @@ function GeneralInfoStep({ formData, onChange, setFormData }: StepProps) {
 				<Typography
 					variant="subtitle1"
 					fontWeight="bold"
-					className="mb-2 text-gray-700"
+					className="mb-2 text-gray-700 dark:text-gray-100"
 				>
 					<FormattedMessage id="medicine.step.packaging" />
 				</Typography>
@@ -679,7 +679,7 @@ function CompositionStep({ formData, onChange, setFormData }: StepProps) {
 				<Typography
 					variant="subtitle1"
 					fontWeight="bold"
-					className="mb-2 text-gray-700"
+					className="mb-2 text-gray-700 dark:text-gray-100"
 				>
 					<FormattedMessage id="medicine.step.batch" />
 				</Typography>
@@ -1073,7 +1073,35 @@ export default function AddNewMedicine({ onClose }: { onClose?: () => void }) {
 			<Stepper className="m-4 " activeStep={activeStep} alternativeLabel>
 				{stepKeys.map((key) => (
 					<Step key={key}>
-						<StepLabel>
+						<StepLabel
+							sx={{
+								// 1. Color del texto INACTIVO (ej: "Empaque y Precios")
+								"& .MuiStepLabel-label": {
+									color: "#94a3b8", // Un gris claro para que resalte en el fondo oscuro
+								},
+								// 2. Color del texto ACTIVO
+								"& .MuiStepLabel-label.Mui-active": {
+									color: "#ffffff", // Blanco
+								},
+								// 3. Color del texto COMPLETADO
+								"& .MuiStepLabel-label.Mui-completed": {
+									color: "#cbd5e1", // Gris intermedio
+								},
+								// 4. Color del círculo INACTIVO
+								"& .MuiStepIcon-root": {
+									color: "#1e293b", // Un gris muy oscuro que coincida con tus inputs
+								},
+								// 5. Color del círculo ACTIVO y COMPLETADO
+								"& .MuiStepIcon-root.Mui-active, & .MuiStepIcon-root.Mui-completed":
+									{
+										color: "#3b82f6", // El color azul que ya tienes
+									},
+								// 6. Color del número dentro del círculo
+								"& .MuiStepIcon-text": {
+									fill: "#ffffff", // Blanco para que el número sea visible
+								},
+							}}
+						>
 							<FormattedMessage id={key} />
 						</StepLabel>
 					</Step>
