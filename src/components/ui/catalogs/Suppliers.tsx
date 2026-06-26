@@ -4,10 +4,10 @@ import { useState } from "react";
 // Local imports
 import { useIntl } from "react-intl";
 import CellWithDrawer from "../table/CellWithDrawer";
-import AddNewBrand from "../table/CustomDrawers/AddNewBrand";
+import AddNewSupplier from "../table/CustomDrawers/AddNewSupplier";
 import SupplierTable from "../../tables/BasicTables/SupplierTable";
 
-const AddNewBrandDrawer = ({ onClose }: any) => {
+const AddNewSupplierDrawer = ({ onClose }: any) => {
 	const intl = useIntl();
 
 	return (
@@ -18,7 +18,7 @@ const AddNewBrandDrawer = ({ onClose }: any) => {
 			widthClass="w-150"
 		>
 			<div>
-				<AddNewBrand />
+				<AddNewSupplier onClose={onClose} />
 			</div>
 		</CellWithDrawer>
 	);
@@ -30,20 +30,20 @@ export default function Suppliers() {
 
 	return (
 		<div className="flex-1">
-			{/* <div className="flex justify-end mb-4">
+			<div className="flex justify-end mb-4">
 				<button
 					onClick={() => setShowDrawer(true)}
-					className="px-4 py-2 text-white rounded-xl transition-colors flex items-center gap-2 bg-brand-500"
+					className="px-4 py-2 text-white rounded-xl transition-colors flex items-center gap-2 bg-brand-500 hover:bg-brand-600"
 				>
 					<PlusCircleIcon className="h-5 w-5" />
 					{intl.formatMessage({ id: "supplier.add" })}
 				</button>
-			</div> */}
+			</div>
 
 			<SupplierTable />
 
 			{showDrawer && (
-				<AddNewBrandDrawer onClose={() => setShowDrawer(false)} />
+				<AddNewSupplierDrawer onClose={() => setShowDrawer(false)} />
 			)}
 		</div>
 	);

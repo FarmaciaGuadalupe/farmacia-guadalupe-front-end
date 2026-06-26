@@ -105,7 +105,7 @@ export default function SaleTable() {
 						<QuestionMarkCircleIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
 						Guía rápida
 					</button>
-					<div id="tour-sales-date" className="w-full md:w-64">
+					<div id="tour-sales-date" className="w-full md:w-64 bg-white rounded-xl">
 						<DatePicker
 							id="sale-date-filter"
 							mode="range"
