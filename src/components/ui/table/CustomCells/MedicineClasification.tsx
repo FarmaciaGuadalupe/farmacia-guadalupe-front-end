@@ -193,7 +193,7 @@ const MedicineClasification = memo(({ row }: any) => {
 				)}
 				{RouteIconComponent && (
 					<RouteIconComponent
-						className="size-4.5 text-gray-500 cursor-default"
+						className="size-4.5 text-gray-500 cursor-default dark:text-gray-100"
 						data-tooltip-id="global-tooltip"
 						data-tooltip-content={intl.formatMessage(
 							{ id: "administration_route" },
@@ -203,7 +203,7 @@ const MedicineClasification = memo(({ row }: any) => {
 				)}
 			</div>
 
-			<div className="flex flex-wrap items-center gap-1 text-xs text-gray-500">
+			<div className="flex flex-wrap items-center gap-1 text-xs text-gray-500 dark:text-gray-100">
 				{brand?.name && <span>{brand.name}</span>}
 
 				{brand?.name && manufacturer?.name && (

@@ -16,7 +16,7 @@ export const BatchTableActions = ({ row }: any) => {
 					className="p-2 text-gray-500 hover:text-brand-500 transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-dark-800"
 					title={intl.formatMessage({ id: "edit" })}
 				>
-					<PencilSquareIcon className="size-5" />
+					<PencilSquareIcon className="size-5 dark:text-gray-100" />
 				</button>
 			</div>
 

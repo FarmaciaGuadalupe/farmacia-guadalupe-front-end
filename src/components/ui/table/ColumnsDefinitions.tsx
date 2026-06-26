@@ -685,7 +685,6 @@ export const useSaleColumns = () => {
 		() => [
 			{
 				header: intl.formatMessage({ id: "date" }),
-				accessorKey: "saleDate",
 				id: "saleDate",
 				cell: ({ row }) => <TransactionDate row={row} />,
 			},
@@ -715,10 +714,10 @@ export const useSaleColumns = () => {
 									})}
 								>
 									{/* Contenedor para el icono: imita el estilo de la columna "Dependiente" */}
-									<div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-500">
+									<div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-500 ">
 										<FaUserDoctor className="size-3.5" />
 									</div>
-									<span className="text-sm font-semibold text-gray-900 capitalize">
+									<span className="text-sm font-semibold text-gray-900 capitalize dark:text-gray-100">
 										{doctorName.toLowerCase()}
 									</span>
 								</div>
@@ -736,7 +735,7 @@ export const useSaleColumns = () => {
 									<div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-gray-400">
 										<RiReceiptLine className="size-4" />
 									</div>
-									<span className="text-xs font-medium text-gray-500">
+									<span className="text-xs font-medium text-gray-500 dark:text-gray-100">
 										{prescriptionNumber}
 									</span>
 								</div>

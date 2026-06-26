@@ -88,15 +88,6 @@ export default function SaleTable() {
 					</h3>
 				</div>
 				<div className="flex items-center gap-2 w-full md:w-auto">
-					{isFiltered && (
-						<button
-							onClick={clearFilters}
-							className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 dark:bg-red-900/20 dark:border-red-900/30 dark:text-red-400 transition-colors"
-						>
-							<XMarkIcon className="size-4" />
-							<FormattedMessage id="cancel" />
-						</button>
-					)}
 					<button
 						id="tour-sales-guide"	
 						onClick={startTour}
@@ -105,7 +96,7 @@ export default function SaleTable() {
 						<QuestionMarkCircleIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
 						Guía rápida
 					</button>
-					<div id="tour-sales-date" className="w-full md:w-64">
+					<div id="tour-sales-date" className="w-full md:w-64 bg-white rounded-xl">
 						<DatePicker
 							id="sale-date-filter"
 							mode="range"
@@ -116,6 +107,15 @@ export default function SaleTable() {
 							onChange={handleDateChange}
 						/>
 					</div>
+					{isFiltered && (
+						<button
+							onClick={clearFilters}
+							className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 dark:bg-red-900/20 dark:border-red-900/30 dark:text-red-400 transition-colors"
+						>
+							<XMarkIcon className="size-4" />
+							<FormattedMessage id="cancel" />
+						</button>
+					)}
 				</div>
 			</div>
 			<div id="tour-sales-table">
